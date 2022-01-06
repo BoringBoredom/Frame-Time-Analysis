@@ -123,7 +123,9 @@ function appendBench(name, data, fileCount) {
             datasets: [{
                 label: 'Frame Times',
                 data: frametimes,
-                backgroundColor: 'rgb(0,191,255)'
+                backgroundColor: 'rgb(0,191,255)',
+                borderWidth: 0,
+                radius: 1
             }]
         },
         options: {
