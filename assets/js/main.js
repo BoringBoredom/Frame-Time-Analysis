@@ -84,8 +84,7 @@ function appendBench(name, data, fileCount) {
         }
     }
 
-    const sortedFrameTimes = [...frametimes].sort().reverse()
-
+    const sortedFrameTimes = [...frametimes].sort((a, b) => b - a)
     bench['Max'] = (1000 / sortedFrameTimes.at(-1)).toFixed(2)
     bench['Avg'] = (1000 / (benchmarkTime / frameCount)).toFixed(2)
     bench['Min'] = (1000 / sortedFrameTimes[0]).toFixed(2)
