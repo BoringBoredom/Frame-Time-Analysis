@@ -96,10 +96,11 @@ function appendBench(name, data, fileCount) {
     }
 
     for (const low of values) {
+        const wall = low / 100 * benchmarkTime
         let currentTotal = 0
         for (const present of sortedFrameTimes) {
             currentTotal += present
-            if (currentTotal >= low / 100 * benchmarkTime) {
+            if (currentTotal >= wall) {
                 const fps = 1000 / present
                 bench[`${low} % low`] = fps.toFixed(2)
                 break
