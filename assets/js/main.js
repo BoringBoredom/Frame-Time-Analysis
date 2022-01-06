@@ -1,7 +1,11 @@
 const results = document.getElementById('results')
 const instructions = document.getElementById('instructions')
+const comparisons = document.getElementById('comparisons')
+const comparisonContainer = document.getElementById('comparison-container')
+const metric = document.getElementById('metric')
 
 let fileCount = 0
+const benches = []
 
 document.addEventListener('dragenter', ev => {
     ev.stopPropagation()
@@ -22,14 +26,51 @@ document.addEventListener('drop', ev => {
     }
 })
 
+const comparisonBar = new Chart(comparisons, {
+    type: 'bar',
+    data: {
+        labels: benches.map(bench => bench.name),
+        datasets: [{
+            label: metric.value,
+            data: benches.map(bench => bench[metric.value]),
+            backgroundColor: 'rgb(0,191,255)'
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        scales: {
+            y: {
+                grid: {
+                    display: false
+                }
+            }
+        },
+        plugins: {
+            datalabels: {
+                anchor: 'start',
+                clamp: true,
+                align: 'end',
+                font: {
+                    weight: 700
+                },
+                color: 'rgb(0,0,0)'
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+})
+
 function appendBench(name, data, fileCount) {
-    const bench = { lows: {}, percentiles: {} }
+    const bench = {
+        name: name,
+        application: data[1][data[0].indexOf('Application')],
+        present_mode: data[1][data[0].indexOf('PresentMode')]
+    }
+
     const frametimes = []
     const horGraphAxis = []
     const values = [1, 0.1, 0.01]
     const index = data[0].indexOf('MsBetweenPresents')
-    const presentMode = data[1][data[0].indexOf('PresentMode')]
-    const application = data[1][data[0].indexOf('Application')]
 
     let frameCount = 0
     let benchmarkTime = 0
@@ -45,13 +86,13 @@ function appendBench(name, data, fileCount) {
 
     const sortedFrameTimes = [...frametimes].sort().reverse()
 
-    bench.max = (1000 / sortedFrameTimes.at(-1)).toFixed(2)
-    bench.avg = (1000 / (benchmarkTime / frameCount)).toFixed(2)
-    bench.min = (1000 / sortedFrameTimes[0]).toFixed(2)
+    bench['Max'] = (1000 / sortedFrameTimes.at(-1)).toFixed(2)
+    bench['Avg'] = (1000 / (benchmarkTime / frameCount)).toFixed(2)
+    bench['Min'] = (1000 / sortedFrameTimes[0]).toFixed(2)
 
     for (const percentile of values) {
         const fps = 1000 / sortedFrameTimes[Math.ceil(percentile / 100 * frameCount) - 1]
-        bench.percentiles[percentile] = fps.toFixed(2)
+        bench[`${percentile} %ile`] = fps.toFixed(2)
     }
 
     for (const low of values) {
@@ -60,7 +101,7 @@ function appendBench(name, data, fileCount) {
             currentTotal += present
             if (currentTotal >= low / 100 * benchmarkTime) {
                 const fps = 1000 / present
-                bench.lows[low] = fps.toFixed(2)
+                bench[`${low} % low`] = fps.toFixed(2)
                 break
             }
         }
@@ -69,7 +110,7 @@ function appendBench(name, data, fileCount) {
     results.insertAdjacentHTML('beforeend', `
         <div class="row">
             <p class="title">
-                ${name} | ${application} | ${presentMode}
+                ${name} | ${bench.application} | ${bench.present_mode}
             </p>
             <div class="col">
                 <canvas id="bar-${fileCount}">
@@ -88,7 +129,7 @@ function appendBench(name, data, fileCount) {
             labels: ['Max', 'Avg', 'Min', '1 %ile', '0.1 %ile', '0.01 %ile', '1 % low', '0.1 % low', '0.01 % low'],
             datasets: [{
                 label: 'FPS',
-                data: [bench.max, bench.avg, bench.min, bench.percentiles['1'], bench.percentiles['0.1'], bench.percentiles['0.01'], bench.lows['1'], bench.lows['0.1'], bench.lows['0.01']],
+                data: [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low']],
                 backgroundColor: 'rgb(0,191,255)'
             }]
         },
@@ -138,9 +179,17 @@ function appendBench(name, data, fileCount) {
             }
         }
     })
+
+    benches.push(bench)
+
+    comparisonContainer.removeAttribute('style')
+
+    updateComparison()
 }
 
-document.getElementById('export').addEventListener('click', ev => {
+const exportButton = document.getElementById('export')
+exportButton.addEventListener('click', ev => {
+    exportButton.style.display = 'none'
     html2canvas(document.body).then(content => {
         const link = document.createElement('a')
         const uri = content.toDataURL()
@@ -154,5 +203,17 @@ document.getElementById('export').addEventListener('click', ev => {
         else {
             window.open(uri)
         }
+        exportButton.removeAttribute('style')
     })
 })
+
+metric.addEventListener('click', ev => {
+    updateComparison()
+})
+
+function updateComparison() {
+    comparisonBar.data.labels = benches.map(bench => bench.name)
+    comparisonBar.data.datasets[0].label = metric.value
+    comparisonBar.data.datasets[0].data = benches.map(bench => bench[metric.value])
+    comparisonBar.update()
+}

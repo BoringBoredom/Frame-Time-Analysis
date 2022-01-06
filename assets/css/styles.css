@@ -17,3 +17,8 @@
   position: absolute;
 }
 
+#metric {
+  overflow: auto !important;
+  border-color: var(--bs-gray-400);
+}
+
