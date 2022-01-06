@@ -190,6 +190,7 @@ function appendBench(name, data, fileCount) {
 const exportButton = document.getElementById('export')
 exportButton.addEventListener('click', ev => {
     exportButton.style.display = 'none'
+    metric.style.display = 'none'
     html2canvas(document.body).then(content => {
         const link = document.createElement('a')
         const uri = content.toDataURL()
@@ -204,6 +205,7 @@ exportButton.addEventListener('click', ev => {
             window.open(uri)
         }
         exportButton.removeAttribute('style')
+        metric.removeAttribute('style')
     })
 })
 
