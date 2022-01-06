@@ -1,0 +1,19 @@
+#instructions {
+  text-align: center;
+  font-size: 50px;
+  padding-top: 40vh;
+}
+
+.row {
+  padding-top: 5vh;
+}
+
+.title {
+  text-align: center;
+}
+
+#export {
+  margin: 10px;
+  position: absolute;
+}
+
