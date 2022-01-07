@@ -1,3 +1,6 @@
+Chart.defaults.animation = false
+Chart.defaults.events = []
+
 const navigation = document.getElementById('navigation')
 const exportButton = document.getElementById('export')
 
