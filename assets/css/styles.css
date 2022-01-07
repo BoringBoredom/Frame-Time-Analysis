@@ -32,13 +32,18 @@
 }
 
 #comparisons {
-  display: flex;
   margin-top: 5vh;
   max-height: 95vh;
+  text-align: center;
 }
 
 #metric {
-  overflow: auto !important;
+  overflow-y: visible;
   border-color: var(--bs-gray-400);
+}
+
+#metric > option {
+  display: table-cell;
+  padding: 0px 10px 0px 8px;
 }
 

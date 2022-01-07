@@ -47,12 +47,8 @@ document.addEventListener('drop', async ev => {
 const comparisonChart = new Chart(comparison, {
     type: 'bar',
     data: {
-        labels: benches.map(bench => bench.file_name),
-        datasets: [{
-            label: metric.value,
-            data: benches.map(bench => bench[metric.value]),
-            backgroundColor: 'rgb(0,191,255)'
-        }]
+        labels: [],
+        datasets: []
     },
     options: {
         indexAxis: 'y',
@@ -77,6 +73,31 @@ const comparisonChart = new Chart(comparison, {
     },
     plugins: [ChartDataLabels]
 })
+
+const colors = {
+    'Max': 'rgb(255,255,0)',
+    'Avg': 'rgb(255,215,0)',
+    'Min': 'rgb(255,165,0)',
+    '1 %ile': 'rgb(0,255,255)',
+    '0.1 %ile': 'rgb(135,206,250)',
+    '0.01 %ile': 'rgb(0,191,255)',
+    '1 % low': 'rgb(152,251,152)',
+    '0.1 % low': 'rgb(0,255,0)',
+    '0.01 % low': 'rgb(50,205,50)'
+}
+
+function updateComparison() {
+    comparisonChart.data.labels = benches.map(bench => bench.file_name)
+    comparisonChart.data.datasets = [...metric.options].filter(option => option.selected).map(option => {
+        const value = option.value
+        return {
+            label: value,
+            data: benches.map(bench => bench[value]),
+            backgroundColor: colors[value]
+        }
+    })
+    comparisonChart.update()
+}
 
 function completeStats(bench) {
     const frameTimes = bench.frame_times
@@ -307,10 +328,3 @@ exportButton.addEventListener('click', ev => {
 metric.addEventListener('click', ev => {
     updateComparison()
 })
-
-function updateComparison() {
-    comparisonChart.data.labels = benches.map(bench => bench.file_name)
-    comparisonChart.data.datasets[0].label = metric.value
-    comparisonChart.data.datasets[0].data = benches.map(bench => bench[metric.value])
-    comparisonChart.update()
-}
