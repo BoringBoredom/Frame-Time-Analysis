@@ -31,6 +31,7 @@ document.addEventListener('drop', async ev => {
         const fileName = file.name
         if (fileName.endsWith('.csv')) {
             instructions.style.display = 'none'
+            navigation.removeAttribute('style')
             Papa.parse(file, {
                 complete: (result) => {
                     processCSV(fileName, ++fileCount, result.data)
@@ -39,6 +40,7 @@ document.addEventListener('drop', async ev => {
         }
         else if (fileName.endsWith('.json')) {
             instructions.style.display = 'none'
+            navigation.removeAttribute('style')
             processJSON(fileName, ++fileCount, JSON.parse(await file.text()))
         }
     }
