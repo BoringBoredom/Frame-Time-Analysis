@@ -224,8 +224,9 @@ function appendBench(bench) {
 function processCSV(fileName, fileCount, data) {
     let infoRow
     for (const [index, row] of data.entries()) {
-        if (row.includes('MsBetweenPresents')) {
-            infoRow = row
+        lowerCaseRow = row.map(entry => entry.toLowerCase())
+        if (lowerCaseRow.includes('msbetweenpresents')) {
+            infoRow = lowerCaseRow
             data = data.slice(index + 1)
             break
         }
@@ -236,15 +237,15 @@ function processCSV(fileName, fileCount, data) {
     const bench = {
         file_name: fileName,
         file_count: fileCount,
-        application: firstRow[infoRow.indexOf('Application')],
-        present_mode: firstRow[infoRow.indexOf('PresentMode')],
-        runtime: firstRow[infoRow.indexOf('Runtime')]
+        application: firstRow[infoRow.indexOf('application')],
+        present_mode: firstRow[infoRow.indexOf('presentmode')],
+        runtime: firstRow[infoRow.indexOf('runtime')]
     }
 
     const frametimes = []
     const elapsed = []
 
-    const presentIndex = infoRow.indexOf('MsBetweenPresents')
+    const presentIndex = infoRow.indexOf('msbetweenpresents')
 
     let frameCount = 0
     let currentElapsed = 0
