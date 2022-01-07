@@ -80,7 +80,7 @@ const comparisonChart = new Chart(comparison, {
 
 function completeStats(bench) {
     const frameTimes = bench.frame_times
-    const benchmarkTime = bench.benchmark_time * 1000
+    const benchmarkTime = bench.benchmark_time
     const frameCount = bench.frame_count
 
     const sortedFrameTimes = [...frameTimes].sort((a, b) => b - a)
@@ -222,13 +222,13 @@ function processCSV(fileName, fileCount, data) {
     const elapsed = []
 
     const presentIndex = infoRow.indexOf('MsBetweenPresents')
-    const elapsedIndex = infoRow.indexOf('TimeInSeconds')
 
     let frameCount = 0
+    let currentElapsed = 0
     for (const row of data) {
         const present = parseFloat(row[presentIndex])
-        const currentElapsed = parseFloat(row[elapsedIndex])
-        if (present && currentElapsed) {
+        if (present) {
+            currentElapsed += present
             frametimes.push(present)
             elapsed.push(currentElapsed)
             frameCount++
@@ -238,7 +238,7 @@ function processCSV(fileName, fileCount, data) {
     bench.frame_times = frametimes
     bench.elapsed = elapsed
     bench.frame_count = frameCount
-    bench.benchmark_time = elapsed.at(-1)
+    bench.benchmark_time = currentElapsed
 
     completeStats(bench)
 }
@@ -262,13 +262,23 @@ function processJSON(fileName, fileCount, data) {
         file_count: fileCount,
         application: data['Info']['ProcessName'],
         present_mode: cfxPresentModes[run['CaptureData']['PresentMode']?.[0]],
-        runtime: run['PresentMonRuntime']
+        runtime: run['PresentMonRuntime'],
+        frame_times: run['CaptureData']['MsBetweenPresents']
     }
 
-    bench.frame_times = run['CaptureData']['MsBetweenPresents']
-    bench.elapsed = run['CaptureData']['TimeInSeconds']
-    bench.frame_count = bench.frame_times.length
-    bench.benchmark_time = bench.elapsed.at(-1)
+    const elapsed = []
+
+    let frameCount = 0
+    let currentElapsed = 0
+    for (const present of bench.frame_times) {
+        currentElapsed += present
+        elapsed.push(currentElapsed)
+        frameCount++
+    }
+
+    bench.elapsed = elapsed
+    bench.frame_count = frameCount
+    bench.benchmark_time = currentElapsed
 
     completeStats(bench)
 }
