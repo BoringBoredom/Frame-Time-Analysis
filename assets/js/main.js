@@ -18,8 +18,11 @@ document.addEventListener('dragover', ev => {
 document.addEventListener('drop', ev => {
     ev.stopPropagation()
     ev.preventDefault()
-    instructions.style.display = 'none'
     for (const file of ev.dataTransfer.files) {
+        if (!file.name.endsWith('.csv')) {
+            continue
+        }
+        instructions.style.display = 'none'
         Papa.parse(file, {
             complete: (result) => appendBench(file.name, result.data, ++fileCount)
         })
@@ -29,7 +32,7 @@ document.addEventListener('drop', ev => {
 const comparisonBar = new Chart(comparisons, {
     type: 'bar',
     data: {
-        labels: benches.map(bench => bench.name),
+        labels: benches.map(bench => bench.fileName),
         datasets: [{
             label: metric.value,
             data: benches.map(bench => bench[metric.value]),
@@ -60,17 +63,27 @@ const comparisonBar = new Chart(comparisons, {
     plugins: [ChartDataLabels]
 })
 
-function appendBench(name, data, fileCount) {
+function appendBench(fileName, data, fileCount) {
+    for (const [index, row] of data.entries()) {
+        if (row.includes('MsBetweenPresents')) {
+            data = data.slice(index)
+            break
+        }
+    }
+
+    const infoRow = data[0]
+    const firstRow = data[1]
+
     const bench = {
-        name: name,
-        application: data[1][data[0].indexOf('Application')],
-        present_mode: data[1][data[0].indexOf('PresentMode')]
+        fileName: fileName,
+        application: firstRow[infoRow.indexOf('Application')],
+        present_mode: firstRow[infoRow.indexOf('PresentMode')]
     }
 
     const frametimes = []
     const horGraphAxis = []
     const values = [1, 0.1, 0.01]
-    const index = data[0].indexOf('MsBetweenPresents')
+    const index = infoRow.indexOf('MsBetweenPresents')
 
     let frameCount = 0
     let benchmarkTime = 0
@@ -110,7 +123,7 @@ function appendBench(name, data, fileCount) {
     results.insertAdjacentHTML('beforeend', `
         <div class="row">
             <p class="title">
-                ${name} | ${bench.application} | ${bench.present_mode}
+                ${fileName} | ${bench.application} | ${bench.present_mode}
             </p>
             <div class="col">
                 <canvas id="bar-${fileCount}">
@@ -214,7 +227,7 @@ metric.addEventListener('click', ev => {
 })
 
 function updateComparison() {
-    comparisonBar.data.labels = benches.map(bench => bench.name)
+    comparisonBar.data.labels = benches.map(bench => bench.fileName)
     comparisonBar.data.datasets[0].label = metric.value
     comparisonBar.data.datasets[0].data = benches.map(bench => bench[metric.value])
     comparisonBar.update()
