@@ -1,20 +1,39 @@
+#navigation {
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin-top: 1vh;
+  margin-right: 1vh;
+}
+
 #instructions {
   text-align: center;
-  font-size: 50px;
-  padding-top: 40vh;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  height: 100vh;
 }
 
-.row {
-  padding-top: 5vh;
+#results {
+  margin: 0 5%;
 }
 
-.title {
+.bench {
+  margin-top: 5vh;
   text-align: center;
 }
 
-#export {
-  margin: 10px;
-  position: absolute;
+.charts {
+  display: flex;
+}
+
+.column {
+  width: 50%;
+}
+
+#comparisons {
+  display: flex;
+  margin-top: 5vh;
 }
 
 #metric {

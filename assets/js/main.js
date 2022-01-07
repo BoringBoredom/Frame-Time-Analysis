@@ -1,8 +1,14 @@
-const results = document.getElementById('results')
+const navigation = document.getElementById('navigation')
+const exportButton = document.getElementById('export')
+
 const instructions = document.getElementById('instructions')
+
+const results = document.getElementById('results')
+const benchmarks = document.getElementById('benchmarks')
 const comparisons = document.getElementById('comparisons')
-const comparisonContainer = document.getElementById('comparison-container')
+const comparison = document.getElementById('comparison')
 const metric = document.getElementById('metric')
+
 
 let fileCount = 0
 const benches = []
@@ -29,7 +35,7 @@ document.addEventListener('drop', ev => {
     }
 })
 
-const comparisonBar = new Chart(comparisons, {
+const comparisonChart = new Chart(comparison, {
     type: 'bar',
     data: {
         labels: benches.map(bench => bench.fileName),
@@ -64,15 +70,16 @@ const comparisonBar = new Chart(comparisons, {
 })
 
 function appendBench(fileName, data, fileCount) {
+    let infoRow
     for (const [index, row] of data.entries()) {
         if (row.includes('MsBetweenPresents')) {
-            data = data.slice(index)
+            infoRow = row
+            data = data.slice(index + 1)
             break
         }
     }
 
-    const infoRow = data[0]
-    const firstRow = data[1]
+    const firstRow = data[0]
 
     const bench = {
         fileName: fileName,
@@ -120,18 +127,20 @@ function appendBench(fileName, data, fileCount) {
         }
     }
 
-    results.insertAdjacentHTML('beforeend', `
-        <div class="row">
-            <p class="title">
+    benchmarks.insertAdjacentHTML('beforeend', `
+        <div class="bench">
+            <p>
                 ${fileName} | ${bench.application} | ${bench.present_mode}
             </p>
-            <div class="col">
-                <canvas id="bar-${fileCount}">
-                </canvas>
-            </div>
-            <div class="col">
-                <canvas id="graph-${fileCount}">
-                </canvas>
+            <div class="charts">
+                <div class="column">
+                    <canvas id="bar-${fileCount}">
+                    </canvas>
+                </div>
+                <div class="column">
+                    <canvas id="scatter-${fileCount}">
+                    </canvas>
+                </div>
             </div>
         </div>
     `)
@@ -170,7 +179,7 @@ function appendBench(fileName, data, fileCount) {
         plugins: [ChartDataLabels]
     })
 
-    const graph = new Chart(document.getElementById(`graph-${fileCount}`), {
+    const scatter = new Chart(document.getElementById(`scatter-${fileCount}`), {
         type: 'scatter',
         data: {
             labels: horGraphAxis,
@@ -195,14 +204,13 @@ function appendBench(fileName, data, fileCount) {
 
     benches.push(bench)
 
-    comparisonContainer.removeAttribute('style')
+    results.removeAttribute('style')
 
     updateComparison()
 }
 
-const exportButton = document.getElementById('export')
 exportButton.addEventListener('click', ev => {
-    exportButton.style.display = 'none'
+    navigation.style.display = 'none'
     metric.style.display = 'none'
     html2canvas(document.body).then(content => {
         const link = document.createElement('a')
@@ -217,7 +225,7 @@ exportButton.addEventListener('click', ev => {
         else {
             window.open(uri)
         }
-        exportButton.removeAttribute('style')
+        navigation.removeAttribute('style')
         metric.removeAttribute('style')
     })
 })
@@ -227,8 +235,8 @@ metric.addEventListener('click', ev => {
 })
 
 function updateComparison() {
-    comparisonBar.data.labels = benches.map(bench => bench.fileName)
-    comparisonBar.data.datasets[0].label = metric.value
-    comparisonBar.data.datasets[0].data = benches.map(bench => bench[metric.value])
-    comparisonBar.update()
+    comparisonChart.data.labels = benches.map(bench => bench.fileName)
+    comparisonChart.data.datasets[0].label = metric.value
+    comparisonChart.data.datasets[0].data = benches.map(bench => bench[metric.value])
+    comparisonChart.update()
 }
