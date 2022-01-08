@@ -446,7 +446,7 @@ function processJSON(fileName, fileIndex, data) {
 
     let frameCount = 0
     let benchmarkTime = 0
-    for (const present of bench.frame_times) {
+    for (const present of bench.full_frame_times) {
         benchmarkTime += present
         elapsed.push(benchmarkTime)
         frameCount++
