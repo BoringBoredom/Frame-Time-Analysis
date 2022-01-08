@@ -200,7 +200,7 @@ function appendBench(bench) {
                 data: bench.frame_times,
                 backgroundColor: 'rgb(0,191,255)',
                 borderWidth: 0,
-                radius: 1
+                radius: 2
             }]
         },
         options: {
@@ -224,14 +224,56 @@ function appendBench(bench) {
 function processCSV(fileName, fileCount, data) {
     let infoRow
     for (const [index, row] of data.entries()) {
-        lowerCaseRow = row.map(entry => entry.toLowerCase())
+        const lowerCaseRow = row.map(entry => entry.toLowerCase())
         if (lowerCaseRow.includes('msbetweenpresents')) {
             infoRow = lowerCaseRow
             data = data.slice(index + 1)
+            processPresentMon(fileName, fileCount, data, infoRow)
+            break
+        }
+        else if(lowerCaseRow.includes('cpuscheduler')) {
+            infoRow = data[index + 2].map(entry => entry.toLowerCase())
+            data = data.slice(index + 3)
+            processMangoHud(fileName, fileCount, data, infoRow)
             break
         }
     }
+}
 
+function processMangoHud(fileName, fileCount, data, infoRow) {
+    const firstRow = data[0]
+
+    const bench = {
+        file_name: fileName,
+        file_count: fileCount
+    }
+
+    const frameTimes = []
+    const elapsed = []
+
+    const presentIndex = infoRow.indexOf('frametime')
+
+    let frameCount = 0
+    let currentElapsed = 0
+    for (const row of data) {
+        const present = parseFloat(row[presentIndex]) / 1000
+        if (present) {
+            currentElapsed += present
+            frameTimes.push(present)
+            elapsed.push(currentElapsed)
+            frameCount++
+        }
+    }
+
+    bench.frame_times = frameTimes
+    bench.elapsed = elapsed
+    bench.frame_count = frameCount
+    bench.benchmark_time = currentElapsed
+
+    completeStats(bench)
+}
+
+function processPresentMon(fileName, fileCount, data, infoRow) {
     const firstRow = data[0]
 
     const bench = {
@@ -242,7 +284,7 @@ function processCSV(fileName, fileCount, data) {
         runtime: firstRow[infoRow.indexOf('runtime')]
     }
 
-    const frametimes = []
+    const frameTimes = []
     const elapsed = []
 
     const presentIndex = infoRow.indexOf('msbetweenpresents')
@@ -253,13 +295,13 @@ function processCSV(fileName, fileCount, data) {
         const present = parseFloat(row[presentIndex])
         if (present) {
             currentElapsed += present
-            frametimes.push(present)
+            frameTimes.push(present)
             elapsed.push(currentElapsed)
             frameCount++
         }
     }
 
-    bench.frame_times = frametimes
+    bench.frame_times = frameTimes
     bench.elapsed = elapsed
     bench.frame_count = frameCount
     bench.benchmark_time = currentElapsed
