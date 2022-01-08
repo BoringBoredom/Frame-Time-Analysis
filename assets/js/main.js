@@ -241,8 +241,6 @@ function processCSV(fileName, fileCount, data) {
 }
 
 function processMangoHud(fileName, fileCount, data, infoRow) {
-    const firstRow = data[0]
-
     const bench = {
         file_name: fileName,
         file_count: fileCount
