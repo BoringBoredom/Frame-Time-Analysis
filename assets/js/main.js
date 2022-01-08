@@ -12,8 +12,10 @@ const comparisons = document.getElementById('comparisons')
 const comparison = document.getElementById('comparison')
 const metric = document.getElementById('metric')
 
+const crop = document.createElement('style')
+document.head.append(crop)
 
-let fileCount = 0
+let fileIndex = -1
 const benches = []
 
 document.addEventListener('dragenter', ev => {
@@ -30,18 +32,19 @@ document.addEventListener('drop', async ev => {
     for (const file of ev.dataTransfer.files) {
         const fileName = file.name
         if (fileName.endsWith('.csv')) {
-            instructions.style.display = 'none'
-            navigation.removeAttribute('style')
-            Papa.parse(file, {
-                complete: (result) => {
-                    processCSV(fileName, ++fileCount, result.data)
-                }
+            const index = ++fileIndex
+            await new Promise((resolve, reject) => {
+                Papa.parse(file, {
+                    complete: (result) => {
+                        processCSV(fileName, index, result.data)
+                        resolve()
+                    }
+                })
             })
         }
         else if (fileName.endsWith('.json')) {
-            instructions.style.display = 'none'
-            navigation.removeAttribute('style')
-            processJSON(fileName, ++fileCount, JSON.parse(await file.text()))
+            const index = ++fileIndex
+            processJSON(fileName, index, JSON.parse(await file.text()))
         }
     }
 })
@@ -55,6 +58,9 @@ const comparisonChart = new Chart(comparison, {
     options: {
         indexAxis: 'y',
         scales: {
+            x: {
+                min: 0
+            },
             y: {
                 grid: {
                     display: false
@@ -101,13 +107,44 @@ function updateComparison() {
     comparisonChart.update()
 }
 
-function completeStats(bench) {
-    const frameTimes = bench.frame_times
-    const benchmarkTime = bench.benchmark_time
-    const frameCount = bench.frame_count
+function updateStats(bench, min, max) {
+    const isOld = min || max
+
+    let frameTimes, benchmarkTime, frameCount
+
+    if (isOld) {
+        frameTimes = []
+        frameCount = 0
+        benchmarkTime = 0
+        let tempBenchmarkTime = 0
+        for (const present of bench.full_frame_times) {
+            tempBenchmarkTime += present
+            if (tempBenchmarkTime < min) {
+                continue
+            }
+
+            benchmarkTime += present
+            frameTimes.push(present)
+            frameCount++
+
+            if (tempBenchmarkTime >= max) {
+                break
+            }
+        }
+
+        bench.frame_times = frameTimes
+        bench.frame_count = frameCount
+        bench.benchmark_time = benchmarkTime
+    }
+    else {
+        frameTimes = bench.full_frame_times
+        benchmarkTime = bench.full_benchmark_time
+
+        frameCount = bench.full_frame_count
+        bench.frame_count = frameCount
+    }
 
     const sortedFrameTimes = [...frameTimes].sort((a, b) => b - a)
-    bench.sorted_frame_times = sortedFrameTimes
 
     bench['Max'] = (1000 / sortedFrameTimes[frameCount - 1]).toFixed(2)
     bench['Avg'] = (1000 / (benchmarkTime / frameCount)).toFixed(2)
@@ -121,6 +158,11 @@ function completeStats(bench) {
     }
 
     for (const low of values) {
+        if (frameCount <= 0) {
+            bench[`${low} % low`] = undefined
+            continue
+        }
+
         const wall = low / 100 * benchmarkTime
         let currentTotal = 0
         for (const present of sortedFrameTimes) {
@@ -133,31 +175,55 @@ function completeStats(bench) {
         }
     }
 
-    appendBench(bench)
+    if (isOld) {
+        updateBench(bench)
+    }
+    else {
+        appendBench(bench)
+    }
+}
+
+function updateBench(bench) {
+    const barChart = bench.bar_chart
+    barChart.data.datasets[0].data = [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low']]
+    barChart.update()
+
+    const scatterChart = bench.scatter_chart
+    scatterChart.options.scales.x.min = parseInt(document.getElementById(`min-${bench.file_index}`).value)
+    scatterChart.options.scales.x.max = parseInt(document.getElementById(`max-${bench.file_index}`).value)
+    scatterChart.update()
+
+    updateComparison()
 }
 
 function appendBench(bench) {
-    const fileCount = bench.file_count
+    const fileIndex = bench.file_index
+    const elapsed = Math.ceil(bench.full_benchmark_time)
 
     benchmarks.insertAdjacentHTML('beforeend', `
         <div class="bench">
             <p>
-                ${bench.file_name} | ${bench.application} | ${bench.runtime} | ${bench.present_mode}
+                ${bench.file_name} | ${bench.application} | ${bench.runtime} | ${bench.present_mode} | ${bench.frame_count} frames | ${elapsed} ms
             </p>
             <div class="charts">
                 <div class="column">
-                    <canvas id="bar-${fileCount}">
+                    <canvas id="bar-${fileIndex}">
                     </canvas>
                 </div>
                 <div class="column">
-                    <canvas id="scatter-${fileCount}">
+                    <canvas id="scatter-${fileIndex}">
                     </canvas>
                 </div>
+            </div>
+            <div class="crop">
+                <input id="min-${fileIndex}" class="input" type="number" value="0" min="0" max="${elapsed}">
+                -
+                <input id="max-${fileIndex}" class="input" type="number" value="${elapsed}" min="0" max="${elapsed}">
             </div>
         </div>
     `)
 
-    const bar = new Chart(document.getElementById(`bar-${fileCount}`), {
+    bench.bar_chart = new Chart(document.getElementById(`bar-${fileIndex}`), {
         type: 'bar',
         data: {
             labels: ['Max', 'Avg', 'Min', '1 %ile', '0.1 %ile', '0.01 %ile', '1 % low', '0.1 % low', '0.01 % low'],
@@ -170,6 +236,9 @@ function appendBench(bench) {
         options: {
             indexAxis: 'y',
             scales: {
+                x: {
+                    min: 0
+                },
                 y: {
                     grid: {
                         display: false
@@ -191,13 +260,13 @@ function appendBench(bench) {
         plugins: [ChartDataLabels]
     })
 
-    const scatter = new Chart(document.getElementById(`scatter-${fileCount}`), {
+    bench.scatter_chart = new Chart(document.getElementById(`scatter-${fileIndex}`), {
         type: 'scatter',
         data: {
-            labels: bench.elapsed,
+            labels: bench.full_elapsed,
             datasets: [{
                 label: 'Frame Times',
-                data: bench.frame_times,
+                data: bench.full_frame_times,
                 backgroundColor: 'rgb(0,191,255)',
                 borderWidth: 0,
                 radius: 2
@@ -208,42 +277,85 @@ function appendBench(bench) {
                 x: {
                     grid: {
                         display: false
-                    }
+                    },
+                    min: 0,
+                    max: elapsed
                 }
             }
         }
     })
 
-    benches.push(bench)
+    const min = document.getElementById(`min-${fileIndex}`)
+    const max = document.getElementById(`max-${fileIndex}`)
 
-    results.removeAttribute('style')
+    min.addEventListener('keydown', ev => {
+        const minimum = parseInt(min.value)
+        const maximum = parseInt(max.value)
+
+        if (ev.key === 'Enter' && Number.isInteger(minimum) && Number.isInteger(maximum)) {
+            updateStats(bench, minimum, maximum)
+        }
+    })
+
+    min.addEventListener('blur', ev => {
+        const minimum = parseInt(min.value)
+        const maximum = parseInt(max.value)
+
+        if (Number.isInteger(minimum) && Number.isInteger(maximum)) {
+            updateStats(bench, minimum, maximum)
+        }
+    })
+
+    max.addEventListener('keydown', ev => {
+        const minimum = parseInt(min.value)
+        const maximum = parseInt(max.value)
+
+        if (ev.key === 'Enter' && Number.isInteger(minimum) && Number.isInteger(maximum)) {
+            updateStats(bench, minimum, maximum)
+        }
+    })
+
+    max.addEventListener('blur', ev => {
+        const minimum = parseInt(min.value)
+        const maximum = parseInt(max.value)
+
+        if (Number.isInteger(minimum) && Number.isInteger(maximum)) {
+            updateStats(bench, minimum, maximum)
+        }
+    })
+
+    benches[fileIndex] = bench
 
     updateComparison()
+
+    instructions.style.display = 'none'
+    navigation.removeAttribute('style')
+    results.removeAttribute('style')
 }
 
-function processCSV(fileName, fileCount, data) {
+function processCSV(fileName, fileIndex, data) {
     let infoRow
     for (const [index, row] of data.entries()) {
         const lowerCaseRow = row.map(entry => entry.toLowerCase())
         if (lowerCaseRow.includes('msbetweenpresents')) {
             infoRow = lowerCaseRow
             data = data.slice(index + 1)
-            processPresentMon(fileName, fileCount, data, infoRow)
+            processPresentMon(fileName, fileIndex, data, infoRow)
             break
         }
         else if(lowerCaseRow.includes('cpuscheduler')) {
             infoRow = data[index + 2].map(entry => entry.toLowerCase())
             data = data.slice(index + 3)
-            processMangoHud(fileName, fileCount, data, infoRow)
+            processMangoHud(fileName, fileIndex, data, infoRow)
             break
         }
     }
 }
 
-function processMangoHud(fileName, fileCount, data, infoRow) {
+function processMangoHud(fileName, fileIndex, data, infoRow) {
     const bench = {
         file_name: fileName,
-        file_count: fileCount
+        file_index: fileIndex
     }
 
     const frameTimes = []
@@ -252,31 +364,31 @@ function processMangoHud(fileName, fileCount, data, infoRow) {
     const presentIndex = infoRow.indexOf('frametime')
 
     let frameCount = 0
-    let currentElapsed = 0
+    let benchmarkTime = 0
     for (const row of data) {
         const present = parseFloat(row[presentIndex]) / 1000
         if (present) {
-            currentElapsed += present
+            benchmarkTime += present
             frameTimes.push(present)
-            elapsed.push(currentElapsed)
+            elapsed.push(benchmarkTime)
             frameCount++
         }
     }
 
-    bench.frame_times = frameTimes
-    bench.elapsed = elapsed
-    bench.frame_count = frameCount
-    bench.benchmark_time = currentElapsed
+    bench.full_frame_times = frameTimes
+    bench.full_elapsed = elapsed
+    bench.full_frame_count = frameCount
+    bench.full_benchmark_time = benchmarkTime
 
-    completeStats(bench)
+    updateStats(bench, null, null)
 }
 
-function processPresentMon(fileName, fileCount, data, infoRow) {
+function processPresentMon(fileName, fileIndex, data, infoRow) {
     const firstRow = data[0]
 
     const bench = {
         file_name: fileName,
-        file_count: fileCount,
+        file_index: fileIndex,
         application: firstRow[infoRow.indexOf('application')],
         present_mode: firstRow[infoRow.indexOf('presentmode')],
         runtime: firstRow[infoRow.indexOf('runtime')]
@@ -288,23 +400,23 @@ function processPresentMon(fileName, fileCount, data, infoRow) {
     const presentIndex = infoRow.indexOf('msbetweenpresents')
 
     let frameCount = 0
-    let currentElapsed = 0
+    let benchmarkTime = 0
     for (const row of data) {
         const present = parseFloat(row[presentIndex])
         if (present) {
-            currentElapsed += present
+            benchmarkTime += present
             frameTimes.push(present)
-            elapsed.push(currentElapsed)
+            elapsed.push(benchmarkTime)
             frameCount++
         }
     }
 
-    bench.frame_times = frameTimes
-    bench.elapsed = elapsed
-    bench.frame_count = frameCount
-    bench.benchmark_time = currentElapsed
+    bench.full_frame_times = frameTimes
+    bench.full_elapsed = elapsed
+    bench.full_frame_count = frameCount
+    bench.full_benchmark_time = benchmarkTime
 
-    completeStats(bench)
+    updateStats(bench, null, null)
 }
 
 const cfxPresentModes = {
@@ -318,38 +430,43 @@ const cfxPresentModes = {
     8: 'Composed: Composition Atlas'
 }
 
-function processJSON(fileName, fileCount, data) {
+function processJSON(fileName, fileIndex, data) {
     const run = data['Runs'][0]
 
     const bench = {
         file_name: fileName,
-        file_count: fileCount,
+        file_index: fileIndex,
         application: data['Info']['ProcessName'],
         present_mode: cfxPresentModes[run['CaptureData']['PresentMode']?.[0]],
         runtime: run['PresentMonRuntime'],
-        frame_times: run['CaptureData']['MsBetweenPresents']
+        full_frame_times: run['CaptureData']['MsBetweenPresents']
     }
 
     const elapsed = []
 
     let frameCount = 0
-    let currentElapsed = 0
+    let benchmarkTime = 0
     for (const present of bench.frame_times) {
-        currentElapsed += present
-        elapsed.push(currentElapsed)
+        benchmarkTime += present
+        elapsed.push(benchmarkTime)
         frameCount++
     }
 
-    bench.elapsed = elapsed
-    bench.frame_count = frameCount
-    bench.benchmark_time = currentElapsed
+    bench.full_elapsed = elapsed
+    bench.full_frame_count = frameCount
+    bench.full_benchmark_time = benchmarkTime
 
-    completeStats(bench)
+    updateStats(bench, null, null)
 }
 
 exportButton.addEventListener('click', ev => {
     navigation.style.display = 'none'
     metric.style.display = 'none'
+    crop.innerHTML = `
+        .crop {
+            display: none;
+        }
+    `
     html2canvas(document.body).then(content => {
         const link = document.createElement('a')
         const uri = content.toDataURL()
@@ -365,6 +482,7 @@ exportButton.addEventListener('click', ev => {
         }
         navigation.removeAttribute('style')
         metric.removeAttribute('style')
+        crop.innerHTML = ''
     })
 })
 

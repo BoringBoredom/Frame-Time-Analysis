@@ -31,19 +31,33 @@
   width: 50%;
 }
 
+.crop {
+  display: flex;
+  justify-content: center;
+  margin-top: 1vh;
+}
+
+.input {
+  margin: 0 1%;
+  border-width: 1px;
+  border-style: solid;
+}
+
 #comparisons {
   margin-top: 5vh;
-  max-height: 95vh;
   text-align: center;
 }
 
 #metric {
   overflow-y: visible;
-  border-color: var(--bs-gray-400);
 }
 
 #metric > option {
   display: table-cell;
   padding: 0px 10px 0px 8px;
+}
+
+#metric, .input {
+  border-color: var(--bs-gray-400);
 }
 
