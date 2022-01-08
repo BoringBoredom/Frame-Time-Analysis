@@ -219,6 +219,7 @@ function appendBench(bench) {
                 <input id="min-${fileIndex}" class="input" type="number" value="0" min="0" max="${elapsed}">
                 -
                 <input id="max-${fileIndex}" class="input" type="number" value="${elapsed}" min="0" max="${elapsed}">
+                ms
             </div>
         </div>
     `)
