@@ -109,7 +109,7 @@ function completeStats(bench) {
     const sortedFrameTimes = [...frameTimes].sort((a, b) => b - a)
     bench.sorted_frame_times = sortedFrameTimes
 
-    bench['Max'] = (1000 / sortedFrameTimes.at(-1)).toFixed(2)
+    bench['Max'] = (1000 / sortedFrameTimes[frameCount - 1]).toFixed(2)
     bench['Avg'] = (1000 / (benchmarkTime / frameCount)).toFixed(2)
     bench['Min'] = (1000 / sortedFrameTimes[0]).toFixed(2)
 
