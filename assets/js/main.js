@@ -108,7 +108,10 @@ function updateComparison() {
 }
 
 function updateStats(bench, min, max) {
-    const isOld = min || max
+    let isOld
+    if (min !== null || max !== null) {
+        isOld = true
+    }
 
     let frameTimes, benchmarkTime, frameCount
 
@@ -290,40 +293,22 @@ function appendBench(bench) {
     const min = document.getElementById(`min-${fileIndex}`)
     const max = document.getElementById(`max-${fileIndex}`)
 
-    min.addEventListener('keydown', ev => {
-        const minimum = parseInt(min.value)
-        const maximum = parseInt(max.value)
+    const cropArgs = [bench, elapsed, min, max]
 
-        if (ev.key === 'Enter' && Number.isInteger(minimum) && Number.isInteger(maximum)) {
-            updateStats(bench, minimum, maximum)
-        }
+    min.addEventListener('keydown', ev => {
+        validateCrop(ev, ...cropArgs)
     })
 
     min.addEventListener('blur', ev => {
-        const minimum = parseInt(min.value)
-        const maximum = parseInt(max.value)
-
-        if (Number.isInteger(minimum) && Number.isInteger(maximum)) {
-            updateStats(bench, minimum, maximum)
-        }
+        validateCrop(ev, ...cropArgs)
     })
 
     max.addEventListener('keydown', ev => {
-        const minimum = parseInt(min.value)
-        const maximum = parseInt(max.value)
-
-        if (ev.key === 'Enter' && Number.isInteger(minimum) && Number.isInteger(maximum)) {
-            updateStats(bench, minimum, maximum)
-        }
+        validateCrop(ev, ...cropArgs)
     })
 
     max.addEventListener('blur', ev => {
-        const minimum = parseInt(min.value)
-        const maximum = parseInt(max.value)
-
-        if (Number.isInteger(minimum) && Number.isInteger(maximum)) {
-            updateStats(bench, minimum, maximum)
-        }
+        validateCrop(ev, ...cropArgs)
     })
 
     benches[fileIndex] = bench
@@ -333,6 +318,43 @@ function appendBench(bench) {
     instructions.style.display = 'none'
     navigation.removeAttribute('style')
     results.removeAttribute('style')
+}
+
+function adjustExtremes(minimum, maximum, elapsed) {
+    let min = parseInt(minimum.value)
+    let max = parseInt(maximum.value)
+
+    if (min < 0) {
+        min = 0
+        minimum.value = 0
+    }
+    else if (min > elapsed) {
+        min = elapsed
+        minimum.value = elapsed
+    }
+
+    if (max < 0) {
+        max = 0
+        maximum.value = 0
+    }
+    else if (max > elapsed) {
+        max = elapsed
+        maximum.value = elapsed
+    }
+
+    return [min, max]
+}
+
+function validateCrop(ev, bench, elapsed, min, max) {
+    if (ev.type === 'keydown') {
+        if (ev.key === 'Enter') {
+            updateStats(bench, ...adjustExtremes(min, max, elapsed))
+        }
+    }
+    else if (ev.type === 'blur') {
+        updateStats(bench, ...adjustExtremes(min, max, elapsed))
+    }
+
 }
 
 function processCSV(fileName, fileIndex, data) {
