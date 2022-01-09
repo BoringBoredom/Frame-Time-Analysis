@@ -123,13 +123,13 @@ function updateStats(bench, min, max) {
                 continue
             }
 
+            if (tempBenchmarkTime > max) {
+                break
+            }
+
             benchmarkTime += present
             frameTimes.push(present)
             frameCount++
-
-            if (tempBenchmarkTime >= max) {
-                break
-            }
         }
 
         bench.frame_times = frameTimes
@@ -189,6 +189,7 @@ function updateBench(bench) {
     barChart.update()
 
     const scatterChart = bench.scatter_chart
+    scatterChart.data.datasets[0].label = `${bench.frame_count} frames`
     scatterChart.options.scales.x.min = parseInt(document.getElementById(`min-${bench.file_index}`).value)
     scatterChart.options.scales.x.max = parseInt(document.getElementById(`max-${bench.file_index}`).value)
     scatterChart.update()
@@ -203,7 +204,7 @@ function appendBench(bench) {
     benchmarks.insertAdjacentHTML('beforeend', `
         <div class="bench">
             <p>
-                ${bench.file_name} | ${bench.application} | ${bench.runtime} | ${bench.present_mode} | ${bench.frame_count} frames | ${elapsed} ms
+                ${bench.file_name} | ${bench.application} | ${bench.runtime} | ${bench.present_mode} | ${bench.full_frame_count} frames | ${elapsed} ms
             </p>
             <div class="charts">
                 <div class="column">
@@ -266,7 +267,7 @@ function appendBench(bench) {
         data: {
             labels: bench.full_elapsed,
             datasets: [{
-                label: 'Frame Times',
+                label: `${bench.full_frame_count} frames`,
                 data: bench.full_frame_times,
                 backgroundColor: 'rgb(0,191,255)',
                 borderWidth: 0,
