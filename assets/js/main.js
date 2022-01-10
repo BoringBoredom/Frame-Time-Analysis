@@ -212,7 +212,7 @@ function appendBench(bench) {
                         <tr>
                             <th>File Name</th>
                             <th>Application</th>
-                            <th>Frames</th>
+                            <th>Dropped Frames</th>
                             <th>Duration (ms)</th>
                             <th>API</th>
                             <th>Present Mode</th>
@@ -225,15 +225,15 @@ function appendBench(bench) {
                     <tbody>
                         <tr>
                             <td>${bench.file_name}</td>
-                            <td>${bench.application}</td>
-                            <td>${bench.full_frame_count}</td>
+                            <td>${bench.application ?? '?'}</td>
+                            <td>${bench.dropped_frames ?? '?'} / ${bench.full_frame_count}</td>
                             <td>${elapsed}</td>
-                            <td>${bench.runtime}</td>
-                            <td>${bench.present_mode}</td>
-                            <td>${bench.allows_tearing}</td>
-                            <td>${bench.dwm_notified}</td>
-                            <td>${bench.sync_interval}</td>
-                            <td>${bench.was_batched}</td>
+                            <td>${bench.runtime ?? '?'}</td>
+                            <td>${bench.present_mode ?? '?'}</td>
+                            <td>${bench.allows_tearing ?? '?'}</td>
+                            <td>${bench.dwm_notified ?? '?'}</td>
+                            <td>${bench.sync_interval ?? '?'}</td>
+                            <td>${bench.was_batched ?? '?'}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -455,6 +455,12 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     const elapsed = []
 
     const presentIndex = infoRow.indexOf('msbetweenpresents')
+    const droppedIndex = infoRow.indexOf('dropped')
+
+    let droppedFrames
+    if (droppedIndex !== -1) {
+        droppedFrames = 0
+    }
 
     let frameCount = 0
     let benchmarkTime = 0
@@ -465,6 +471,13 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
             frameTimes.push(present)
             elapsed.push(benchmarkTime)
             frameCount++
+
+            if (droppedIndex !== -1) {
+                const dropped = parseInt(row[droppedIndex])
+                if (dropped === 1) {
+                    droppedFrames++
+                }
+            }
         }
     }
 
@@ -472,6 +485,7 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     bench.full_elapsed = elapsed
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
+    bench.dropped_frames = droppedFrames
 
     updateStats(bench, null, null)
 }
@@ -500,7 +514,8 @@ function processJSON(fileName, fileIndex, data) {
         allows_tearing: run['CaptureData']['AllowsTearing']?.[0],
         dwm_notified: run['CaptureData']['DwmNotified']?.[0],
         sync_interval: run['CaptureData']['SyncInterval']?.[0],
-        was_batched: run['CaptureData']['WasBatched']?.[0]
+        was_batched: run['CaptureData']['WasBatched']?.[0],
+        dropped_frames: run['CaptureData']['Dropped'].filter(frame => frame === true).length
     }
 
     const elapsed = []
