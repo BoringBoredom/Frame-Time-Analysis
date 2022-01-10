@@ -590,7 +590,7 @@ exportButton.addEventListener('click', ev => {
             display: none;
         }
     `
-    document.body.scrollTop = 0
+    window.scrollTo(0, 0)
 
     html2canvas(document.body).then(content => {
         const link = document.createElement('a')
