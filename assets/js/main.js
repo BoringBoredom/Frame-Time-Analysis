@@ -5,6 +5,7 @@ const navigation = document.getElementById('navigation')
 const exportButton = document.getElementById('export')
 
 const instructions = document.getElementById('instructions')
+const readme = document.getElementById('show-readme')
 
 const results = document.getElementById('results')
 const benchmarks = document.getElementById('benchmarks')
@@ -540,7 +541,6 @@ function processJSON(fileName, fileIndex, data) {
         file_index: fileIndex,
         full_frame_times: run['CaptureData']['MsBetweenPresents'],
         application: data['Info']['ProcessName'],
-        present_mode: cfxPresentModes[run['CaptureData']['PresentMode']?.[0]],
         runtime: run['PresentMonRuntime'],
         allows_tearing: run['CaptureData']['AllowsTearing']?.filter(frame => frame === 1).length,
         dwm_notified: run['CaptureData']['DwmNotified']?.filter(frame => frame === 1).length,
@@ -561,6 +561,16 @@ function processJSON(fileName, fileIndex, data) {
     bench.full_elapsed = elapsed
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
+
+    const presentModes = run['CaptureData']['PresentMode']
+    let presentMode = presentModes?.[0]
+    if (presentModes?.some(frame => frame !== presentMode)) {
+        presentMode = 'Mixed'
+    }
+    else {
+        presentMode = cfxPresentModes[presentMode]
+    }
+    bench.present_mode = presentMode
 
     const syncIntervals = run['CaptureData']['SyncInterval']
     let syncInterval = syncIntervals?.[0]
@@ -601,4 +611,8 @@ exportButton.addEventListener('click', ev => {
 
 metric.addEventListener('click', ev => {
     updateComparison()
+})
+
+readme.addEventListener('click', ev => {
+    document.getElementById('readme').removeAttribute('style')
 })

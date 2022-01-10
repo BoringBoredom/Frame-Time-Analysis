@@ -28,14 +28,15 @@
     <div id="instructions">
         <div>
             <h1>Drag and drop files here</h1>
-            <p>Supported formats:<br>CSV (PresentMon, OCAT, FrameView, CapFrameX, MangoHud)<br>JSON (CapFrameX)</p>
+            <p>Supported formats:<br>CSV (PresentMon, OCAT, FrameView, CapFrameX, MangoHud)<br>JSON (CapFrameX)</p><button class="btn btn-primary" id="show-readme" type="button">README</button>
+            <p class="text-start" id="readme" style="display: none;">In this section you can:<br>- drag and drop one or multiple files at the same time<br><br>In the analysis section you can:<br>- export a screenshot of everything<br>- append more benches by dragging and dropping one or multiple files at the same time<br>- CTRL-click to select / deselect metrics in the final comparison</p>
         </div>
     </div>
     <div id="results" style="display: none;">
         <div id="benchmarks"></div>
         <div id="comparisons"><select id="metric" size="2" multiple="">
                 <option value="Max">Max</option>
-                <option value="Avg" selected="">Avg</option>
+                <option value="Avg">Avg</option>
                 <option value="Min">Min</option>
                 <option value="1 %ile" selected="">1 %ile</option>
                 <option value="0.1 %ile" selected="">0.1 %ile</option>
