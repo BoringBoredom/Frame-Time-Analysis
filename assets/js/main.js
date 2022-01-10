@@ -203,6 +203,12 @@ function updateBench(bench) {
 function appendBench(bench) {
     const fileIndex = bench.file_index
     const elapsed = Math.ceil(bench.full_benchmark_time)
+    const frameCount = bench.full_frame_count
+
+    const droppedPercentage = Math.round(bench.dropped_frames / frameCount * 100)
+    const allowsTearingPercentage = Math.round(bench.allows_tearing / frameCount * 100)
+    const dwmNotifiedPercentage = Math.round(bench.dwm_notified / frameCount * 100)
+    const wasBatchedPercentage = Math.round(bench.was_batched / frameCount * 100)
 
     benchmarks.insertAdjacentHTML('beforeend', `
         <div class="bench">
@@ -212,13 +218,13 @@ function appendBench(bench) {
                         <tr>
                             <th>File Name</th>
                             <th>Application</th>
-                            <th>Dropped Frames</th>
-                            <th>Duration (ms)</th>
                             <th>API</th>
                             <th>Present Mode</th>
+                            <th>Duration (ms)</th>
+                            <th>Sync Interval</th>
+                            <th>Dropped Frames</th>
                             <th>Allows Tearing</th>
                             <th>DWM Notified</th>
-                            <th>Sync Interval</th>
                             <th>Was Batched</th>
                         </tr>
                     </thead>
@@ -226,14 +232,14 @@ function appendBench(bench) {
                         <tr>
                             <td>${bench.file_name}</td>
                             <td>${bench.application ?? '?'}</td>
-                            <td>${bench.dropped_frames ?? '?'} / ${bench.full_frame_count}</td>
-                            <td>${elapsed}</td>
                             <td>${bench.runtime ?? '?'}</td>
                             <td>${bench.present_mode ?? '?'}</td>
-                            <td>${bench.allows_tearing ?? '?'}</td>
-                            <td>${bench.dwm_notified ?? '?'}</td>
+                            <td>${elapsed}</td>
                             <td>${bench.sync_interval ?? '?'}</td>
-                            <td>${bench.was_batched ?? '?'}</td>
+                            <td>${bench.dropped_frames ?? '?'} / ${frameCount}${isNaN(droppedPercentage) ? '' : ` (${droppedPercentage} %)`}</td>
+                            <td>${bench.allows_tearing ?? '?'} / ${frameCount}${isNaN(allowsTearingPercentage) ? '' : ` (${allowsTearingPercentage} %)`}</td>
+                            <td>${bench.dwm_notified ?? '?'} / ${frameCount}${isNaN(dwmNotifiedPercentage) ? '' : ` (${dwmNotifiedPercentage} %)`}</td>
+                            <td>${bench.was_batched ?? '?'} / ${frameCount}${isNaN(wasBatchedPercentage) ? '' : ` (${wasBatchedPercentage} %)`}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -299,7 +305,7 @@ function appendBench(bench) {
         data: {
             labels: bench.full_elapsed,
             datasets: [{
-                label: `${bench.full_frame_count} frames`,
+                label: `${frameCount} frames`,
                 data: bench.full_frame_times,
                 backgroundColor: 'rgb(0,191,255)',
                 borderWidth: 0,
@@ -443,27 +449,28 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
         file_name: fileName,
         file_index: fileIndex,
         application: firstRow[infoRow.indexOf('application')],
-        present_mode: firstRow[infoRow.indexOf('presentmode')],
-        runtime: firstRow[infoRow.indexOf('runtime')],
-        allows_tearing: firstRow[infoRow.indexOf('allowstearing')],
-        dwm_notified: firstRow[infoRow.indexOf('dwmnotified')],
-        sync_interval: firstRow[infoRow.indexOf('syncinterval')],
-        was_batched: firstRow[infoRow.indexOf('wasbatched')]
+        runtime: firstRow[infoRow.indexOf('runtime')]
     }
 
     const frameTimes = []
     const elapsed = []
+    const presentModes = []
+    const syncIntervals = []
 
     const presentIndex = infoRow.indexOf('msbetweenpresents')
     const droppedIndex = infoRow.indexOf('dropped')
-
-    let droppedFrames
-    if (droppedIndex !== -1) {
-        droppedFrames = 0
-    }
+    const allowsTearingIndex = infoRow.indexOf('allowstearing')
+    const dwmNotifiedIndex = infoRow.indexOf('dwmnotified')
+    const wasBatchedIndex = infoRow.indexOf('wasbatched')
+    const presentModeIndex = infoRow.indexOf('presentmode')
+    const syncIntervalIndex = infoRow.indexOf('syncinterval')
 
     let frameCount = 0
     let benchmarkTime = 0
+    let dropped = 0
+    let allowsTearing = 0
+    let dwmNotified = 0
+    let wasBatched = 0
     for (const row of data) {
         const present = parseFloat(row[presentIndex])
         if (present) {
@@ -472,11 +479,20 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
             elapsed.push(benchmarkTime)
             frameCount++
 
-            if (droppedIndex !== -1) {
-                const dropped = parseInt(row[droppedIndex])
-                if (dropped === 1) {
-                    droppedFrames++
-                }
+            presentModes.push(row[presentModeIndex])
+            syncIntervals.push(row[syncIntervalIndex])
+
+            if (parseInt(row[droppedIndex]) === 1) {
+                dropped++
+            }
+            if (parseInt(row[allowsTearingIndex]) === 1) {
+                allowsTearing++
+            }
+            if (parseInt(row[dwmNotifiedIndex]) === 1) {
+                dwmNotified++
+            }
+            if (parseInt(row[wasBatchedIndex]) === 1) {
+                wasBatched++
             }
         }
     }
@@ -485,7 +501,22 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     bench.full_elapsed = elapsed
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
-    bench.dropped_frames = droppedFrames
+    bench.dropped_frames = dropped
+    bench.allows_tearing = allowsTearing
+    bench.dwm_notified = dwmNotified
+    bench.was_batched = wasBatched
+
+    let presentMode = presentModes[0]
+    if (presentModes.some(frame => frame !== presentMode)) {
+        presentMode = 'Mixed'
+    }
+    bench.present_mode = presentMode
+
+    let syncInterval = syncIntervals[0]
+    if (syncIntervals.some(frame => frame !== syncInterval)) {
+        syncInterval = 'Mixed'
+    }
+    bench.sync_interval = syncInterval
 
     updateStats(bench, null, null)
 }
@@ -511,11 +542,10 @@ function processJSON(fileName, fileIndex, data) {
         application: data['Info']['ProcessName'],
         present_mode: cfxPresentModes[run['CaptureData']['PresentMode']?.[0]],
         runtime: run['PresentMonRuntime'],
-        allows_tearing: run['CaptureData']['AllowsTearing']?.[0],
-        dwm_notified: run['CaptureData']['DwmNotified']?.[0],
-        sync_interval: run['CaptureData']['SyncInterval']?.[0],
-        was_batched: run['CaptureData']['WasBatched']?.[0],
-        dropped_frames: run['CaptureData']['Dropped'].filter(frame => frame === true).length
+        allows_tearing: run['CaptureData']['AllowsTearing']?.filter(frame => frame === 1).length,
+        dwm_notified: run['CaptureData']['DwmNotified']?.filter(frame => frame === 1).length,
+        was_batched: run['CaptureData']['WasBatched']?.filter(frame => frame === 1).length,
+        dropped_frames: run['CaptureData']['Dropped']?.filter(frame => frame === true).length
     }
 
     const elapsed = []
@@ -531,6 +561,13 @@ function processJSON(fileName, fileIndex, data) {
     bench.full_elapsed = elapsed
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
+
+    const syncIntervals = run['CaptureData']['SyncInterval']
+    let syncInterval = syncIntervals?.[0]
+    if (syncIntervals?.some(frame => frame !== syncInterval)) {
+        syncInterval = 'Mixed'
+    }
+    bench.sync_interval = syncInterval
 
     updateStats(bench, null, null)
 }
