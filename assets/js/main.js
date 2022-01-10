@@ -206,9 +206,38 @@ function appendBench(bench) {
 
     benchmarks.insertAdjacentHTML('beforeend', `
         <div class="bench">
-            <p>
-                ${bench.file_name} | ${bench.application} | ${bench.runtime} | ${bench.present_mode} | ${bench.full_frame_count} frames | ${elapsed} ms
-            </p>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Application</th>
+                            <th>Frames</th>
+                            <th>Duration (ms)</th>
+                            <th>API</th>
+                            <th>Present Mode</th>
+                            <th>Allows Tearing</th>
+                            <th>DWM Notified</th>
+                            <th>Sync Interval</th>
+                            <th>Was Batched</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${bench.file_name}</td>
+                            <td>${bench.application}</td>
+                            <td>${bench.full_frame_count}</td>
+                            <td>${elapsed}</td>
+                            <td>${bench.runtime}</td>
+                            <td>${bench.present_mode}</td>
+                            <td>${bench.allows_tearing}</td>
+                            <td>${bench.dwm_notified}</td>
+                            <td>${bench.sync_interval}</td>
+                            <td>${bench.was_batched}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="charts">
                 <div class="column">
                     <canvas id="bar-${fileIndex}">
@@ -415,7 +444,11 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
         file_index: fileIndex,
         application: firstRow[infoRow.indexOf('application')],
         present_mode: firstRow[infoRow.indexOf('presentmode')],
-        runtime: firstRow[infoRow.indexOf('runtime')]
+        runtime: firstRow[infoRow.indexOf('runtime')],
+        allows_tearing: firstRow[infoRow.indexOf('allowstearing')],
+        dwm_notified: firstRow[infoRow.indexOf('dwmnotified')],
+        sync_interval: firstRow[infoRow.indexOf('syncinterval')],
+        was_batched: firstRow[infoRow.indexOf('wasbatched')]
     }
 
     const frameTimes = []
@@ -460,10 +493,14 @@ function processJSON(fileName, fileIndex, data) {
     const bench = {
         file_name: fileName,
         file_index: fileIndex,
+        full_frame_times: run['CaptureData']['MsBetweenPresents'],
         application: data['Info']['ProcessName'],
         present_mode: cfxPresentModes[run['CaptureData']['PresentMode']?.[0]],
         runtime: run['PresentMonRuntime'],
-        full_frame_times: run['CaptureData']['MsBetweenPresents']
+        allows_tearing: run['CaptureData']['AllowsTearing']?.[0],
+        dwm_notified: run['CaptureData']['DwmNotified']?.[0],
+        sync_interval: run['CaptureData']['SyncInterval']?.[0],
+        was_batched: run['CaptureData']['WasBatched']?.[0]
     }
 
     const elapsed = []
