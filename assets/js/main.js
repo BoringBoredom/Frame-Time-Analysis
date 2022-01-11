@@ -247,12 +247,14 @@ function appendBench(bench) {
             </div>
             <div class="charts">
                 <div class="column">
-                    <canvas id="bar-${fileIndex}">
-                    </canvas>
+                    <canvas id="bar-${fileIndex}"></canvas>
                 </div>
                 <div class="column">
-                    <canvas id="scatter-${fileIndex}">
-                    </canvas>
+                    <select class="chart-metric" id="chart-metric-${fileIndex}" size="2">
+                        <option value="FPS" selected>FPS</option>
+                        <option value="ms">ms</option>
+                    </select>
+                    <canvas id="scatter-${fileIndex}"></canvas>
                 </div>
             </div>
             <div class="crop">
@@ -307,7 +309,7 @@ function appendBench(bench) {
             labels: bench.full_elapsed,
             datasets: [{
                 label: `${frameCount} frames`,
-                data: bench.full_frame_times,
+                data: bench.full_fps,
                 backgroundColor: 'rgb(0,191,255)',
                 borderWidth: 0,
                 radius: 2
@@ -345,6 +347,12 @@ function appendBench(bench) {
 
     max.addEventListener('blur', ev => {
         validateCrop(ev, ...cropArgs)
+    })
+
+    document.getElementById(`chart-metric-${fileIndex}`).addEventListener('click', ev => {
+        const metric = ev.currentTarget.value
+        bench.scatter_chart.data.datasets[0].data = (metric === 'FPS' ? bench.full_fps : bench.full_frame_times)
+        bench.scatter_chart.update()
     })
 
     benches[fileIndex] = bench
@@ -418,6 +426,7 @@ function processMangoHud(fileName, fileIndex, data, infoRow) {
     }
 
     const frameTimes = []
+    const fps = []
     const elapsed = []
 
     const presentIndex = infoRow.indexOf('frametime')
@@ -429,12 +438,14 @@ function processMangoHud(fileName, fileIndex, data, infoRow) {
         if (!isNaN(present)) {
             benchmarkTime += present
             frameTimes.push(present)
+            fps.push(1000 / present)
             elapsed.push(benchmarkTime)
             frameCount++
         }
     }
 
     bench.full_frame_times = frameTimes
+    bench.full_fps = fps
     bench.full_elapsed = elapsed
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
@@ -453,6 +464,7 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     }
 
     const frameTimes = []
+    const fps = []
     const elapsed = []
 
     const presentModes = new Set()
@@ -477,6 +489,7 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
         if (!isNaN(present)) {
             benchmarkTime += present
             frameTimes.push(present)
+            fps.push(1000 / present)
             elapsed.push(benchmarkTime)
             frameCount++
 
@@ -499,6 +512,7 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     }
 
     bench.full_frame_times = frameTimes
+    bench.full_fps = fps
     bench.full_elapsed = elapsed
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
@@ -540,16 +554,19 @@ function processJSON(fileName, fileIndex, data) {
     }
 
     const elapsed = []
+    const fps = []
 
     let frameCount = 0
     let benchmarkTime = 0
     for (const present of bench.full_frame_times) {
         benchmarkTime += present
         elapsed.push(benchmarkTime)
+        fps.push(1000 / present)
         frameCount++
     }
 
     bench.full_elapsed = elapsed
+    bench.full_fps = fps
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
 
@@ -569,10 +586,8 @@ function processJSON(fileName, fileIndex, data) {
 }
 
 exportButton.addEventListener('click', ev => {
-    navigation.style.display = 'none'
-    metric.style.display = 'none'
     crop.innerHTML = `
-        .crop {
+        #navigation, #metric, .crop, .chart-metric {
             display: none;
         }
     `
@@ -591,8 +606,6 @@ exportButton.addEventListener('click', ev => {
         else {
             window.open(uri)
         }
-        navigation.removeAttribute('style')
-        metric.removeAttribute('style')
         crop.innerHTML = ''
     })
 })
