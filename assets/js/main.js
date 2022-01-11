@@ -206,10 +206,10 @@ function appendBench(bench) {
     const elapsed = Math.ceil(bench.full_benchmark_time)
     const frameCount = bench.full_frame_count
 
-    const droppedPercentage = Math.round(bench.dropped_frames / frameCount * 100)
-    const allowsTearingPercentage = Math.round(bench.allows_tearing / frameCount * 100)
-    const dwmNotifiedPercentage = Math.round(bench.dwm_notified / frameCount * 100)
-    const wasBatchedPercentage = Math.round(bench.was_batched / frameCount * 100)
+    const droppedPercentage = (bench.dropped_frames / frameCount * 100).toFixed(2)
+    const allowsTearingPercentage = (bench.allows_tearing / frameCount * 100).toFixed(2)
+    const dwmNotifiedPercentage = (bench.dwm_notified / frameCount * 100).toFixed(2)
+    const wasBatchedPercentage = (bench.was_batched / frameCount * 100).toFixed(2)
 
     benchmarks.insertAdjacentHTML('beforeend', `
         <div class="bench">
