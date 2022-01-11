@@ -390,7 +390,6 @@ function validateCrop(ev, bench, elapsed, min, max) {
     else if (ev.type === 'blur') {
         updateStats(bench, ...adjustExtremes(min, max, elapsed))
     }
-
 }
 
 function processCSV(fileName, fileIndex, data) {
@@ -403,7 +402,7 @@ function processCSV(fileName, fileIndex, data) {
             processPresentMon(fileName, fileIndex, data, infoRow)
             break
         }
-        else if(lowerCaseRow.includes('cpuscheduler')) {
+        else if (lowerCaseRow.includes('cpuscheduler')) {
             infoRow = data[index + 2].map(entry => entry.toLowerCase())
             data = data.slice(index + 3)
             processMangoHud(fileName, fileIndex, data, infoRow)
@@ -427,7 +426,7 @@ function processMangoHud(fileName, fileIndex, data, infoRow) {
     let benchmarkTime = 0
     for (const row of data) {
         const present = parseFloat(row[presentIndex]) / 1000
-        if (present) {
+        if (!isNaN(present)) {
             benchmarkTime += present
             frameTimes.push(present)
             elapsed.push(benchmarkTime)
@@ -455,8 +454,9 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
 
     const frameTimes = []
     const elapsed = []
-    const presentModes = []
-    const syncIntervals = []
+
+    const presentModes = new Set()
+    const syncIntervals = new Set()
 
     const presentIndex = infoRow.indexOf('msbetweenpresents')
     const droppedIndex = infoRow.indexOf('dropped')
@@ -474,14 +474,14 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     let wasBatched = 0
     for (const row of data) {
         const present = parseFloat(row[presentIndex])
-        if (present) {
+        if (!isNaN(present)) {
             benchmarkTime += present
             frameTimes.push(present)
             elapsed.push(benchmarkTime)
             frameCount++
 
-            presentModes.push(row[presentModeIndex])
-            syncIntervals.push(row[syncIntervalIndex])
+            presentModes.add(row[presentModeIndex])
+            syncIntervals.add(row[syncIntervalIndex])
 
             if (parseInt(row[droppedIndex]) === 1) {
                 dropped++
@@ -507,17 +507,8 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     bench.dwm_notified = dwmNotified
     bench.was_batched = wasBatched
 
-    let presentMode = presentModes[0]
-    if (presentModes.some(frame => frame !== presentMode)) {
-        presentMode = 'Mixed'
-    }
-    bench.present_mode = presentMode
-
-    let syncInterval = syncIntervals[0]
-    if (syncIntervals.some(frame => frame !== syncInterval)) {
-        syncInterval = 'Mixed'
-    }
-    bench.sync_interval = syncInterval
+    bench.present_mode = [...presentModes].join(', ')
+    bench.sync_interval = [...syncIntervals].join(', ')
 
     updateStats(bench, null, null)
 }
@@ -562,20 +553,15 @@ function processJSON(fileName, fileIndex, data) {
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
 
-    const presentModes = run['CaptureData']['PresentMode']
-    let presentMode = presentModes?.[0]
-    if (presentModes?.some(frame => frame !== presentMode)) {
-        presentMode = 'Mixed'
-    }
-    else {
-        presentMode = cfxPresentModes[presentMode]
+    let presentMode = [...new Set(run['CaptureData']['PresentMode'])].map(pMode => cfxPresentModes[pMode]).join(', ')
+    if (presentMode === '') {
+        presentMode = '?'
     }
     bench.present_mode = presentMode
 
-    const syncIntervals = run['CaptureData']['SyncInterval']
-    let syncInterval = syncIntervals?.[0]
-    if (syncIntervals?.some(frame => frame !== syncInterval)) {
-        syncInterval = 'Mixed'
+    let syncInterval = [...new Set(run['CaptureData']['SyncInterval'])].join(', ')
+    if (syncInterval === '') {
+        syncInterval = '?'
     }
     bench.sync_interval = syncInterval
 
