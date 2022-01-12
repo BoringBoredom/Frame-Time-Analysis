@@ -51,7 +51,7 @@
 
 select option:checked {
   background-color: rgb(0, 191, 255) !important;
-  color: white;
+  color: white !important;
 }
 
 .chart-metric:focus-visible, #metric:focus-visible {
