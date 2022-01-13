@@ -55,7 +55,7 @@ select option:checked {
 }
 
 .chart-metric:focus-visible, #metric:focus-visible {
-  outline: 0 !important;
+  outline: none !important;
 }
 
 #metric, .chart-metric {

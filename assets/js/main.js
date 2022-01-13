@@ -10,6 +10,7 @@ const readme = document.getElementById('show-readme')
 const results = document.getElementById('results')
 const benchmarks = document.getElementById('benchmarks')
 const comparisons = document.getElementById('comparisons')
+const comparisonContainer = document.getElementById('comparison-container')
 const comparison = document.getElementById('comparison')
 const metric = document.getElementById('metric')
 
@@ -58,6 +59,7 @@ const comparisonChart = new Chart(comparison, {
     },
     options: {
         indexAxis: 'y',
+        maintainAspectRatio: false,
         scales: {
             x: {
                 min: 0
@@ -96,6 +98,7 @@ const colors = {
 }
 
 function updateComparison() {
+    comparisonContainer.style.height = `${Math.ceil((fileIndex + 1) / 9) * 100}vh`
     comparisonChart.data.labels = benches.map(bench => bench.file_name)
     comparisonChart.data.datasets = [...metric.options].filter(option => option.selected).map(option => {
         const value = option.value
@@ -254,7 +257,9 @@ function appendBench(bench) {
                         <option value="FPS" selected>FPS</option>
                         <option value="ms">ms</option>
                     </select>
-                    <canvas id="scatter-${fileIndex}"></canvas>
+                    <div>
+                        <canvas id="scatter-${fileIndex}"></canvas>
+                    </div>
                 </div>
             </div>
             <div class="crop">
