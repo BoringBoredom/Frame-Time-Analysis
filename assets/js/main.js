@@ -2,7 +2,6 @@ Chart.defaults.animation = false
 Chart.defaults.events = []
 
 const navigation = document.getElementById('navigation')
-const exportButton = document.getElementById('export')
 
 const instructions = document.getElementById('instructions')
 const readme = document.getElementById('show-readme')
@@ -592,7 +591,7 @@ function processJSON(fileName, fileIndex, data) {
     updateStats(bench, null, null)
 }
 
-exportButton.addEventListener('click', ev => {
+document.getElementById('export').addEventListener('click', ev => {
     crop.innerHTML = `
         #navigation, #metric, .crop, .chart-metric {
             display: none;
@@ -615,6 +614,14 @@ exportButton.addEventListener('click', ev => {
         }
         crop.innerHTML = ''
     })
+})
+
+document.getElementById('benches').addEventListener('click', ev => {
+    benchmarks.scrollIntoView()
+})
+
+document.getElementById('summary').addEventListener('click', ev => {
+    comparisons.scrollIntoView()
 })
 
 metric.addEventListener('click', ev => {
