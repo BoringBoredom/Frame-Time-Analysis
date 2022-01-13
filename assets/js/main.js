@@ -98,7 +98,7 @@ const colors = {
 }
 
 function updateComparison() {
-    comparisonContainer.style.height = `${Math.ceil((fileIndex + 1) / 9) * 100}vh`
+    comparisonContainer.style.height = `${6 + (fileIndex + 1) * 14}vh`
     comparisonChart.data.labels = benches.map(bench => bench.file_name)
     comparisonChart.data.datasets = [...metric.options].filter(option => option.selected).map(option => {
         const value = option.value
