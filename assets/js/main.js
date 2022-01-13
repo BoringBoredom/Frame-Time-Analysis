@@ -86,19 +86,21 @@ const comparisonChart = new Chart(comparison, {
 })
 
 const colors = {
-    'Max': 'rgb(255,255,0)',
-    'Avg': 'rgb(255,215,0)',
-    'Min': 'rgb(255,165,0)',
-    '1 %ile': 'rgb(0,255,255)',
-    '0.1 %ile': 'rgb(135,206,250)',
-    '0.01 %ile': 'rgb(0,191,255)',
-    '1 % low': 'rgb(152,251,152)',
-    '0.1 % low': 'rgb(0,255,0)',
-    '0.01 % low': 'rgb(50,205,50)'
+    'Max': 'rgb(50,205,50)',
+    'Avg': 'rgb(154,205,50)',
+    'Min': 'rgb(0,255,0)',
+    '1 %ile': 'rgb(0,191,255)',
+    '0.1 %ile': 'rgb(0,206,209)',
+    '0.01 %ile': 'rgb(127,255,212)',
+    '0.001 %ile': 'rgb(0,255,255)',
+    '1 % low': 'rgb(255,127,80)',
+    '0.1 % low': 'rgb(255,165,0)',
+    '0.01 % low': 'rgb(255,215,0)',
+    '0.001 % low': 'rgb(255,255,0)'
 }
 
 function updateComparison() {
-    comparisonContainer.style.height = `${6 + (fileIndex + 1) * 14}vh`
+    comparisonContainer.style.height = `${6 + (fileIndex + 1) * 20}vh`
     comparisonChart.data.labels = benches.map(bench => bench.file_name)
     comparisonChart.data.datasets = [...metric.options].filter(option => option.selected).map(option => {
         const value = option.value
@@ -157,7 +159,7 @@ function updateStats(bench, min, max) {
     bench['Avg'] = (1000 / (benchmarkTime / frameCount)).toFixed(2)
     bench['Min'] = (1000 / sortedFrameTimes[0]).toFixed(2)
 
-    const values = [1, 0.1, 0.01]
+    const values = [1, 0.1, 0.01, 0.001]
 
     for (const percentile of values) {
         const fps = 1000 / sortedFrameTimes[Math.ceil(percentile / 100 * frameCount) - 1]
@@ -192,7 +194,7 @@ function updateStats(bench, min, max) {
 
 function updateBench(bench) {
     const barChart = bench.bar_chart
-    barChart.data.datasets[0].data = [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low']]
+    barChart.data.datasets[0].data = [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['0.001 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low'], bench['0.001 % low']]
     barChart.update()
 
     const scatterChart = bench.scatter_chart
@@ -274,10 +276,10 @@ function appendBench(bench) {
     bench.bar_chart = new Chart(document.getElementById(`bar-${fileIndex}`), {
         type: 'bar',
         data: {
-            labels: ['Max', 'Avg', 'Min', '1 %ile', '0.1 %ile', '0.01 %ile', '1 % low', '0.1 % low', '0.01 % low'],
+            labels: ['Max', 'Avg', 'Min', '1 %ile', '0.1 %ile', '0.01 %ile', '0.001 %ile', '1 % low', '0.1 % low', '0.01 % low', '0.001 % low'],
             datasets: [{
                 label: 'FPS',
-                data: [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low']],
+                data: [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['0.001 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low'], bench['0.001 % low']],
                 backgroundColor: 'rgb(0,191,255)'
             }]
         },
