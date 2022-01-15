@@ -484,12 +484,18 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     const presentModeIndex = infoRow.indexOf('presentmode')
     const syncIntervalIndex = infoRow.indexOf('syncinterval')
 
+    let dwmNotified, wasBatched
+    if (dwmNotifiedIndex !== -1) {
+        dwmNotified = 0
+    }
+    if (wasBatchedIndex !== -1) {
+        wasBatched = 0
+    }
+
     let frameCount = 0
     let benchmarkTime = 0
     let dropped = 0
     let allowsTearing = 0
-    let dwmNotified = 0
-    let wasBatched = 0
     for (const row of data) {
         const present = parseFloat(row[presentIndex])
         if (!isNaN(present)) {
