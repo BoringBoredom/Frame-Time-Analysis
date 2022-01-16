@@ -460,22 +460,22 @@ function processMangoHud(fileName, fileIndex, data, infoRow) {
 }
 
 function processPresentMon(fileName, fileIndex, data, infoRow) {
-    const firstRow = data[0]
-
     const bench = {
         file_name: fileName,
-        file_index: fileIndex,
-        application: firstRow[infoRow.indexOf('application')],
-        runtime: firstRow[infoRow.indexOf('runtime')]
+        file_index: fileIndex
     }
 
     const frameTimes = []
     const fps = []
     const elapsed = []
 
+    const applications = new Set()
+    const runtimes = new Set()
     const presentModes = new Set()
     const syncIntervals = new Set()
 
+    const applicationIndex = infoRow.indexOf('application')
+    const runtimeIndex = infoRow.indexOf('runtime')
     const presentIndex = infoRow.indexOf('msbetweenpresents')
     const droppedIndex = infoRow.indexOf('dropped')
     const allowsTearingIndex = infoRow.indexOf('allowstearing')
@@ -496,6 +496,7 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     let benchmarkTime = 0
     let dropped = 0
     let allowsTearing = 0
+
     for (const row of data) {
         const present = parseFloat(row[presentIndex])
         if (!isNaN(present)) {
@@ -505,6 +506,8 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
             elapsed.push(benchmarkTime)
             frameCount++
 
+            applications.add(row[applicationIndex])
+            runtimes.add(row[runtimeIndex])
             presentModes.add(row[presentModeIndex])
             syncIntervals.add(row[syncIntervalIndex])
 
@@ -533,6 +536,8 @@ function processPresentMon(fileName, fileIndex, data, infoRow) {
     bench.dwm_notified = dwmNotified
     bench.was_batched = wasBatched
 
+    bench.application = [...applications].join(', ')
+    bench.runtime = [...runtimes].join(', ')
     bench.present_mode = [...presentModes].join(', ')
     bench.sync_interval = [...syncIntervals].join(', ')
 
