@@ -222,7 +222,7 @@ function appendBench(bench) {
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>File Name</th>
+                            <th>File Name & Comment</th>
                             <th>Application</th>
                             <th>API</th>
                             <th>Present Mode</th>
