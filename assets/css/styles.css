@@ -61,21 +61,21 @@ select option:checked {
   color: white !important;
 }
 
-.chart-metric:focus-visible, #metric:focus-visible {
+.chart-metric:focus-visible, #metric:focus-visible, #metric-labels:focus-visible {
   outline: none !important;
 }
 
-#metric, .chart-metric {
+#metric, .chart-metric, #metric-labels {
   overflow: visible;
   height: 1.4rem;
 }
 
-#metric > option, .chart-metric > option {
+#metric > option, .chart-metric > option, #metric-labels > option {
   display: table-cell;
   padding: 0 0.8rem 0 0.8rem;
 }
 
-#metric, .input, .chart-metric {
+#metric, .input, .chart-metric, #metric-labels {
   border-color: var(--bs-gray-400);
 }
 
@@ -86,5 +86,12 @@ select option:checked {
 
 #readme {
   margin-top: 5%;
+}
+
+.file-comment {
+  outline: none !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 

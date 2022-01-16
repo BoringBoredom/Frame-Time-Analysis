@@ -12,6 +12,7 @@ const comparisons = document.getElementById('comparisons')
 const comparisonContainer = document.getElementById('comparison-container')
 const comparison = document.getElementById('comparison')
 const metric = document.getElementById('metric')
+const metricLabels = document.getElementById('metric-labels')
 
 const crop = document.createElement('style')
 document.head.append(crop)
@@ -100,7 +101,7 @@ const colors = {
 
 function updateComparison() {
     comparisonContainer.style.height = `${6 + (fileIndex + 1) * 20}vh`
-    comparisonChart.data.labels = benches.map(bench => bench.file_name)
+    comparisonChart.data.labels = benches.map(bench => [...metricLabels.options].filter(option => option.selected).map(option => bench[option.value] ?? ''))
     comparisonChart.data.datasets = [...metric.options].filter(option => option.selected).map(option => {
         const value = option.value
         return {
@@ -235,7 +236,10 @@ function appendBench(bench) {
                     </thead>
                     <tbody>
                         <tr>
-                            <td>${bench.file_name}</td>
+                            <td>
+                                ${bench.file_name}<br>
+                                ✏<input class="file-comment" id="comment-${fileIndex}" type="text">
+                            </td>
                             <td>${bench.application ?? '?'}</td>
                             <td>${bench.runtime ?? '?'}</td>
                             <td>${bench.present_mode ?? '?'}</td>
@@ -361,6 +365,16 @@ function appendBench(bench) {
         bench.scatter_chart.update()
     })
 
+    const fileComment = document.getElementById(`comment-${fileIndex}`)
+
+    fileComment.addEventListener('keydown', ev => {
+        modifyComment(bench, ev, fileComment.value)
+    })
+
+    fileComment.addEventListener('blur', ev => {
+        modifyComment(bench, ev, fileComment.value)
+    })
+
     benches[fileIndex] = bench
 
     updateComparison()
@@ -368,6 +382,19 @@ function appendBench(bench) {
     instructions.style.display = 'none'
     navigation.removeAttribute('style')
     results.removeAttribute('style')
+}
+
+function modifyComment(bench, ev, comment) {
+    if (ev.type === 'keydown') {
+        if (ev.key === 'Enter') {
+            bench.comment = comment
+            updateComparison()
+        }
+    }
+    else if (ev.type === 'blur') {
+        bench.comment = comment
+        updateComparison()
+    }
 }
 
 function adjustExtremes(minimum, maximum, elapsed) {
@@ -407,28 +434,32 @@ function validateCrop(ev, bench, elapsed, min, max) {
 }
 
 function processCSV(fileName, fileIndex, data) {
-    let infoRow
+    let infoRow, comment
     for (const [index, row] of data.entries()) {
+        if (row[0].includes('//Comment=')) {
+            comment = row.join(',').replace('//Comment=', '')
+        }
         const lowerCaseRow = row.map(entry => entry.toLowerCase())
         if (lowerCaseRow.includes('msbetweenpresents')) {
             infoRow = lowerCaseRow
             data = data.slice(index + 1)
-            processPresentMon(fileName, fileIndex, data, infoRow)
+            processPresentMon(fileName, fileIndex, data, infoRow, comment)
             break
         }
         else if (lowerCaseRow.includes('cpuscheduler')) {
             infoRow = data[index + 2].map(entry => entry.toLowerCase())
             data = data.slice(index + 3)
-            processMangoHud(fileName, fileIndex, data, infoRow)
+            processMangoHud(fileName, fileIndex, data, infoRow, comment)
             break
         }
     }
 }
 
-function processMangoHud(fileName, fileIndex, data, infoRow) {
+function processMangoHud(fileName, fileIndex, data, infoRow, comment) {
     const bench = {
         file_name: fileName,
-        file_index: fileIndex
+        file_index: fileIndex,
+        comment: comment
     }
 
     const frameTimes = []
@@ -459,10 +490,11 @@ function processMangoHud(fileName, fileIndex, data, infoRow) {
     updateStats(bench, null, null)
 }
 
-function processPresentMon(fileName, fileIndex, data, infoRow) {
+function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
     const bench = {
         file_name: fileName,
-        file_index: fileIndex
+        file_index: fileIndex,
+        comment: comment
     }
 
     const frameTimes = []
@@ -564,6 +596,7 @@ function processJSON(fileName, fileIndex, data) {
         full_frame_times: run['CaptureData']['MsBetweenPresents'],
         application: data['Info']['ProcessName'],
         runtime: run['PresentMonRuntime'],
+        comment: data['Info']['Comment'],
         allows_tearing: run['CaptureData']['AllowsTearing']?.filter(frame => frame === 1).length,
         dwm_notified: run['CaptureData']['DwmNotified']?.filter(frame => frame === 1).length,
         was_batched: run['CaptureData']['WasBatched']?.filter(frame => frame === 1).length,
@@ -604,7 +637,7 @@ function processJSON(fileName, fileIndex, data) {
 
 document.getElementById('export').addEventListener('click', ev => {
     crop.innerHTML = `
-        #navigation, #metric, .crop, .chart-metric {
+        #navigation, #metric, .crop, .chart-metric, #metric-labels {
             display: none;
         }
     `
@@ -636,6 +669,10 @@ document.getElementById('summary').addEventListener('click', ev => {
 })
 
 metric.addEventListener('click', ev => {
+    updateComparison()
+})
+
+metricLabels.addEventListener('click', ev => {
     updateComparison()
 })
 
