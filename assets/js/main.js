@@ -237,8 +237,13 @@ function appendBench(bench) {
                     <tbody>
                         <tr>
                             <td>
-                                ${bench.file_name}<br>
-                                ✏<input class="file-comment" id="comment-${fileIndex}" type="text">
+                                <div style="display:flex; align-items:center;">
+                                    <div class="edit-comment" id="edit-comment-${fileIndex}">✏</div>
+                                    <div>
+                                        ${bench.file_name}<br>
+                                        <input class="file-comment" id="comment-${fileIndex}" type="text" value="${bench.comment ?? ''}">
+                                    </div>
+                                </div>
                             </td>
                             <td>${bench.application ?? '?'}</td>
                             <td>${bench.runtime ?? '?'}</td>
@@ -373,6 +378,10 @@ function appendBench(bench) {
 
     fileComment.addEventListener('blur', ev => {
         modifyComment(bench, ev, fileComment.value)
+    })
+
+    document.getElementById(`edit-comment-${fileIndex}`).addEventListener('click', ev => {
+        fileComment.focus()
     })
 
     benches[fileIndex] = bench

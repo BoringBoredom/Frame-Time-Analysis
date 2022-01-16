@@ -28,7 +28,6 @@
 
 .bench {
   margin-bottom: 5vh;
-  text-align: center;
 }
 
 .charts {
@@ -93,5 +92,17 @@ select option:checked {
   border: none !important;
   margin: 0 !important;
   padding: 0 !important;
+}
+
+.edit-comment {
+  margin-right: 0.8rem;
+}
+
+.edit-comment:hover {
+  cursor: pointer;
+}
+
+td {
+  vertical-align: middle;
 }
 
