@@ -529,7 +529,10 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
     const presentModeIndex = infoRow.indexOf('presentmode')
     const syncIntervalIndex = infoRow.indexOf('syncinterval')
 
-    let dwmNotified, wasBatched
+    let allowsTearing, dwmNotified, wasBatched
+    if (allowsTearingIndex !== -1) {
+        allowsTearing = 0
+    }
     if (dwmNotifiedIndex !== -1) {
         dwmNotified = 0
     }
@@ -540,7 +543,6 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
     let frameCount = 0
     let benchmarkTime = 0
     let dropped = 0
-    let allowsTearing = 0
 
     for (const row of data) {
         const present = parseFloat(row[presentIndex])
@@ -583,7 +585,7 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
 
     bench.application = [...applications].join(', ')
     bench.runtime = [...runtimes].join(', ')
-    bench.present_mode = [...presentModes].join(', ')
+    bench.present_mode = [...presentModes].join(', ') || '?'
     bench.sync_interval = [...syncIntervals].join(', ')
 
     updateStats(bench, null, null)
@@ -601,19 +603,52 @@ const cfxPresentModes = {
 }
 
 function processJSON(fileName, fileIndex, data) {
-    const run = data['Runs'][0]
-
     const bench = {
         file_name: fileName,
         file_index: fileIndex,
-        full_frame_times: run['CaptureData']['MsBetweenPresents'],
         application: data['Info']['ProcessName'],
-        runtime: run['PresentMonRuntime'],
-        comment: data['Info']['Comment'],
-        allows_tearing: run['CaptureData']['AllowsTearing']?.filter(frame => frame === 1).length,
-        dwm_notified: run['CaptureData']['DwmNotified']?.filter(frame => frame === 1).length,
-        was_batched: run['CaptureData']['WasBatched']?.filter(frame => frame === 1).length,
-        dropped_frames: run['CaptureData']['Dropped']?.filter(frame => frame === true).length
+        comment: data['Info']['Comment']
+    }
+
+    const frameTimes = []
+    const allowsTearing = []
+    const dwmNotified = []
+    const wasBatched = []
+    const droppedFrames = []
+
+    const presentModes = []
+    const syncIntervals = []
+
+    const runtimes = new Set()
+
+    for (const run of data['Runs']) {
+        frameTimes.push(...run['CaptureData']['MsBetweenPresents'])
+
+        if (run['CaptureData']['AllowsTearing'] !== undefined) {
+            allowsTearing.push(...run['CaptureData']['AllowsTearing'])
+        }
+
+        if (run['CaptureData']['DwmNotified'] !== undefined) {
+            dwmNotified.push(...run['CaptureData']['DwmNotified'])
+        }
+
+        if (run['CaptureData']['WasBatched'] !== undefined) {
+            wasBatched.push(...run['CaptureData']['WasBatched'])
+        }
+
+        if (run['CaptureData']['Dropped'] !== undefined) {
+            droppedFrames.push(...run['CaptureData']['Dropped'])
+        }
+
+        if (run['CaptureData']['PresentMode'] !== undefined) {
+            presentModes.push(...run['CaptureData']['PresentMode'])
+        }
+
+        if (run['CaptureData']['SyncInterval'] !== undefined) {
+            syncIntervals.push(...run['CaptureData']['SyncInterval'])
+        }
+
+        runtimes.add(run['PresentMonRuntime'])
     }
 
     const elapsed = []
@@ -621,7 +656,7 @@ function processJSON(fileName, fileIndex, data) {
 
     let frameCount = 0
     let benchmarkTime = 0
-    for (const present of bench.full_frame_times) {
+    for (const present of frameTimes) {
         benchmarkTime += present
         elapsed.push(benchmarkTime)
         fps.push(1000 / present)
@@ -632,14 +667,33 @@ function processJSON(fileName, fileIndex, data) {
     bench.full_fps = fps
     bench.full_frame_count = frameCount
     bench.full_benchmark_time = benchmarkTime
+    bench.full_frame_times = frameTimes
 
-    let presentMode = [...new Set(run['CaptureData']['PresentMode'])].map(pMode => cfxPresentModes[pMode]).join(', ')
+    if (allowsTearing.length !== 0) {
+        bench.allows_tearing = allowsTearing.filter(frame => frame === 1).length
+    }
+
+    if (dwmNotified.length !== 0) {
+        bench.dwm_notified = dwmNotified.filter(frame => frame === 1).length
+    }
+
+    if (wasBatched.length !== 0) {
+        bench.was_batched = wasBatched.filter(frame => frame === 1).length
+    }
+
+    if (droppedFrames.length !== 0) {
+        bench.dropped_frames = droppedFrames.filter(frame => frame === true).length
+    }
+
+    bench.runtime = [...runtimes].join(', ') || '?'
+
+    let presentMode = [...new Set(presentModes)].map(pMode => cfxPresentModes[pMode]).join(', ')
     if (presentMode === '') {
         presentMode = '?'
     }
     bench.present_mode = presentMode
 
-    let syncInterval = [...new Set(run['CaptureData']['SyncInterval'])].join(', ')
+    let syncInterval = [...new Set(syncIntervals)].join(', ')
     if (syncInterval === '') {
         syncInterval = '?'
     }
