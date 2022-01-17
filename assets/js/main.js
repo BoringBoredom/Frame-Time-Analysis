@@ -159,7 +159,7 @@ function updateStats(bench, min, max) {
     bench['Avg'] = (1000 / (benchmarkTime / frameCount)).toFixed(2)
     bench['Min'] = (1000 / sortedFrameTimes[0]).toFixed(2)
 
-    const values = [1, 0.1, 0.01, 0.001]
+    const values = [1, 0.1, 0.01]
 
     for (const percentile of values) {
         const fps = 1000 / sortedFrameTimes[Math.ceil(percentile / 100 * frameCount) - 1]
@@ -194,11 +194,12 @@ function updateStats(bench, min, max) {
 
 function updateBench(bench) {
     const barChart = bench.bar_chart
-    barChart.data.datasets[0].data = [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['0.001 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low'], bench['0.001 % low']]
+    barChart.data.datasets[0].data = [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low']]
     barChart.update()
 
     const scatterChart = bench.scatter_chart
-    scatterChart.data.datasets[0].label = `${bench.frame_count} frames`
+    const metric = scatterChart.data.datasets[0].label.split(' | ')[0]
+    scatterChart.data.datasets[0].label = `${metric} | ${bench.frame_count} frames`
     scatterChart.options.scales.x.min = parseInt(document.getElementById(`min-${bench.file_index}`).value)
     scatterChart.options.scales.x.max = parseInt(document.getElementById(`max-${bench.file_index}`).value)
     scatterChart.update()
@@ -284,10 +285,10 @@ function appendBench(bench) {
     bench.bar_chart = new Chart(document.getElementById(`bar-${fileIndex}`), {
         type: 'bar',
         data: {
-            labels: ['Max', 'Avg', 'Min', '1 %ile', '0.1 %ile', '0.01 %ile', '0.001 %ile', '1 % low', '0.1 % low', '0.01 % low', '0.001 % low'],
+            labels: ['Max', 'Avg', 'Min', '1 %ile', '0.1 %ile', '0.01 %ile', '1 % low', '0.1 % low', '0.01 % low'],
             datasets: [{
                 label: 'FPS',
-                data: [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['0.001 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low'], bench['0.001 % low']],
+                data: [bench['Max'], bench['Avg'], bench['Min'], bench['1 %ile'], bench['0.1 %ile'], bench['0.01 %ile'], bench['1 % low'], bench['0.1 % low'], bench['0.01 % low']],
                 backgroundColor: 'rgb(0,191,255)'
             }]
         },
@@ -323,7 +324,7 @@ function appendBench(bench) {
         data: {
             labels: bench.full_elapsed,
             datasets: [{
-                label: `${frameCount} frames`,
+                label: `FPS | ${frameCount} frames`,
                 data: bench.full_fps,
                 backgroundColor: 'rgb(0,191,255)',
                 borderWidth: 0,
@@ -366,8 +367,11 @@ function appendBench(bench) {
 
     document.getElementById(`chart-metric-${fileIndex}`).addEventListener('click', ev => {
         const metric = ev.currentTarget.value
-        bench.scatter_chart.data.datasets[0].data = (metric === 'FPS' ? bench.full_fps : bench.full_frame_times)
-        bench.scatter_chart.update()
+
+        const scatterChart = bench.scatter_chart
+        scatterChart.data.datasets[0].label = `${metric} | ${bench.frame_count} frames`
+        scatterChart.data.datasets[0].data = (metric === 'FPS' ? bench.full_fps : bench.full_frame_times)
+        scatterChart.update()
     })
 
     const fileComment = document.getElementById(`comment-${fileIndex}`)
