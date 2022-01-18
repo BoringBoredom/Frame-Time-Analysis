@@ -686,12 +686,7 @@ function processJSON(fileName, fileIndex, data) {
     }
 
     bench.runtime = [...runtimes].join(', ') || '?'
-
-    let presentMode = [...new Set(presentModes)].map(pMode => cfxPresentModes[pMode]).join(', ')
-    if (presentMode === '') {
-        presentMode = '?'
-    }
-    bench.present_mode = presentMode
+    bench.present_mode = [...new Set(presentModes)].map(pMode => cfxPresentModes[pMode]).join(', ') || '?'
 
     let syncInterval = [...new Set(syncIntervals)].join(', ')
     if (syncInterval === '') {
