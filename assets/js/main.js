@@ -811,7 +811,7 @@ function processJSON(fileName, fileIndex, data) {
 
 document.getElementById('export').addEventListener('click', ev => {
     crop.innerHTML = `
-        #navigation, #metric, .crop, .chart-metric, #metric-labels {
+        #navigation, #metric, .crop, .chart-metric, #metric-labels, .edit-comment {
             display: none;
         }
     `

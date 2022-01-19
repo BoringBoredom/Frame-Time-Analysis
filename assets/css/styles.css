@@ -96,6 +96,8 @@ select option:checked {
 
 .edit-comment {
   margin-right: 0.8rem;
+  border-style: outset;
+  border-width: 0.2rem;
 }
 
 .edit-comment:hover {
