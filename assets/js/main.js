@@ -113,6 +113,37 @@ function updateComparison() {
     comparisonChart.update()
 }
 
+const values = [
+    10,
+    9,
+    8,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0.9,
+    0.8,
+    0.7,
+    0.6,
+    0.5,
+    0.4,
+    0.3,
+    0.2,
+    0.1,
+    0.09,
+    0.08,
+    0.07,
+    0.06,
+    0.05,
+    0.04,
+    0.03,
+    0.02,
+    0.01
+]
+
 function updateStats(bench, min, max) {
     let isOld
     if (min !== null || max !== null) {
@@ -159,8 +190,6 @@ function updateStats(bench, min, max) {
     bench['Avg'] = (1000 / (benchmarkTime / frameCount)).toFixed(2)
     bench['Min'] = (1000 / sortedFrameTimes[0]).toFixed(2)
 
-    const values = [10, 1, 0.1, 0.01]
-
     for (const percentile of values) {
         const fps = 1000 / sortedFrameTimes[Math.ceil(percentile / 100 * frameCount) - 1]
         bench[`${percentile} %ile`] = fps.toFixed(2)
@@ -192,21 +221,23 @@ function updateStats(bench, min, max) {
     }
 }
 
+const mainMetrics = [
+    'Max',
+    'Avg',
+    'Min',
+    '10 %ile',
+    '1 %ile',
+    '0.1 %ile',
+    '0.01 %ile',
+    '10 % low',
+    '1 % low',
+    '0.1 % low',
+    '0.01 % low'
+]
+
 function updateBench(bench) {
     const barChart = bench.bar_chart
-    barChart.data.datasets[0].data = [
-        bench['Max'],
-        bench['Avg'],
-        bench['Min'],
-        bench['10 %ile'],
-        bench['1 %ile'],
-        bench['0.1 %ile'],
-        bench['0.01 %ile'],
-        bench['10 % low'],
-        bench['1 % low'],
-        bench['0.1 % low'],
-        bench['0.01 % low']
-    ]
+    barChart.data.datasets[0].data = mainMetrics.map(metric => bench[metric])
     barChart.update()
 
     const scatterChart = bench.scatter_chart
@@ -215,6 +246,21 @@ function updateBench(bench) {
     scatterChart.options.scales.x.min = parseInt(document.getElementById(`min-${bench.file_index}`).value)
     scatterChart.options.scales.x.max = parseInt(document.getElementById(`max-${bench.file_index}`).value)
     scatterChart.update()
+
+    const highest = Math.ceil(Math.max(bench['10 %ile'], bench['10 % low']))
+    const lowest = Math.floor(Math.min(bench['0.01 %ile'], bench['0.01 % low']))
+
+    const percChart = bench.l_percentiles
+    percChart.data.datasets[0].data = values.map(value => bench[`${value} %ile`])
+    percChart.options.scales.y.min = lowest
+    percChart.options.scales.y.max = highest
+    percChart.update()
+
+    const lowChart = bench.l_lows
+    lowChart.data.datasets[0].data = values.map(value => bench[`${value} % low`])
+    lowChart.options.scales.y.min = lowest
+    lowChart.options.scales.y.max = highest
+    lowChart.update()
 
     updateComparison()
 }
@@ -285,6 +331,14 @@ function appendBench(bench) {
                     </div>
                 </div>
             </div>
+            <div class="charts">
+                <div class="column">
+                    <canvas id="l-perc-${fileIndex}"></canvas>
+                </div>
+                <div class="column">
+                    <canvas id="l-low-${fileIndex}"></canvas>
+                </div>
+            </div>
             <div class="crop">
                 <input id="min-${fileIndex}" class="input" type="number" value="0" min="0" max="${elapsed}">
                 -
@@ -297,35 +351,12 @@ function appendBench(bench) {
     bench.bar_chart = new Chart(document.getElementById(`bar-${fileIndex}`), {
         type: 'bar',
         data: {
-            labels: [
-                'Max',
-                'Avg',
-                'Min',
-                '10 %ile',
-                '1 %ile',
-                '0.1 %ile',
-                '0.01 %ile',
-                '10 % low',
-                '1 % low',
-                '0.1 % low',
-                '0.01 % low'
-            ],
+            labels: mainMetrics,
             datasets: [{
                 label: 'FPS',
-                data: [
-                    bench['Max'],
-                    bench['Avg'],
-                    bench['Min'],
-                    bench['10 %ile'],
-                    bench['1 %ile'],
-                    bench['0.1 %ile'],
-                    bench['0.01 %ile'],
-                    bench['10 % low'],
-                    bench['1 % low'],
-                    bench['0.1 % low'],
-                    bench['0.01 % low']
-                ],
-                backgroundColor: 'rgb(0,191,255)'
+                data: mainMetrics.map(metric => bench[metric]),
+                backgroundColor: 'rgb(0,191,255)',
+                borderWidth: 0
             }]
         },
         options: {
@@ -375,6 +406,51 @@ function appendBench(bench) {
                     },
                     min: 0,
                     max: elapsed
+                }
+            }
+        }
+    })
+
+    const highest = Math.ceil(Math.max(bench['10 %ile'], bench['10 % low']))
+    const lowest = Math.floor(Math.min(bench['0.01 %ile'], bench['0.01 % low']))
+
+    bench.l_percentiles = new Chart(document.getElementById(`l-perc-${fileIndex}`), {
+        type: 'line',
+        data: {
+            labels: values,
+            datasets: [{
+                label: `FPS | %ile`,
+                data: values.map(value => bench[`${value} %ile`]),
+                backgroundColor: 'rgb(0,191,255)',
+                borderColor: 'rgb(0,191,255)'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    min: lowest,
+                    max: highest
+                }
+            }
+        }
+    })
+
+    bench.l_lows = new Chart(document.getElementById(`l-low-${fileIndex}`), {
+        type: 'line',
+        data: {
+            labels: values,
+            datasets: [{
+                label: `FPS | % low`,
+                data: values.map(value => bench[`${value} % low`]),
+                backgroundColor: 'rgb(0,191,255)',
+                borderColor: 'rgb(0,191,255)'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    min: lowest,
+                    max: highest
                 }
             }
         }
