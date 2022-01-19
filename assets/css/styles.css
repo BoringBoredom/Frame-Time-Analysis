@@ -46,9 +46,9 @@
 }
 
 .input {
-  margin: 0 1%;
-  border-width: 0.1rem;
-  border-style: solid;
+  margin: 0 1% !important;
+  border-width: 0.1rem !important;
+  border-style: solid !important;
 }
 
 #comparisons {
@@ -65,17 +65,17 @@ select option:checked {
 }
 
 #metric, .chart-metric, #metric-labels {
-  overflow: visible;
-  height: 1.4rem;
+  overflow: visible !important;
+  height: 1.4rem !important;
 }
 
 #metric > option, .chart-metric > option, #metric-labels > option {
-  display: table-cell;
-  padding: 0 0.8rem 0 0.8rem;
+  display: table-cell !important;
+  padding: 0 0.8rem 0 0.8rem !important;
 }
 
 #metric, .input, .chart-metric, #metric-labels {
-  border-color: var(--bs-gray-400);
+  border-color: rgb(206, 212, 218) !important;
 }
 
 .chart-metric {
