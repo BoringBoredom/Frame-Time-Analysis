@@ -4,13 +4,14 @@
   right: 0;
   margin-top: 1vh;
   margin-right: 1vh;
+  text-align: right;
 }
 
 #export {
   margin-bottom: 1rem;
 }
 
-#summary, #benches {
+#jump-to-benchmarks, #jump-to-comparisons {
   margin-bottom: 0.1rem;
 }
 
@@ -22,8 +23,20 @@
   height: 100vh;
 }
 
+#readme {
+  margin-top: 5%;
+}
+
 #results {
   margin: 0 5%;
+}
+
+#comparisons {
+  text-align: center;
+}
+
+#chart-metric-comparison {
+  margin-top: 3rem;
 }
 
 .bench {
@@ -51,40 +64,32 @@
   border-style: solid !important;
 }
 
-#comparisons {
-  text-align: center;
-}
-
 select option:checked {
   background-color: rgb(0, 191, 255) !important;
   color: white !important;
 }
 
-.chart-metric:focus-visible, #metric:focus-visible, #metric-labels:focus-visible {
+.chart-metric:focus-visible, #metric:focus-visible, #file-descriptions:focus-visible {
   outline: none !important;
 }
 
-#metric, .chart-metric, #metric-labels {
+#metric, .chart-metric, #file-descriptions {
   overflow: visible !important;
   height: 1.4rem !important;
 }
 
-#metric > option, .chart-metric > option, #metric-labels > option {
+#metric > option, .chart-metric > option, #file-descriptions > option {
   display: table-cell !important;
   padding: 0 0.8rem 0 0.8rem !important;
 }
 
-#metric, .input, .chart-metric, #metric-labels {
+#metric, .input, .chart-metric, #file-descriptions {
   border-color: rgb(206, 212, 218) !important;
 }
 
 .chart-metric {
   position: absolute;
   right: 5%;
-}
-
-#readme {
-  margin-top: 5%;
 }
 
 .file-comment {
@@ -100,11 +105,16 @@ select option:checked {
   border-width: 0.2rem;
 }
 
-.edit-comment:hover {
+.edit-comment:hover, .file-comment:hover, .chart-metric:hover, #metric:hover, #file-descriptions:hover {
   cursor: pointer;
 }
 
 td {
   vertical-align: middle;
+}
+
+h1 {
+  text-align: center;
+  margin: 1rem 0;
 }
 

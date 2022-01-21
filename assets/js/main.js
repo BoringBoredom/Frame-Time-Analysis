@@ -1,21 +1,104 @@
 Chart.defaults.animation = false
 Chart.defaults.events = []
 
+const values = [
+    10,
+    9,
+    8,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0.9,
+    0.8,
+    0.7,
+    0.6,
+    0.5,
+    0.4,
+    0.3,
+    0.2,
+    0.1,
+    0.09,
+    0.08,
+    0.07,
+    0.06,
+    0.05,
+    0.04,
+    0.03,
+    0.02,
+    0.01
+]
+
+const colors = {
+    'Max': 'rgb(50,205,50)',
+    'Avg': 'rgb(154,205,50)',
+    'Min': 'rgb(0,255,0)',
+    '10 %ile': 'rgb(0,191,255)',
+    '1 %ile': 'rgb(0,206,209)',
+    '0.1 %ile': 'rgb(127,255,212)',
+    '0.01 %ile': 'rgb(0,255,255)',
+    '10 % low': 'rgb(255,127,80)',
+    '1 % low': 'rgb(255,165,0)',
+    '0.1 % low': 'rgb(255,215,0)',
+    '0.01 % low': 'rgb(255,255,0)'
+}
+
+const colorList = [
+    'rgb(255,0,0)',
+    'rgb(0,255,0)',
+    'rgb(0,0,255)',
+    'rgb(255,255,0)',
+    'rgb(0,255,255)',
+    'rgb(255,0,255)',
+    'rgb(192,192,192)',
+    'rgb(128,128,128)',
+    'rgb(128,0,0)',
+    'rgb(128,128,0)',
+    'rgb(0,128,0)',
+    'rgb(128,0,128)',
+    'rgb(0,128,128)',
+    'rgb(0,0,128)',
+]
+
+const cfxPresentModes = {
+    1: 'Hardware: Legacy Flip',
+    2: 'Hardware: Legacy Copy to front buffer',
+    3: 'Hardware: Independent Flip',
+    4: 'Composed: Flip',
+    5: 'Hardware Composed: Independent Flip',
+    6: 'Composed: Copy with GPU GDI',
+    7: 'Composed: Copy with CPU GDI',
+    8: 'Composed: Composition Atlas'
+}
+
+const mainMetrics = [
+    'Max',
+    'Avg',
+    'Min',
+    '10 %ile',
+    '1 %ile',
+    '0.1 %ile',
+    '0.01 %ile',
+    '10 % low',
+    '1 % low',
+    '0.1 % low',
+    '0.01 % low'
+]
+
 const navigation = document.getElementById('navigation')
-
 const instructions = document.getElementById('instructions')
-const readme = document.getElementById('show-readme')
-
 const results = document.getElementById('results')
 const benchmarks = document.getElementById('benchmarks')
 const comparisons = document.getElementById('comparisons')
 const comparisonContainer = document.getElementById('comparison-container')
-const comparison = document.getElementById('comparison')
 const metric = document.getElementById('metric')
-const metricLabels = document.getElementById('metric-labels')
+const fileDescriptions = document.getElementById('file-descriptions')
 
-const crop = document.createElement('style')
-document.head.append(crop)
+const hideForExport = document.createElement('style')
+document.head.append(hideForExport)
 
 let fileIndex = -1
 const benches = []
@@ -32,6 +115,9 @@ document.addEventListener('drop', async ev => {
     ev.stopPropagation()
     ev.preventDefault()
     for (const file of ev.dataTransfer.files) {
+        if (fileIndex >= 13) {
+            break
+        }
         const fileName = file.name
         if (fileName.endsWith('.csv')) {
             const index = ++fileIndex
@@ -51,7 +137,87 @@ document.addEventListener('drop', async ev => {
     }
 })
 
-const comparisonChart = new Chart(comparison, {
+const frameTimeOverlayChart = new Chart(document.getElementById('frame-time-overlay'), {
+    type: 'scatter',
+    data: {
+        datasets: []
+    },
+    options: {
+        parsing: false,
+        normalized: true,
+        showLine: true,
+        scales: {
+            x: {
+                min: 0,
+                grid: {
+                    display: false
+                }
+            }
+        },
+        radius: 0,
+        plugins: {
+            legend: {
+                title: {
+                    display: true,
+                    text: 'FPS'
+                }
+            }
+        }
+    }
+})
+
+document.getElementById('chart-metric-comparison').addEventListener('click', ev => {
+    const metric = ev.currentTarget.value
+
+    frameTimeOverlayChart.data.datasets = benches.map(bench => {
+        return {
+            label: [...fileDescriptions.options].filter(option => option.selected).map(option => bench[option.value] ?? '').join(' | '),
+            data: (metric === 'FPS') ? bench.chart_format.full_fps : bench.chart_format.full_frame_times,
+            backgroundColor: colorList[bench.file_index],
+            borderColor: colorList[bench.file_index]
+        }
+    })
+    frameTimeOverlayChart.options.plugins.legend.title.text = metric
+    frameTimeOverlayChart.update()
+})
+
+const percentileOverlayChart = new Chart(document.getElementById('percentile-overlay'), {
+    type: 'line',
+    data: {
+        labels: values,
+        datasets: []
+    },
+    options: {
+        plugins: {
+            legend: {
+                title: {
+                    display: true,
+                    text: 'FPS | Percentiles'
+                }
+            }
+        }
+    }
+})
+
+const lowsOverlayChart = new Chart(document.getElementById('lows-overlay'), {
+    type: 'line',
+    data: {
+        labels: values,
+        datasets: []
+    },
+    options: {
+        plugins: {
+            legend: {
+                title: {
+                    display: true,
+                    text: 'FPS | Lows'
+                }
+            }
+        }
+    }
+})
+
+const comparisonChart = new Chart(document.getElementById('comparison'), {
     type: 'bar',
     data: {
         labels: [],
@@ -85,23 +251,9 @@ const comparisonChart = new Chart(comparison, {
     plugins: [ChartDataLabels]
 })
 
-const colors = {
-    'Max': 'rgb(50,205,50)',
-    'Avg': 'rgb(154,205,50)',
-    'Min': 'rgb(0,255,0)',
-    '10 %ile': 'rgb(0,191,255)',
-    '1 %ile': 'rgb(0,206,209)',
-    '0.1 %ile': 'rgb(127,255,212)',
-    '0.01 %ile': 'rgb(0,255,255)',
-    '10 % low': 'rgb(255,127,80)',
-    '1 % low': 'rgb(255,165,0)',
-    '0.1 % low': 'rgb(255,215,0)',
-    '0.01 % low': 'rgb(255,255,0)'
-}
-
 function updateComparison() {
     comparisonContainer.style.height = `${6 + (fileIndex + 1) * 20}vh`
-    comparisonChart.data.labels = benches.map(bench => [...metricLabels.options].filter(option => option.selected).map(option => bench[option.value] ?? ''))
+    comparisonChart.data.labels = benches.map(bench => [...fileDescriptions.options].filter(option => option.selected).map(option => bench[option.value] ?? ''))
     comparisonChart.data.datasets = [...metric.options].filter(option => option.selected).map(option => {
         const value = option.value
         return {
@@ -112,37 +264,6 @@ function updateComparison() {
     })
     comparisonChart.update()
 }
-
-const values = [
-    10,
-    9,
-    8,
-    7,
-    6,
-    5,
-    4,
-    3,
-    2,
-    1,
-    0.9,
-    0.8,
-    0.7,
-    0.6,
-    0.5,
-    0.4,
-    0.3,
-    0.2,
-    0.1,
-    0.09,
-    0.08,
-    0.07,
-    0.06,
-    0.05,
-    0.04,
-    0.03,
-    0.02,
-    0.01
-]
 
 function updateStats(bench, min, max) {
     let isOld
@@ -221,20 +342,6 @@ function updateStats(bench, min, max) {
     }
 }
 
-const mainMetrics = [
-    'Max',
-    'Avg',
-    'Min',
-    '10 %ile',
-    '1 %ile',
-    '0.1 %ile',
-    '0.01 %ile',
-    '10 % low',
-    '1 % low',
-    '0.1 % low',
-    '0.01 % low'
-]
-
 function updateBench(bench) {
     const barChart = bench.bar_chart
     barChart.data.datasets[0].data = mainMetrics.map(metric => bench[metric])
@@ -261,8 +368,44 @@ function updateBench(bench) {
     lowChart.options.scales.y.min = lowest
     lowChart.options.scales.y.max = highest
     lowChart.update()
+}
 
-    updateComparison()
+function updateOverlays() {
+    const labelTypes = [...fileDescriptions.options].filter(option => option.selected)
+
+    let highest = 0
+    frameTimeOverlayChart.data.datasets = benches.map(bench => {
+        highest = Math.max(highest, bench.full_benchmark_time)
+
+        return {
+            label: labelTypes.map(option => bench[option.value] ?? '').join(' | '),
+            data: bench.chart_format.full_fps,
+            backgroundColor: colorList[bench.file_index],
+            borderColor: colorList[bench.file_index]
+        }
+    })
+    frameTimeOverlayChart.options.scales.x.max = Math.ceil(highest)
+    frameTimeOverlayChart.update()
+
+    percentileOverlayChart.data.datasets = benches.map(bench => {
+        return {
+            label: labelTypes.map(option => bench[option.value] ?? '').join(' | '),
+            data: values.map(value => bench[`${value} %ile`]),
+            backgroundColor: colorList[bench.file_index],
+            borderColor: colorList[bench.file_index]
+        }
+    })
+    percentileOverlayChart.update()
+
+    lowsOverlayChart.data.datasets = benches.map(bench => {
+        return {
+            label: labelTypes.map(option => bench[option.value] ?? '').join(' | '),
+            data: values.map(value => bench[`${value} % low`]),
+            backgroundColor: colorList[bench.file_index],
+            borderColor: colorList[bench.file_index]
+        }
+    })
+    lowsOverlayChart.update()
 }
 
 function appendBench(bench) {
@@ -354,12 +497,12 @@ function appendBench(bench) {
             labels: mainMetrics,
             datasets: [{
                 label: 'FPS',
-                data: mainMetrics.map(metric => bench[metric]),
-                backgroundColor: 'rgb(0,191,255)',
-                borderWidth: 0
+                data: mainMetrics.map(metric => bench[metric])
             }]
         },
         options: {
+            backgroundColor: 'rgb(0,191,255)',
+            borderWidth: 0,
             indexAxis: 'y',
             scales: {
                 x: {
@@ -389,16 +532,17 @@ function appendBench(bench) {
     bench.scatter_chart = new Chart(document.getElementById(`scatter-${fileIndex}`), {
         type: 'scatter',
         data: {
-            labels: bench.full_elapsed,
             datasets: [{
                 label: `FPS | ${frameCount} frames`,
-                data: bench.full_fps,
-                backgroundColor: 'rgb(0,191,255)',
-                borderWidth: 0,
-                radius: 2
+                data: bench.chart_format.full_fps
             }]
         },
         options: {
+            parsing: false,
+            normalized: true,
+            backgroundColor: 'rgb(0,191,255)',
+            borderWidth: 0,
+            radius: 2,
             scales: {
                 x: {
                     grid: {
@@ -419,13 +563,13 @@ function appendBench(bench) {
         data: {
             labels: values,
             datasets: [{
-                label: `FPS | %ile`,
-                data: values.map(value => bench[`${value} %ile`]),
-                backgroundColor: 'rgb(0,191,255)',
-                borderColor: 'rgb(0,191,255)'
+                label: 'FPS | %ile',
+                data: values.map(value => bench[`${value} %ile`])
             }]
         },
         options: {
+            backgroundColor: 'rgb(0,191,255)',
+            borderColor: 'rgb(0,191,255)',
             scales: {
                 y: {
                     min: lowest,
@@ -440,13 +584,13 @@ function appendBench(bench) {
         data: {
             labels: values,
             datasets: [{
-                label: `FPS | % low`,
-                data: values.map(value => bench[`${value} % low`]),
-                backgroundColor: 'rgb(0,191,255)',
-                borderColor: 'rgb(0,191,255)'
+                label: 'FPS | % low',
+                data: values.map(value => bench[`${value} % low`])
             }]
         },
         options: {
+            backgroundColor: 'rgb(0,191,255)',
+            borderColor: 'rgb(0,191,255)',
             scales: {
                 y: {
                     min: lowest,
@@ -482,7 +626,7 @@ function appendBench(bench) {
 
         const scatterChart = bench.scatter_chart
         scatterChart.data.datasets[0].label = `${metric} | ${bench.frame_count} frames`
-        scatterChart.data.datasets[0].data = (metric === 'FPS' ? bench.full_fps : bench.full_frame_times)
+        scatterChart.data.datasets[0].data = (metric === 'FPS' ? bench.chart_format.full_fps : bench.chart_format.full_frame_times)
         scatterChart.update()
     })
 
@@ -504,21 +648,44 @@ function appendBench(bench) {
 
     updateComparison()
 
+    updateOverlays()
+
     instructions.style.display = 'none'
     navigation.removeAttribute('style')
     results.removeAttribute('style')
+}
+
+function updateComments() {
+    comparisonChart.data.labels = benches.map(bench => [...fileDescriptions.options].filter(option => option.selected).map(option => bench[option.value] ?? ''))
+    comparisonChart.update()
+
+    const labelTypes = [...fileDescriptions.options].filter(option => option.selected)
+
+    const length = benches.length
+
+    for (let index = 0; index < length; index++) {
+        const bench = benches[index]
+
+        frameTimeOverlayChart.data.datasets[index].label = labelTypes.map(option => bench[option.value] ?? '').join(' | ')
+        percentileOverlayChart.data.datasets[index].label = labelTypes.map(option => bench[option.value] ?? '').join(' | ')
+        lowsOverlayChart.data.datasets[index].label = labelTypes.map(option => bench[option.value] ?? '').join(' | ')
+    }
+
+    frameTimeOverlayChart.update()
+    percentileOverlayChart.update()
+    lowsOverlayChart.update()
 }
 
 function modifyComment(bench, ev, comment) {
     if (ev.type === 'keydown') {
         if (ev.key === 'Enter') {
             bench.comment = comment
-            updateComparison()
+            updateComments()
         }
     }
     else if (ev.type === 'blur') {
         bench.comment = comment
-        updateComparison()
+        updateComments()
     }
 }
 
@@ -588,29 +755,28 @@ function processMangoHud(fileName, fileIndex, data, infoRow, comment) {
     }
 
     const frameTimes = []
-    const fps = []
-    const elapsed = []
+    const fullFrameTimes = []
+    const fullFPS = []
 
     const presentIndex = infoRow.indexOf('frametime')
 
-    let frameCount = 0
     let benchmarkTime = 0
+
     for (const row of data) {
         const present = parseFloat(row[presentIndex]) / 1000
         if (!isNaN(present)) {
             benchmarkTime += present
             frameTimes.push(present)
-            fps.push(1000 / present)
-            elapsed.push(benchmarkTime)
-            frameCount++
+
+            fullFPS.push({ x: benchmarkTime, y: 1000 / present })
+            fullFrameTimes.push({ x: benchmarkTime, y: present })
         }
     }
 
     bench.full_frame_times = frameTimes
-    bench.full_fps = fps
-    bench.full_elapsed = elapsed
-    bench.full_frame_count = frameCount
+    bench.full_frame_count = frameTimes.length
     bench.full_benchmark_time = benchmarkTime
+    bench.chart_format = { full_fps: fullFPS, full_frame_times: fullFrameTimes }
 
     updateStats(bench, null, null)
 }
@@ -623,8 +789,8 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
     }
 
     const frameTimes = []
-    const fps = []
-    const elapsed = []
+    const fullFrameTimes = []
+    const fullFPS = []
 
     const applications = new Set()
     const runtimes = new Set()
@@ -652,7 +818,6 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
         wasBatched = 0
     }
 
-    let frameCount = 0
     let benchmarkTime = 0
     let dropped = 0
 
@@ -661,9 +826,6 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
         if (!isNaN(present)) {
             benchmarkTime += present
             frameTimes.push(present)
-            fps.push(1000 / present)
-            elapsed.push(benchmarkTime)
-            frameCount++
 
             applications.add(row[applicationIndex])
             runtimes.add(row[runtimeIndex])
@@ -682,18 +844,20 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
             if (parseInt(row[wasBatchedIndex]) === 1) {
                 wasBatched++
             }
+
+            fullFPS.push({ x: benchmarkTime, y: 1000 / present })
+            fullFrameTimes.push({ x: benchmarkTime, y: present })
         }
     }
 
     bench.full_frame_times = frameTimes
-    bench.full_fps = fps
-    bench.full_elapsed = elapsed
-    bench.full_frame_count = frameCount
+    bench.full_frame_count = frameTimes.length
     bench.full_benchmark_time = benchmarkTime
     bench.dropped_frames = dropped
     bench.allows_tearing = allowsTearing
     bench.dwm_notified = dwmNotified
     bench.was_batched = wasBatched
+    bench.chart_format = { full_fps: fullFPS, full_frame_times: fullFrameTimes }
 
     bench.application = [...applications].join(', ')
     bench.runtime = [...runtimes].join(', ')
@@ -701,17 +865,6 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
     bench.sync_interval = [...syncIntervals].join(', ')
 
     updateStats(bench, null, null)
-}
-
-const cfxPresentModes = {
-    1: 'Hardware: Legacy Flip',
-    2: 'Hardware: Legacy Copy to front buffer',
-    3: 'Hardware: Independent Flip',
-    4: 'Composed: Flip',
-    5: 'Hardware Composed: Independent Flip',
-    6: 'Composed: Copy with GPU GDI',
-    7: 'Composed: Copy with CPU GDI',
-    8: 'Composed: Composition Atlas'
 }
 
 function processJSON(fileName, fileIndex, data) {
@@ -723,6 +876,9 @@ function processJSON(fileName, fileIndex, data) {
     }
 
     const frameTimes = []
+    const fullFrameTimes = []
+    const fullFPS = []
+
     const allowsTearing = []
     const dwmNotified = []
     const wasBatched = []
@@ -763,23 +919,17 @@ function processJSON(fileName, fileIndex, data) {
         runtimes.add(run['PresentMonRuntime'])
     }
 
-    const elapsed = []
-    const fps = []
-
-    let frameCount = 0
     let benchmarkTime = 0
     for (const present of frameTimes) {
         benchmarkTime += present
-        elapsed.push(benchmarkTime)
-        fps.push(1000 / present)
-        frameCount++
+        fullFPS.push({ x: benchmarkTime, y: 1000 / present })
+        fullFrameTimes.push({ x: benchmarkTime, y: present })
     }
 
-    bench.full_elapsed = elapsed
-    bench.full_fps = fps
-    bench.full_frame_count = frameCount
+    bench.full_frame_count = frameTimes.length
     bench.full_benchmark_time = benchmarkTime
     bench.full_frame_times = frameTimes
+    bench.chart_format = { full_fps: fullFPS, full_frame_times: fullFrameTimes }
 
     if (allowsTearing.length !== 0) {
         bench.allows_tearing = allowsTearing.filter(frame => frame === 1).length
@@ -810,8 +960,8 @@ function processJSON(fileName, fileIndex, data) {
 }
 
 document.getElementById('export').addEventListener('click', ev => {
-    crop.innerHTML = `
-        #navigation, #metric, .crop, .chart-metric, #metric-labels, .edit-comment {
+    hideForExport.innerHTML = `
+        #navigation, #metric, .crop, .chart-metric, #file-descriptions, .edit-comment {
             display: none;
         }
     `
@@ -830,15 +980,15 @@ document.getElementById('export').addEventListener('click', ev => {
         else {
             window.open(uri)
         }
-        crop.innerHTML = ''
+        hideForExport.innerHTML = ''
     })
 })
 
-document.getElementById('benches').addEventListener('click', ev => {
+document.getElementById('jump-to-benchmarks').addEventListener('click', ev => {
     benchmarks.scrollIntoView()
 })
 
-document.getElementById('summary').addEventListener('click', ev => {
+document.getElementById('jump-to-comparisons').addEventListener('click', ev => {
     comparisons.scrollIntoView()
 })
 
@@ -846,10 +996,10 @@ metric.addEventListener('click', ev => {
     updateComparison()
 })
 
-metricLabels.addEventListener('click', ev => {
-    updateComparison()
+fileDescriptions.addEventListener('click', ev => {
+    updateComments()
 })
 
-readme.addEventListener('click', ev => {
+document.getElementById('show-readme').addEventListener('click', ev => {
     document.getElementById('readme').removeAttribute('style')
 })
