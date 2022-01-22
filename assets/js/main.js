@@ -96,6 +96,7 @@ const comparisons = document.getElementById('comparisons')
 const comparisonContainer = document.getElementById('comparison-container')
 const metric = document.getElementById('metric')
 const fileDescriptions = document.getElementById('file-descriptions')
+const chartMetricComparison = document.getElementById('chart-metric-comparison')
 
 const hideForExport = document.createElement('style')
 document.head.append(hideForExport)
@@ -166,8 +167,8 @@ const frameTimeOverlayChart = new Chart(document.getElementById('frame-time-over
     }
 })
 
-document.getElementById('chart-metric-comparison').addEventListener('click', ev => {
-    const metric = ev.currentTarget.value
+chartMetricComparison.addEventListener('click', ev => {
+    const metric = chartMetricComparison.value
 
     frameTimeOverlayChart.data.datasets = benches.map(bench => {
         return {
@@ -372,6 +373,7 @@ function updateBench(bench) {
 
 function updateOverlays() {
     const labelTypes = [...fileDescriptions.options].filter(option => option.selected)
+    const metric = chartMetricComparison.value
 
     let highest = 0
     frameTimeOverlayChart.data.datasets = benches.map(bench => {
@@ -379,7 +381,7 @@ function updateOverlays() {
 
         return {
             label: labelTypes.map(option => bench[option.value] ?? '').join(' | '),
-            data: bench.chart_format.full_fps,
+            data: (metric === 'FPS') ? bench.chart_format.full_fps : bench.chart_format.full_frame_times,
             backgroundColor: colorList[bench.file_index],
             borderColor: colorList[bench.file_index]
         }
