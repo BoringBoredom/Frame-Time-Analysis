@@ -152,18 +152,20 @@ const frameTimeOverlayChart = new Chart(document.getElementById('frame-time-over
                 min: 0,
                 grid: {
                     display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Elapsed (ms)'
                 }
-            }
-        },
-        radius: 0,
-        plugins: {
-            legend: {
+            },
+            y: {
                 title: {
                     display: true,
                     text: 'FPS'
                 }
             }
-        }
+        },
+        radius: 0
     }
 })
 
@@ -178,7 +180,7 @@ chartMetricComparison.addEventListener('click', ev => {
             borderColor: colorList[bench.file_index]
         }
     })
-    frameTimeOverlayChart.options.plugins.legend.title.text = metric
+    frameTimeOverlayChart.options.scales.y.title.text = metric
     frameTimeOverlayChart.update()
 })
 
@@ -189,11 +191,17 @@ const percentileOverlayChart = new Chart(document.getElementById('percentile-ove
         datasets: []
     },
     options: {
-        plugins: {
-            legend: {
+        scales: {
+            x: {
                 title: {
                     display: true,
-                    text: 'FPS | Percentiles'
+                    text: 'Percentile'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'FPS'
                 }
             }
         }
@@ -207,11 +215,17 @@ const lowsOverlayChart = new Chart(document.getElementById('lows-overlay'), {
         datasets: []
     },
     options: {
-        plugins: {
-            legend: {
+        scales: {
+            x: {
                 title: {
                     display: true,
-                    text: 'FPS | Lows'
+                    text: '% low'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'FPS'
                 }
             }
         }
@@ -229,7 +243,11 @@ const comparisonChart = new Chart(document.getElementById('comparison'), {
         maintainAspectRatio: false,
         scales: {
             x: {
-                min: 0
+                min: 0,
+                title: {
+                    display: true,
+                    text: 'FPS'
+                }
             },
             y: {
                 grid: {
@@ -276,7 +294,6 @@ function updateStats(bench, min, max) {
 
     if (isOld) {
         frameTimes = []
-        frameCount = 0
         benchmarkTime = 0
         let tempBenchmarkTime = 0
         for (const present of bench.full_frame_times) {
@@ -291,8 +308,9 @@ function updateStats(bench, min, max) {
 
             benchmarkTime += present
             frameTimes.push(present)
-            frameCount++
         }
+
+        frameCount = frameTimes.length
 
         bench.frame_times = frameTimes
         bench.frame_count = frameCount
@@ -349,8 +367,6 @@ function updateBench(bench) {
     barChart.update()
 
     const scatterChart = bench.scatter_chart
-    const metric = scatterChart.data.datasets[0].label.split(' | ')[0]
-    scatterChart.data.datasets[0].label = `${metric} | ${bench.frame_count} frames`
     scatterChart.options.scales.x.min = parseInt(document.getElementById(`min-${bench.file_index}`).value)
     scatterChart.options.scales.x.max = parseInt(document.getElementById(`max-${bench.file_index}`).value)
     scatterChart.update()
@@ -498,7 +514,6 @@ function appendBench(bench) {
         data: {
             labels: mainMetrics,
             datasets: [{
-                label: 'FPS',
                 data: mainMetrics.map(metric => bench[metric])
             }]
         },
@@ -508,7 +523,11 @@ function appendBench(bench) {
             indexAxis: 'y',
             scales: {
                 x: {
-                    min: 0
+                    min: 0,
+                    title: {
+                        display: true,
+                        text: 'FPS'
+                    }
                 },
                 y: {
                     grid: {
@@ -517,6 +536,9 @@ function appendBench(bench) {
                 }
             },
             plugins: {
+                legend: {
+                    display: false
+                },
                 datalabels: {
                     anchor: 'start',
                     clamp: true,
@@ -535,7 +557,6 @@ function appendBench(bench) {
         type: 'scatter',
         data: {
             datasets: [{
-                label: `FPS | ${frameCount} frames`,
                 data: bench.chart_format.full_fps
             }]
         },
@@ -551,7 +572,22 @@ function appendBench(bench) {
                         display: false
                     },
                     min: 0,
-                    max: elapsed
+                    max: elapsed,
+                    title: {
+                        display: true,
+                        text: 'Elapsed (ms)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'FPS'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
                 }
             }
         }
@@ -565,7 +601,6 @@ function appendBench(bench) {
         data: {
             labels: values,
             datasets: [{
-                label: 'FPS | %ile',
                 data: values.map(value => bench[`${value} %ile`])
             }]
         },
@@ -573,9 +608,24 @@ function appendBench(bench) {
             backgroundColor: 'rgb(0,191,255)',
             borderColor: 'rgb(0,191,255)',
             scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Percentile'
+                    }
+                },
                 y: {
                     min: lowest,
-                    max: highest
+                    max: highest,
+                    title: {
+                        display: true,
+                        text: 'FPS'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
                 }
             }
         }
@@ -586,7 +636,6 @@ function appendBench(bench) {
         data: {
             labels: values,
             datasets: [{
-                label: 'FPS | % low',
                 data: values.map(value => bench[`${value} % low`])
             }]
         },
@@ -594,9 +643,24 @@ function appendBench(bench) {
             backgroundColor: 'rgb(0,191,255)',
             borderColor: 'rgb(0,191,255)',
             scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: '% low'
+                    }
+                },
                 y: {
                     min: lowest,
-                    max: highest
+                    max: highest,
+                    title: {
+                        display: true,
+                        text: 'FPS'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
                 }
             }
         }
@@ -627,7 +691,7 @@ function appendBench(bench) {
         const metric = ev.currentTarget.value
 
         const scatterChart = bench.scatter_chart
-        scatterChart.data.datasets[0].label = `${metric} | ${bench.frame_count} frames`
+        scatterChart.options.scales.y.title.text = metric
         scatterChart.data.datasets[0].data = (metric === 'FPS' ? bench.chart_format.full_fps : bench.chart_format.full_frame_times)
         scatterChart.update()
     })
