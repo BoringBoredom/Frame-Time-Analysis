@@ -458,7 +458,9 @@ function appendBench(bench) {
                         <tr>
                             <td>
                                 <div style="display:flex; align-items:center;">
-                                    <div class="edit-comment" id="edit-comment-${fileIndex}">✏</div>
+                                    <div class="edit-comment" id="edit-comment-${fileIndex}">
+                                        <img src="assets/img/pencil.png">
+                                    </div>
                                     <div>
                                         ${bench.file_name}<br>
                                         <input class="file-comment" id="comment-${fileIndex}" type="text" value="${bench.comment ?? ''}">

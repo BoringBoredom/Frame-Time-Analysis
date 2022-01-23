@@ -11,6 +11,10 @@
   margin-bottom: 1rem;
 }
 
+#export > img {
+  width: 1.6rem;
+}
+
 #jump-to-benchmarks, #jump-to-comparisons {
   margin-bottom: 0.1rem;
 }
@@ -101,8 +105,10 @@ select option:checked {
 
 .edit-comment {
   margin-right: 0.8rem;
-  border-style: outset;
-  border-width: 0.2rem;
+}
+
+.edit-comment > img {
+  width: 1.4rem;
 }
 
 .edit-comment:hover, .file-comment:hover, .chart-metric:hover, #metric:hover, #file-descriptions:hover {
