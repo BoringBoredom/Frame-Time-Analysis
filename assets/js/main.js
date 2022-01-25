@@ -90,6 +90,7 @@ const mainMetrics = [
 
 const navigation = document.getElementById('navigation')
 const instructions = document.getElementById('instructions')
+const aggregate = document.getElementById('aggregate')
 const results = document.getElementById('results')
 const benchmarks = document.getElementById('benchmarks')
 const comparisons = document.getElementById('comparisons')
@@ -1070,4 +1071,63 @@ fileDescriptions.addEventListener('click', ev => {
 
 document.getElementById('show-readme').addEventListener('click', ev => {
     document.getElementById('readme').removeAttribute('style')
+})
+
+document.getElementById('show-aggregate').addEventListener('click', ev => {
+    aggregate.removeAttribute('style')
+})
+
+aggregate.addEventListener('drop', async ev => {
+    ev.stopImmediatePropagation()
+    ev.preventDefault()
+
+    let first = true
+    let content = ''
+    let indicator
+    for (const file of ev.dataTransfer.files) {
+        if (file.name.endsWith('.csv')) {
+            const text = await file.text()
+            if (first) {
+                for (const line of text.split('\n')) {
+                    const lowerCaseLine = line.toLowerCase()
+                    if (lowerCaseLine.includes('cpuscheduler')) {
+                        indicator = 'frametime'
+                        break
+                    }
+                    if (lowerCaseLine.includes('msbetweenpresents')) {
+                        indicator = 'msbetweenpresents'
+                        break
+                    }
+                }
+                content += text
+                first = false
+            }
+            else {
+                const textArray = text.split('\n')
+                for (const [index, line] of textArray.entries()) {
+                    const lowerCaseLine = line.toLowerCase()
+                    if (lowerCaseLine.includes(indicator)) {
+                        content += textArray.slice(index + 1).join('\n')
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    if (content) {
+        const file = new Blob([content], { type: 'text/html' })
+        const link = document.createElement('a')
+        const uri = URL.createObjectURL(file)
+        if (typeof(link.download) === 'string') {
+            link.href = uri
+            link.download = 'aggregated.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        }
+        else {
+            window.open(uri)
+        }
+    }
 })

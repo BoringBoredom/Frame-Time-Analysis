@@ -28,7 +28,23 @@
 }
 
 #readme {
-  margin-top: 5%;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+#show-readme {
+  margin-right: 1rem;
+}
+
+#aggregate {
+  min-height: 30vh;
+  border-width: 0.1rem;
+  border-style: solid;
+  border-radius: 1rem;
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #results {
