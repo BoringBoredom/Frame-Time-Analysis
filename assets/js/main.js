@@ -944,45 +944,45 @@ function processJSON(fileName, fileIndex, data) {
         comment: data['Info']['Comment']
     }
 
-    const frameTimes = []
+    let frameTimes = []
     const fullFrameTimes = []
     const fullFPS = []
 
-    const allowsTearing = []
-    const dwmNotified = []
-    const wasBatched = []
-    const droppedFrames = []
+    let allowsTearing = []
+    let dwmNotified = []
+    let wasBatched = []
+    let droppedFrames = []
 
-    const presentModes = []
-    const syncIntervals = []
+    let presentModes = []
+    let syncIntervals = []
 
     const runtimes = new Set()
 
     for (const run of data['Runs']) {
-        frameTimes.push(...run['CaptureData']['MsBetweenPresents'])
+        frameTimes = frameTimes.concat(run['CaptureData']['MsBetweenPresents'])
 
         if (run['CaptureData']['AllowsTearing'] !== undefined) {
-            allowsTearing.push(...run['CaptureData']['AllowsTearing'])
+            allowsTearing = allowsTearing.concat(run['CaptureData']['AllowsTearing'])
         }
 
         if (run['CaptureData']['DwmNotified'] !== undefined) {
-            dwmNotified.push(...run['CaptureData']['DwmNotified'])
+            dwmNotified = dwmNotified.concat(run['CaptureData']['DwmNotified'])
         }
 
         if (run['CaptureData']['WasBatched'] !== undefined) {
-            wasBatched.push(...run['CaptureData']['WasBatched'])
+            wasBatched = wasBatched.concat(run['CaptureData']['WasBatched'])
         }
 
         if (run['CaptureData']['Dropped'] !== undefined) {
-            droppedFrames.push(...run['CaptureData']['Dropped'])
+            droppedFrames = droppedFrames.concat(run['CaptureData']['Dropped'])
         }
 
         if (run['CaptureData']['PresentMode'] !== undefined) {
-            presentModes.push(...run['CaptureData']['PresentMode'])
+            presentModes = presentModes.concat(run['CaptureData']['PresentMode'])
         }
 
         if (run['CaptureData']['SyncInterval'] !== undefined) {
-            syncIntervals.push(...run['CaptureData']['SyncInterval'])
+            syncIntervals = syncIntervals.concat(run['CaptureData']['SyncInterval'])
         }
 
         runtimes.add(run['PresentMonRuntime'])
