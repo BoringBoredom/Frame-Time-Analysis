@@ -2,11 +2,6 @@ Chart.defaults.animation = false
 Chart.defaults.events = []
 
 const values = [
-    10,
-    9,
-    8,
-    7,
-    6,
     5,
     4,
     3,
@@ -29,21 +24,26 @@ const values = [
     0.04,
     0.03,
     0.02,
-    0.01
+    0.01,
+    0.009,
+    0.008,
+    0.007,
+    0.006,
+    0.005
 ]
 
 const colors = {
     'Max': 'rgb(50,205,50)',
     'Avg': 'rgb(154,205,50)',
     'Min': 'rgb(0,255,0)',
-    '10 %ile': 'rgb(0,191,255)',
-    '1 %ile': 'rgb(0,206,209)',
-    '0.1 %ile': 'rgb(127,255,212)',
-    '0.01 %ile': 'rgb(0,255,255)',
-    '10 % low': 'rgb(255,127,80)',
-    '1 % low': 'rgb(255,165,0)',
-    '0.1 % low': 'rgb(255,215,0)',
-    '0.01 % low': 'rgb(255,255,0)'
+    '1 %ile': 'rgb(0,191,255)',
+    '0.1 %ile': 'rgb(0,206,209)',
+    '0.01 %ile': 'rgb(127,255,212)',
+    '0.005 %ile': 'rgb(0,255,255)',
+    '1 % low': 'rgb(255,127,80)',
+    '0.1 % low': 'rgb(255,165,0)',
+    '0.01 % low': 'rgb(255,215,0)',
+    '0.005 % low': 'rgb(255,255,0)'
 }
 
 const colorList = [
@@ -78,14 +78,14 @@ const mainMetrics = [
     'Max',
     'Avg',
     'Min',
-    '10 %ile',
     '1 %ile',
     '0.1 %ile',
     '0.01 %ile',
-    '10 % low',
+    '0.005 %ile',
     '1 % low',
     '0.1 % low',
-    '0.01 % low'
+    '0.01 % low',
+    '0.005 % low'
 ]
 
 const navigation = document.getElementById('navigation')
@@ -372,8 +372,8 @@ function updateBench(bench) {
     scatterChart.options.scales.x.max = parseInt(document.getElementById(`max-${bench.file_index}`).value)
     scatterChart.update()
 
-    const highest = Math.ceil(Math.max(bench['10 %ile'], bench['10 % low']))
-    const lowest = Math.floor(Math.min(bench['0.01 %ile'], bench['0.01 % low']))
+    const highest = Math.ceil(Math.max(bench[`${values[0]} %ile`], bench[`${values[0]} % low`]))
+    const lowest = Math.floor(Math.min(bench[`${values[values.length - 1]} %ile`], bench[`${values[values.length - 1]} % low`]))
 
     const percChart = bench.l_percentiles
     percChart.data.datasets[0].data = values.map(value => bench[`${value} %ile`])
@@ -596,8 +596,8 @@ function appendBench(bench) {
         }
     })
 
-    const highest = Math.ceil(Math.max(bench['10 %ile'], bench['10 % low']))
-    const lowest = Math.floor(Math.min(bench['0.01 %ile'], bench['0.01 % low']))
+    const highest = Math.ceil(Math.max(bench[`${values[0]} %ile`], bench[`${values[0]} % low`]))
+    const lowest = Math.floor(Math.min(bench[`${values[values.length - 1]} %ile`], bench[`${values[values.length - 1]} % low`]))
 
     bench.l_percentiles = new Chart(document.getElementById(`l-perc-${fileIndex}`), {
         type: 'line',
