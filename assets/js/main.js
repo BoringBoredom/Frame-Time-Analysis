@@ -166,7 +166,24 @@ const frameTimeOverlayChart = new Chart(document.getElementById('frame-time-over
                 }
             }
         },
-        radius: 0
+        radius: 0,
+        plugins: {
+            zoom: {
+                zoom: {
+                    wheel: {
+                        enabled: true,
+                        modifierKey: 'alt'
+                    },
+                    mode: 'x'
+                },
+                limits: {
+                    x: {
+                        min: 0,
+                        max: 'original'
+                    }
+                }
+            }
+        }
     }
 })
 
@@ -368,8 +385,8 @@ function updateBench(bench) {
     barChart.update()
 
     const scatterChart = bench.scatter_chart
-    scatterChart.options.scales.x.min = parseInt(document.getElementById(`min-${bench.file_index}`).value)
-    scatterChart.options.scales.x.max = parseInt(document.getElementById(`max-${bench.file_index}`).value)
+    scatterChart.options.scales.x.min = parseFloat(bench.crop_fields.min.value)
+    scatterChart.options.scales.x.max = parseFloat(bench.crop_fields.max.value)
     scatterChart.update()
 
     const highest = Math.ceil(Math.max(bench[`${values[0]} %ile`], bench[`${values[0]} % low`]))
@@ -512,6 +529,13 @@ function appendBench(bench) {
         </div>
     `)
 
+    const min = document.getElementById(`min-${fileIndex}`)
+    const max = document.getElementById(`max-${fileIndex}`)
+    bench.crop_fields = {
+        min: min,
+        max: max
+    }
+
     bench.bar_chart = new Chart(document.getElementById(`bar-${fileIndex}`), {
         type: 'bar',
         data: {
@@ -591,6 +615,28 @@ function appendBench(bench) {
             plugins: {
                 legend: {
                     display: false
+                },
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                            modifierKey: 'alt'
+                        },
+                        mode: 'x',
+                        onZoomComplete({chart}) {
+                            const minimum = chart.options.scales.x.min
+                            const maximum = chart.options.scales.x.max
+                            min.value = minimum
+                            max.value = maximum
+                            updateStats(bench, minimum, maximum)
+                        }
+                    },
+                    limits: {
+                        x: {
+                            min: 0,
+                            max: elapsed
+                        }
+                    }
                 }
             }
         }
@@ -669,25 +715,20 @@ function appendBench(bench) {
         }
     })
 
-    const min = document.getElementById(`min-${fileIndex}`)
-    const max = document.getElementById(`max-${fileIndex}`)
-
-    const cropArgs = [bench, elapsed, min, max]
-
     min.addEventListener('keydown', ev => {
-        validateCrop(ev, ...cropArgs)
+        validateCrop(ev, bench, elapsed, min, max)
     })
 
     min.addEventListener('blur', ev => {
-        validateCrop(ev, ...cropArgs)
+        validateCrop(ev, bench, elapsed, min, max)
     })
 
     max.addEventListener('keydown', ev => {
-        validateCrop(ev, ...cropArgs)
+        validateCrop(ev, bench, elapsed, min, max)
     })
 
     max.addEventListener('blur', ev => {
-        validateCrop(ev, ...cropArgs)
+        validateCrop(ev, bench, elapsed, min, max)
     })
 
     document.getElementById(`chart-metric-${fileIndex}`).addEventListener('click', ev => {
@@ -759,8 +800,8 @@ function modifyComment(bench, ev, comment) {
 }
 
 function adjustExtremes(minimum, maximum, elapsed) {
-    let min = parseInt(minimum.value)
-    let max = parseInt(maximum.value)
+    let min = parseFloat(minimum.value)
+    let max = parseFloat(maximum.value)
 
     if (min < 0) {
         min = 0
