@@ -174,7 +174,16 @@ const frameTimeOverlayChart = new Chart(document.getElementById('frame-time-over
                         enabled: true,
                         modifierKey: 'alt'
                     },
-                    mode: 'x'
+                    mode: 'x',
+                    onZoomComplete({chart}) {
+                        const minimum = chart.options.scales.x.min
+                        const maximum = chart.options.scales.x.max
+                        for (const bench of benches) {
+                            updateStats(bench, minimum, maximum, true)
+                        }
+                        updateOverlays(true)
+                        updateComparison()
+                    }
                 },
                 limits: {
                     x: {
@@ -302,7 +311,7 @@ function updateComparison() {
     comparisonChart.update()
 }
 
-function updateStats(bench, min, max) {
+function updateStats(bench, min= null, max= null, comparison= false) {
     let isOld
     if (min !== null || max !== null) {
         isOld = true
@@ -371,11 +380,13 @@ function updateStats(bench, min, max) {
         }
     }
 
-    if (isOld) {
-        updateBench(bench)
-    }
-    else {
-        appendBench(bench)
+    if (!comparison) {
+        if (isOld) {
+            updateBench(bench)
+        }
+        else {
+            appendBench(bench)
+        }
     }
 }
 
@@ -405,7 +416,7 @@ function updateBench(bench) {
     lowChart.update()
 }
 
-function updateOverlays() {
+function updateOverlays(old= false) {
     const labelTypes = [...fileDescriptions.options].filter(option => option.selected)
     const metric = chartMetricComparison.value
 
@@ -420,7 +431,10 @@ function updateOverlays() {
             borderColor: colorList[bench.file_index]
         }
     })
-    frameTimeOverlayChart.options.scales.x.max = Math.ceil(highest)
+    if (!old) {
+        frameTimeOverlayChart.options.scales.x.max = Math.ceil(highest)
+    }
+
     frameTimeOverlayChart.update()
 
     percentileOverlayChart.data.datasets = benches.map(bench => {
@@ -888,7 +902,7 @@ function processMangoHud(fileName, fileIndex, data, infoRow, comment) {
     bench.full_benchmark_time = benchmarkTime
     bench.chart_format = { full_fps: fullFPS, full_frame_times: fullFrameTimes }
 
-    updateStats(bench, null, null)
+    updateStats(bench)
 }
 
 function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
@@ -974,7 +988,7 @@ function processPresentMon(fileName, fileIndex, data, infoRow, comment) {
     bench.present_mode = [...presentModes].join(', ') || '?'
     bench.sync_interval = [...syncIntervals].join(', ')
 
-    updateStats(bench, null, null)
+    updateStats(bench)
 }
 
 function processJSON(fileName, fileIndex, data) {
@@ -1066,7 +1080,7 @@ function processJSON(fileName, fileIndex, data) {
     }
     bench.sync_interval = syncInterval
 
-    updateStats(bench, null, null)
+    updateStats(bench)
 }
 
 document.getElementById('export').addEventListener('click', ev => {
