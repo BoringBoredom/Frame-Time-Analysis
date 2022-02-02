@@ -95,6 +95,7 @@ select option:checked {
 #metric, .chart-metric, #file-descriptions {
   overflow: visible !important;
   height: 1.4rem !important;
+  scrollbar-width: none;
 }
 
 #metric > option, .chart-metric > option, #file-descriptions > option {

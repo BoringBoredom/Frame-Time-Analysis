@@ -1083,13 +1083,22 @@ function processJSON(fileName, fileIndex, data) {
     updateStats(bench)
 }
 
-document.getElementById('export').addEventListener('click', ev => {
+document.getElementById('export').addEventListener('click', async ev => {
     hideForExport.innerHTML = `
         #navigation, #metric, .crop, .chart-metric, #file-descriptions, .edit-comment {
             display: none;
         }
     `
+
     window.scrollTo(0, 0)
+    await new Promise((resolve, reject) => {
+        const posCheck = setInterval(() => {
+            if (window.scrollY === 0) {
+                clearInterval(posCheck)
+                return resolve()
+            }
+        }, 100)
+    })
 
     html2canvas(document.body).then(content => {
         const link = document.createElement('a')
