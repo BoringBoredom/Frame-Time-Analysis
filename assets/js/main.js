@@ -169,10 +169,23 @@ const frameTimeOverlayChart = new Chart(document.getElementById('frame-time-over
         radius: 0,
         plugins: {
             zoom: {
+                pan: {
+                    enabled: true,
+                    mode: 'x',
+                    onPanComplete({chart}) {
+                        const minimum = chart.options.scales.x.min
+                        const maximum = chart.options.scales.x.max
+                        for (const bench of benches) {
+                            updateStats(bench, minimum, maximum, true)
+                        }
+                        updateOverlays(true)
+                        updateComparison()
+                    }
+                },
                 zoom: {
                     wheel: {
                         enabled: true,
-                        modifierKey: 'alt'
+                        modifierKey: 'ctrl'
                     },
                     mode: 'x',
                     onZoomComplete({chart}) {
@@ -631,10 +644,21 @@ function appendBench(bench) {
                     display: false
                 },
                 zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: 'x',
+                        onPanComplete({chart}) {
+                            const minimum = chart.options.scales.x.min
+                            const maximum = chart.options.scales.x.max
+                            min.value = minimum
+                            max.value = maximum
+                            updateStats(bench, minimum, maximum)
+                        }
+                    },
                     zoom: {
                         wheel: {
                             enabled: true,
-                            modifierKey: 'alt'
+                            modifierKey: 'ctrl'
                         },
                         mode: 'x',
                         onZoomComplete({chart}) {
