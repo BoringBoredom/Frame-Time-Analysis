@@ -1,5 +1,5 @@
 Chart.defaults.animation = false
-Chart.defaults.events = []
+Chart.defaults.events = ['click']
 
 const values = [
     5,
