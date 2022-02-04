@@ -79,13 +79,8 @@
 
 .input {
   margin: 0 1% !important;
-  border-width: 0.1rem !important;
+  border-width: 1px !important;
   border-style: solid !important;
-}
-
-select option:checked {
-  background-color: rgb(0, 191, 255) !important;
-  color: white !important;
 }
 
 .chart-metric:focus-visible, #metric:focus-visible, #file-descriptions:focus-visible {
@@ -96,6 +91,8 @@ select option:checked {
   overflow: visible !important;
   height: 1.4rem !important;
   scrollbar-width: none !important;
+  border-width: 1px !important;
+  border-style: solid !important;
 }
 
 #metric > option, .chart-metric > option, #file-descriptions > option {
