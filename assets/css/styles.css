@@ -137,3 +137,12 @@ h1 {
   margin: 1rem 0;
 }
 
+#tooltips > div {
+  border: 2px solid red;
+  background-color: white;
+  position: fixed;
+  padding: 1rem;
+  max-width: 94vw;
+  display: none;
+}
+

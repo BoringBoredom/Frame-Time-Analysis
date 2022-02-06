@@ -81,6 +81,57 @@
             </div>
         </div>
     </div>
+    <div class="d-flex justify-content-center" id="tooltips">
+        <div id="present-mode-tooltip">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Present Mode</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Hardware: Legacy Flip</td>
+                            <td>Indicates the app took ownership of the screen, and is swapping the displayed surface every frame.</td>
+                        </tr>
+                        <tr>
+                            <td>Hardware: Legacy Copy to front buffer</td>
+                            <td>Indicates the app took ownership of the screen, and is copying new contents to an already-on-screen surface every frame.</td>
+                        </tr>
+                        <tr>
+                            <td>Hardware: Independent Flip</td>
+                            <td>Indicates the app does not have ownership of the screen, but is still swapping the displayed surface every frame.</td>
+                        </tr>
+                        <tr>
+                            <td>Composed: Flip</td>
+                            <td>Indicates the app is windowed, is using "flip model" swapchains, and is sharing its surfaces with DWM to be composed.</td>
+                        </tr>
+                        <tr>
+                            <td>Hardware Composed: Independent Flip</td>
+                            <td>Indicates the app is using "flip model" swapchains, and has been granted a hardware overlay plane.</td>
+                        </tr>
+                        <tr>
+                            <td>Composed: Copy with GPU GDI</td>
+                            <td>Indicates the app is windowed, and is copying contents into a surface that's shared with GDI.</td>
+                        </tr>
+                        <tr>
+                            <td>Composed: Copy with CPU GDI</td>
+                            <td>Indicates the app is windowed, and is copying contents into a dedicated DirectX window surface. GDI contents are stored separately, and are composed together with DX contents by the DWM.</td>
+                        </tr>
+                        <tr>
+                            <td>Composed: Composition Atlas</td>
+                            <td>Indicates use of DirectComposition.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="was-batched-tooltip">
+            <p style="margin-bottom: 0px;">Whether the frame was submitted by the driver on a different thread than the app (1) or not (0).</p>
+        </div>
+    </div>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/hammer.min.js"></script>
     <script src="assets/js/chart.min.js"></script>

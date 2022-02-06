@@ -98,6 +98,8 @@ const comparisonContainer = document.getElementById('comparison-container')
 const metric = document.getElementById('metric')
 const fileDescriptions = document.getElementById('file-descriptions')
 const chartMetricComparison = document.getElementById('chart-metric-comparison')
+const presentModeTooltip = document.getElementById('present-mode-tooltip')
+const wasBatchedTooltip = document.getElementById('was-batched-tooltip')
 
 const hideForExport = document.createElement('style')
 document.head.append(hideForExport)
@@ -490,13 +492,13 @@ function appendBench(bench) {
                             <th>File Name & Comment</th>
                             <th>Application</th>
                             <th>API</th>
-                            <th>Present Mode</th>
+                            <th id="present-mode-hover-${fileIndex}">Present Mode</th>
                             <th>Duration (ms)</th>
                             <th>Sync Interval</th>
                             <th>Dropped Frames</th>
                             <th>Allows Tearing</th>
                             <th>DWM Notified</th>
-                            <th>Was Batched</th>
+                            <th id="was-batched-hover-${fileIndex}">Was Batched</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -555,6 +557,24 @@ function appendBench(bench) {
             </div>
         </div>
     `)
+
+    const presentModeHover = document.getElementById(`present-mode-hover-${fileIndex}`)
+    presentModeHover.addEventListener('mouseover', ev => {
+        presentModeTooltip.style.display = 'block'
+        presentModeTooltip.style.top = `${ev.y}px`
+    })
+    presentModeHover.addEventListener('mouseleave', ev => {
+        presentModeTooltip.style.display = 'none'
+    })
+
+    const wasBatchedHover = document.getElementById(`was-batched-hover-${fileIndex}`)
+    wasBatchedHover.addEventListener('mouseover', ev => {
+        wasBatchedTooltip.style.display = 'block'
+        wasBatchedTooltip.style.top = `${ev.y}px`
+    })
+    wasBatchedHover.addEventListener('mouseleave', ev => {
+        wasBatchedTooltip.style.display = 'none'
+    })
 
     const min = document.getElementById(`min-${fileIndex}`)
     const max = document.getElementById(`max-${fileIndex}`)
