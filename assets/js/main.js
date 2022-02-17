@@ -1145,19 +1145,10 @@ document.getElementById('export').addEventListener('click', async ev => {
     })
 
     html2canvas(document.body).then(content => {
-        const link = document.createElement('a')
-        const uri = content.toDataURL()
-        if (typeof(link.download) === 'string') {
-            link.href = uri
-            link.download = 'export.png'
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-        }
-        else {
-            window.open(uri)
-        }
-        hideForExport.innerHTML = ''
+        content.toBlob(blob => {
+            saveAs(blob, 'export.png')
+            hideForExport.innerHTML = ''
+        })
     })
 })
 
@@ -1224,18 +1215,6 @@ aggregate.addEventListener('drop', async ev => {
     }
 
     if (content) {
-        const file = new Blob([content], { type: 'text/html' })
-        const link = document.createElement('a')
-        const uri = URL.createObjectURL(file)
-        if (typeof(link.download) === 'string') {
-            link.href = uri
-            link.download = 'aggregated.csv'
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-        }
-        else {
-            window.open(uri)
-        }
+        saveAs(new Blob([content], { type: 'text/plain;charset=utf-8' }), 'aggregated.csv')
     }
 })
