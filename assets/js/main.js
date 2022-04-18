@@ -1,5 +1,5 @@
 Chart.defaults.animation = false
-Chart.defaults.events = ['click']
+Chart.defaults.events = []
 
 const values = [
     5,
@@ -90,6 +90,7 @@ const mainMetrics = [
 
 const navigation = document.getElementById('navigation')
 const instructions = document.getElementById('instructions')
+const readme = document.getElementById('readme')
 const aggregate = document.getElementById('aggregate')
 const results = document.getElementById('results')
 const benchmarks = document.getElementById('benchmarks')
@@ -150,6 +151,7 @@ const frameTimeOverlayChart = new Chart(document.getElementById('frame-time-over
         parsing: false,
         normalized: true,
         showLine: true,
+        events: ['click'],
         scales: {
             x: {
                 min: 0,
@@ -233,6 +235,7 @@ const percentileOverlayChart = new Chart(document.getElementById('percentile-ove
         datasets: []
     },
     options: {
+        events: ['click', 'mousemove'],
         scales: {
             x: {
                 title: {
@@ -257,6 +260,7 @@ const lowsOverlayChart = new Chart(document.getElementById('lows-overlay'), {
         datasets: []
     },
     options: {
+        events: ['click', 'mousemove'],
         scales: {
             x: {
                 title: {
@@ -714,6 +718,7 @@ function appendBench(bench) {
         options: {
             backgroundColor: 'rgb(0,191,255)',
             borderColor: 'rgb(0,191,255)',
+            events: ['mousemove'],
             scales: {
                 x: {
                     title: {
@@ -749,6 +754,7 @@ function appendBench(bench) {
         options: {
             backgroundColor: 'rgb(0,191,255)',
             borderColor: 'rgb(0,191,255)',
+            events: ['mousemove'],
             scales: {
                 x: {
                     title: {
@@ -1169,11 +1175,13 @@ fileDescriptions.addEventListener('click', ev => {
 })
 
 document.getElementById('show-readme').addEventListener('click', ev => {
-    document.getElementById('readme').removeAttribute('style')
+    readme.removeAttribute('style')
+    aggregate.style.display = 'none'
 })
 
 document.getElementById('show-aggregate').addEventListener('click', ev => {
     aggregate.removeAttribute('style')
+    readme.style.display = 'none'
 })
 
 aggregate.addEventListener('drop', async ev => {
