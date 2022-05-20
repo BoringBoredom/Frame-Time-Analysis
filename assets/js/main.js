@@ -43,7 +43,8 @@ const colors = {
     '1 % low': 'rgb(255,127,80)',
     '0.1 % low': 'rgb(255,165,0)',
     '0.01 % low': 'rgb(255,215,0)',
-    '0.005 % low': 'rgb(255,255,0)'
+    '0.005 % low': 'rgb(255,255,0)',
+    'STDEV': 'rgb(192,192,192)'
 }
 
 const colorList = [
@@ -85,9 +86,11 @@ const mainMetrics = [
     '1 % low',
     '0.1 % low',
     '0.01 % low',
-    '0.005 % low'
+    '0.005 % low',
+    'STDEV'
 ]
 
+const filePicker = document.getElementById('file-picker')
 const navigation = document.getElementById('navigation')
 const instructions = document.getElementById('instructions')
 const readme = document.getElementById('readme')
@@ -119,7 +122,23 @@ document.addEventListener('dragover', ev => {
 document.addEventListener('drop', async ev => {
     ev.stopPropagation()
     ev.preventDefault()
-    for (const file of ev.dataTransfer.files) {
+
+    await processFiles(ev.dataTransfer.files)
+})
+
+document.addEventListener('keydown', ev => {
+    if (ev.key === 'Alt') {
+        filePicker.click()
+    }
+})
+
+filePicker.addEventListener('change', async ev => {
+    await processFiles(filePicker.files)
+    filePicker.value = ''
+})
+
+async function processFiles(files) {
+    for (const file of files) {
         if (fileIndex >= 13) {
             break
         }
@@ -140,7 +159,7 @@ document.addEventListener('drop', async ev => {
             processJSON(fileName, index, JSON.parse(await file.text()))
         }
     }
-})
+}
 
 const frameTimeOverlayChart = new Chart(document.getElementById('frame-time-overlay'), {
     type: 'scatter',
@@ -372,8 +391,10 @@ function updateStats(bench, min= null, max= null, comparison= false) {
 
     const sortedFrameTimes = [...frameTimes].sort((a, b) => b - a)
 
+    const avg = 1000 / (benchmarkTime / frameCount)
+
     bench['Max'] = (1000 / sortedFrameTimes[frameCount - 1]).toFixed(2)
-    bench['Avg'] = (1000 / (benchmarkTime / frameCount)).toFixed(2)
+    bench['Avg'] = avg.toFixed(2)
     bench['Min'] = (1000 / sortedFrameTimes[0]).toFixed(2)
 
     for (const percentile of values) {
@@ -398,6 +419,8 @@ function updateStats(bench, min= null, max= null, comparison= false) {
             }
         }
     }
+
+    bench['STDEV'] = Math.sqrt(frameTimes.map(frameTime => (1000 / frameTime - avg) ** 2).reduce((previous, current) => previous + current) / (frameCount - 1)).toFixed(2)
 
     if (!comparison) {
         if (isOld) {
