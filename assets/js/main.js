@@ -420,7 +420,7 @@ function updateStats(bench, min= null, max= null, comparison= false) {
         }
     }
 
-    bench['STDEV'] = Math.sqrt(frameTimes.map(frameTime => (1000 / frameTime - avg) ** 2).reduce((previous, current) => previous + current) / (frameCount - 1)).toFixed(2)
+    bench['STDEV'] = Math.sqrt(frameTimes.reduce((previous, current) => previous + (1000 / current - avg) ** 2, 0) / (frameCount - 1)).toFixed(2)
 
     if (!comparison) {
         if (isOld) {
