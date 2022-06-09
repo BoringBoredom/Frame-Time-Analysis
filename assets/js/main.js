@@ -1217,8 +1217,9 @@ aggregate.addEventListener('drop', async ev => {
     for (const file of ev.dataTransfer.files) {
         if (file.name.endsWith('.csv')) {
             const text = await file.text()
+            const textArray = text.split('\n')
             if (first) {
-                for (const line of text.split('\n')) {
+                for (const line of textArray) {
                     const lowerCaseLine = line.toLowerCase()
                     if (lowerCaseLine.includes('cpuscheduler')) {
                         indicator = 'frametime'
@@ -1233,7 +1234,6 @@ aggregate.addEventListener('drop', async ev => {
                 first = false
             }
             else {
-                const textArray = text.split('\n')
                 for (const [index, line] of textArray.entries()) {
                     const lowerCaseLine = line.toLowerCase()
                     if (lowerCaseLine.includes(indicator)) {
@@ -1241,6 +1241,9 @@ aggregate.addEventListener('drop', async ev => {
                         break
                     }
                 }
+            }
+            if (textArray[textArray.length - 1] !== '') {
+                content += '\n'
             }
         }
     }
