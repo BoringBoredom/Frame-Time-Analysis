@@ -52,9 +52,9 @@ const initialColors = [
 const initialChartTypes = [
    { type: "Info", show: true },
    { type: "Scatter: FPS", show: true },
-   { type: "Scatter: ms", show: true },
-   { type: "Line: FPS", show: true },
-   { type: "Line: ms", show: true },
+   { type: "Scatter: ms", show: false },
+   { type: "Line: FPS", show: false },
+   { type: "Line: ms", show: false },
    { type: "L: Percentiles", show: true },
    { type: "L: Lows", show: true },
    { type: "Bar", show: true }
