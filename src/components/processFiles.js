@@ -387,7 +387,7 @@ export default async function processFiles(
       }
 
       if (
-         bench.data.percentiles[values[values.length - 1]] >
+         bench.data.percentiles[values[values.length - 1]] <
          extremes.min_percentile
       ) {
          extremes.min_percentile =
@@ -398,7 +398,7 @@ export default async function processFiles(
          extremes.max_percentile = bench.data.percentiles[values[0]];
       }
 
-      if (bench.data.lows[values[values.length - 1]] > extremes.min_low) {
+      if (bench.data.lows[values[values.length - 1]] < extremes.min_low) {
          extremes.min_low = bench.data.lows[values[values.length - 1]];
       }
 
