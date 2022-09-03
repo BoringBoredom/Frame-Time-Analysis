@@ -3,6 +3,7 @@ import Colors from "./components/Colors";
 import ChartTypes from "./components/ChartTypes";
 import Misc from "./components/Misc";
 import Charts from "./components/Charts";
+import ReadMe from "./components/ReadMe";
 
 import processFiles from "./components/processFiles";
 
@@ -17,6 +18,7 @@ import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import Tooltip from "@mui/material/Tooltip";
 import { useState, useEffect } from "react";
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
@@ -165,18 +167,22 @@ export default function App() {
             >
                {benches.benches.length > 0 && (
                   <>
-                     <IconButton
-                        color="primary"
-                        onClick={() => exportPage("file")}
-                     >
-                        <PhotoCamera fontSize="large" />
-                     </IconButton>
-                     <IconButton
-                        color="primary"
-                        onClick={() => exportPage("clipboard")}
-                     >
-                        <ContentCopyIcon fontSize="large" />
-                     </IconButton>
+                     <Tooltip title="Download as PNG">
+                        <IconButton
+                           color="primary"
+                           onClick={() => exportPage("file")}
+                        >
+                           <PhotoCamera fontSize="large" />
+                        </IconButton>
+                     </Tooltip>
+                     <Tooltip title="Export to clipboard">
+                        <IconButton
+                           color="primary"
+                           onClick={() => exportPage("clipboard")}
+                        >
+                           <ContentCopyIcon fontSize="large" />
+                        </IconButton>
+                     </Tooltip>
                   </>
                )}
                <IconButton color="primary" component="label">
@@ -209,6 +215,7 @@ export default function App() {
                         chartsPerRow={chartsPerRow}
                         setChartsPerRow={setChartsPerRow}
                      />
+                     <ReadMe />
                   </Stack>
                </Item>
             ) : (
