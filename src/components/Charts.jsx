@@ -39,34 +39,29 @@ ChartJS.register(
 );
 
 const mainMetrics = [
-   "Max",
-   "Avg",
-   "Min",
-   "1 %ile",
-   "0.1 %ile",
-   "0.01 %ile",
-   "0.005 %ile",
-   "1 % low",
-   "0.1 % low",
-   "0.01 % low",
-   "0.005 % low",
-   "STDEV"
+   { name: "Max", color: "rgb(0,80,0)" },
+   { name: "Avg", color: "rgb(0,130,0)" },
+   { name: "Min", color: "rgb(0,180,0)" },
+   { name: "1 %ile", color: "rgb(0,0,80)" },
+   { name: "0.1 %ile", color: "rgb(0,0,130)" },
+   { name: "0.01 %ile", color: "rgb(0,0,180)" },
+   { name: "0.005 %ile", color: "rgb(0,0,230)" },
+   { name: "1 % low", color: "rgb(80,0,0)" },
+   { name: "0.1 % low", color: "rgb(130,0,0)" },
+   { name: "0.01 % low", color: "rgb(180,0,0)" },
+   { name: "0.005 % low", color: "rgb(230,0,0)" },
+   { name: "STDEV", color: "rgb(130,130,130)" }
 ];
 
-const metricColors = {
-   Max: "rgb(0,80,0)",
-   Avg: "rgb(0,130,0)",
-   Min: "rgb(0,180,0)",
-   "1 %ile": "rgb(0,0,80)",
-   "0.1 %ile": "rgb(0,0,130)",
-   "0.01 %ile": "rgb(0,0,180)",
-   "0.005 %ile": "rgb(0,0,230)",
-   "1 % low": "rgb(80,0,0)",
-   "0.1 % low": "rgb(130,0,0)",
-   "0.01 % low": "rgb(180,0,0)",
-   "0.005 % low": "rgb(230,0,0)",
-   STDEV: "rgb(130,130,130)"
-};
+const segmentationUnits = [
+   { name: "<0.5ms", color: "rgb(0,100,0)" },
+   { name: "<1ms", color: "rgb(0,128,0)" },
+   { name: "<2ms", color: "rgb(50,205,50)" },
+   { name: "<4ms", color: "rgb(154,205,50)" },
+   { name: "<8ms", color: "rgb(255,255,0)" },
+   { name: "<16ms", color: "rgb(255,165,0)" },
+   { name: ">16ms", color: "rgb(255,0,0)" }
+];
 
 defaults.animation = false;
 defaults.events = [];
@@ -493,7 +488,60 @@ function Lows(props) {
    );
 }
 
-function BarFps(props) {
+function BarVariation(props) {
+   const { benches } = props;
+
+   const options = {
+      indexAxis: "y",
+      events: ["click", "mousemove"],
+      scales: {
+         x: {
+            min: 99,
+            stacked: true,
+            grid: {
+               display: false
+            },
+            title: {
+               display: true,
+               text: "%"
+            }
+         },
+         y: {
+            stacked: true,
+            grid: {
+               display: false
+            }
+         }
+      }
+   };
+
+   return (
+      <div>
+         <Bar
+            datasetIdKey="id"
+            options={options}
+            data={{
+               labels: benches.benches.map(
+                  (bench) => bench.comment || bench.file_name
+               ),
+               datasets: segmentationUnits.map((segmentationUnit, index) => ({
+                  id: index,
+                  label: segmentationUnit.name,
+                  data: benches.benches.map(
+                     (bench) =>
+                        (bench.segmentation[segmentationUnit.name] /
+                           bench.frame_count) *
+                        100
+                  ),
+                  backgroundColor: segmentationUnit.color
+               }))
+            }}
+         />
+      </div>
+   );
+}
+
+function BarDefault(props) {
    const { benches } = props;
 
    const options = {
@@ -539,19 +587,21 @@ function BarFps(props) {
                ),
                datasets: mainMetrics.map((metric, index) => ({
                   id: index,
-                  label: metric,
+                  label: metric.name,
                   data: benches.benches.map((bench) => {
-                     if (metric.includes("%ile")) {
+                     if (metric.name.includes("%ile")) {
                         return bench.data.percentiles[
-                           metric.split(" ")[0]
+                           metric.name.split(" ")[0]
                         ].toFixed(2);
-                     } else if (metric.includes("% low")) {
-                        return bench.data.lows[metric.split(" ")[0]].toFixed(2);
+                     } else if (metric.name.includes("% low")) {
+                        return bench.data.lows[
+                           metric.name.split(" ")[0]
+                        ].toFixed(2);
                      } else {
-                        return bench.data[metric].toFixed(2);
+                        return bench.data[metric.name].toFixed(2);
                      }
                   }),
-                  backgroundColor: metricColors[metric]
+                  backgroundColor: metric.color
                }))
             }}
          />
@@ -624,7 +674,14 @@ export default function Charts(props) {
                {chartTypes[7].show && (
                   <Grid item xs={1}>
                      <Item>
-                        <BarFps benches={benches} />
+                        <BarVariation benches={benches} />
+                     </Item>
+                  </Grid>
+               )}
+               {chartTypes[8].show && (
+                  <Grid item xs={1}>
+                     <Item>
+                        <BarDefault benches={benches} />
                      </Item>
                   </Grid>
                )}

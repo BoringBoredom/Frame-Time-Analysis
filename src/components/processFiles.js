@@ -44,7 +44,36 @@ function calculateMetrics(bench) {
       }
    }
 
+   const segmentation = {
+      "<0.5ms": 0,
+      "<1ms": 0,
+      "<2ms": 0,
+      "<4ms": 0,
+      "<8ms": 0,
+      "<16ms": 0,
+      ">16ms": 0
+   };
+
+   for (const present of sortedFrameTimes) {
+      if (present < 0.5) {
+         segmentation["<0.5ms"]++;
+      } else if (present < 1) {
+         segmentation["<1ms"]++;
+      } else if (present < 2) {
+         segmentation["<2ms"]++;
+      } else if (present < 4) {
+         segmentation["<4ms"]++;
+      } else if (present < 8) {
+         segmentation["<8ms"]++;
+      } else if (present < 16) {
+         segmentation["<16ms"]++;
+      } else if (present > 16) {
+         segmentation[">16ms"]++;
+      }
+   }
+
    bench.sorted_frame_times = sortedFrameTimes;
+   bench.segmentation = segmentation;
    bench.data = data;
    return bench;
 }
