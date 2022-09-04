@@ -493,7 +493,7 @@ function BarVariation(props) {
 
    const options = {
       indexAxis: "y",
-      events: ["click", "mousemove"],
+      events: ["mousemove"],
       scales: {
          x: {
             min: 99,
