@@ -72,7 +72,8 @@ const exportStyle = document.createElement("style");
 document.head.append(exportStyle);
 
 async function exportPage(type) {
-   const offset = document.getElementById("comment-0").offsetLeft;
+   const offset =
+      document.getElementsByClassName("hide-for-export")[0].offsetLeft;
 
    exportStyle.innerHTML = `
       .hide-for-export {
@@ -86,7 +87,10 @@ async function exportPage(type) {
 
    await new Promise((resolve, reject) => {
       const check = setInterval(() => {
-         if (offset !== document.getElementById("comment-0").offsetLeft) {
+         if (
+            offset !==
+            document.getElementsByClassName("hide-for-export")[0].offsetLeft
+         ) {
             clearInterval(check);
             return resolve();
          }

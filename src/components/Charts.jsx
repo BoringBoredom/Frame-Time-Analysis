@@ -497,6 +497,7 @@ function BarVariation(props) {
       scales: {
          x: {
             min: 99,
+            max: 100,
             stacked: true,
             grid: {
                display: false
