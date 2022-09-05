@@ -54,6 +54,14 @@ export default function ReadMe() {
                )
             </div>
             <div>
+               Panning and Zooming:
+               <br></br> - Pan: hold down left click and move mouse inside a
+               chart
+               <br></br> - Zoom: hold down CTRL and scroll inside a chart
+               <br></br> - disabled for both Scatter and both Line charts due to
+               performance reasons
+            </div>
+            <div>
                Report bugs{" "}
                <Link
                   href="https://github.com/BoringBoredom/Frame-Time-Analysis/issues"

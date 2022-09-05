@@ -59,7 +59,7 @@ const initialChartTypes = [
    { type: "Line: ms", show: false },
    { type: "L: Percentiles", show: true },
    { type: "L: Lows", show: true },
-   { type: "Bar: Variation", show: true },
+   { type: "Bar: Variation", show: false },
    { type: "Bar: Default Metrics", show: true }
 ];
 

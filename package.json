@@ -14,6 +14,7 @@
     "@testing-library/user-event": "^13.5.0",
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.1.0",
+    "chartjs-plugin-zoom": "^1.2.1",
     "file-saver": "^2.0.5",
     "gh-pages": "^4.0.0",
     "html2canvas": "^1.4.1",

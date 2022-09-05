@@ -27,6 +27,7 @@ import {
    Tooltip
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import zoomPlugin from "chartjs-plugin-zoom";
 
 ChartJS.register(
    CategoryScale,
@@ -35,7 +36,8 @@ ChartJS.register(
    LineElement,
    BarElement,
    Legend,
-   Tooltip
+   Tooltip,
+   zoomPlugin
 );
 
 const mainMetrics = [
@@ -414,6 +416,27 @@ function Percentiles(props) {
          line: {
             borderWidth: 2
          }
+      },
+      plugins: {
+         zoom: {
+            pan: {
+               enabled: true,
+               mode: "x"
+            },
+            zoom: {
+               wheel: {
+                  enabled: true,
+                  modifierKey: "ctrl"
+               },
+               mode: "x"
+            },
+            limits: {
+               x: {
+                  min: "original",
+                  max: "original"
+               }
+            }
+         }
       }
    };
 
@@ -465,6 +488,27 @@ function Lows(props) {
          line: {
             borderWidth: 2
          }
+      },
+      plugins: {
+         zoom: {
+            pan: {
+               enabled: true,
+               mode: "x"
+            },
+            zoom: {
+               wheel: {
+                  enabled: true,
+                  modifierKey: "ctrl"
+               },
+               mode: "x"
+            },
+            limits: {
+               x: {
+                  min: "original",
+                  max: "original"
+               }
+            }
+         }
       }
    };
 
@@ -511,6 +555,27 @@ function BarVariation(props) {
             stacked: true,
             grid: {
                display: false
+            }
+         }
+      },
+      plugins: {
+         zoom: {
+            pan: {
+               enabled: true,
+               mode: "x"
+            },
+            zoom: {
+               wheel: {
+                  enabled: true,
+                  modifierKey: "ctrl"
+               },
+               mode: "x"
+            },
+            limits: {
+               x: {
+                  min: 0,
+                  max: 100
+               }
             }
          }
       }
