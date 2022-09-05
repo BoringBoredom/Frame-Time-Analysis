@@ -97,7 +97,10 @@ async function exportPage(type) {
       }, 100);
    });
 
-   html2canvas(document.body, { scrollX: 0 }).then((canvas) => {
+   html2canvas(document.body, {
+      scrollY: 0,
+      height: document.body.scrollHeight
+   }).then((canvas) =>
       canvas.toBlob((blob) => {
          if (type === "file") {
             saveAs(blob, "export.png");
@@ -110,8 +113,8 @@ async function exportPage(type) {
          }
 
          exportStyle.innerHTML = "";
-      });
-   });
+      })
+   );
 }
 
 export default function App() {
