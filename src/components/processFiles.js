@@ -439,8 +439,8 @@ export default async function processFiles(
    extremes.max_benchmark_time = Math.ceil(extremes.max_benchmark_time);
    extremes.min_fps = Math.floor(extremes.min_fps);
    extremes.max_fps = Math.ceil(extremes.max_fps);
-   extremes.min_ms = Math.floor(extremes.min_ms);
-   extremes.max_ms = Math.ceil(extremes.max_ms);
+   extremes.min_ms = Math.floor(extremes.min_ms * 10) / 10;
+   extremes.max_ms = Math.ceil(extremes.max_ms * 10) / 10;
    extremes.min_percentile = Math.floor(extremes.min_percentile);
    extremes.max_percentile = Math.ceil(extremes.max_percentile);
    extremes.min_low = Math.floor(extremes.min_low);
