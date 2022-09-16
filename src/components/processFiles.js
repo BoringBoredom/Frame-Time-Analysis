@@ -329,7 +329,7 @@ export default async function processFiles(
       const fileName = file.name;
 
       if (fileName.endsWith(".csv")) {
-         const splitFile = (await file.text()).split("\n");
+         const splitFile = (await file.text()).replaceAll("\r", "").split("\n");
          let comment;
 
          for (const [index, row] of splitFile.entries()) {
