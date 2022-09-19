@@ -3,3 +3,15 @@
    padding: 16px;
    text-align: center;
 }
+
+.tooltip {
+   font-size: 18px;
+}
+
+#present-mode-table td {
+   padding: 8px;
+}
+
+#present-mode-table td:first-child {
+   white-space: nowrap;
+}

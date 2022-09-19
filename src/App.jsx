@@ -175,7 +175,9 @@ export default function App() {
             >
                {benches.benches.length > 0 && (
                   <>
-                     <Tooltip title="Download as PNG">
+                     <Tooltip
+                        title={<div className="tooltip">Download as PNG</div>}
+                     >
                         <IconButton
                            color="primary"
                            onClick={() => exportPage("file")}
@@ -183,7 +185,11 @@ export default function App() {
                            <PhotoCamera fontSize="large" />
                         </IconButton>
                      </Tooltip>
-                     <Tooltip title="Export to clipboard">
+                     <Tooltip
+                        title={
+                           <div className="tooltip">Export to clipboard</div>
+                        }
+                     >
                         <IconButton
                            color="primary"
                            onClick={() => exportPage("clipboard")}
@@ -193,18 +199,22 @@ export default function App() {
                      </Tooltip>
                   </>
                )}
-               <IconButton color="primary" component="label">
-                  <input
-                     hidden
-                     multiple
-                     accept=".csv, .json"
-                     type="file"
-                     onChange={(ev) =>
-                        processFiles(ev, benches, setBenches, values)
-                     }
-                  />
-                  <FileUploadIcon fontSize="large" />
-               </IconButton>
+               <Tooltip
+                  title={<div className="tooltip">Upload benchmarks</div>}
+               >
+                  <IconButton color="primary" component="label">
+                     <input
+                        hidden
+                        multiple
+                        accept=".csv, .json"
+                        type="file"
+                        onChange={(ev) =>
+                           processFiles(ev, benches, setBenches, values)
+                        }
+                     />
+                     <FileUploadIcon fontSize="large" />
+                  </IconButton>
+               </Tooltip>
             </Stack>
             {benches.benches.length < 1 ? (
                <Item>

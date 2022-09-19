@@ -10,6 +10,8 @@ import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
+import { styled } from "@mui/material/styles";
+import MuiTooltip, { tooltipClasses } from "@mui/material/Tooltip";
 
 import { useMemo } from "react";
 
@@ -76,6 +78,14 @@ defaults.normalized = true;
 let values;
 let labelValues;
 
+const CustomWidthTooltip = styled(({ className, ...props }) => (
+   <MuiTooltip {...props} classes={{ popper: className }} />
+))({
+   [`& .${tooltipClasses.tooltip}`]: {
+      minWidth: "90vw"
+   }
+});
+
 function Info(props) {
    const { benches, setBenches, colors } = props;
 
@@ -84,17 +94,128 @@ function Info(props) {
          <Table>
             <TableHead>
                <TableRow>
-                  <TableCell>File Name and Comment</TableCell>
+                  <MuiTooltip
+                     title={
+                        <div className="tooltip">
+                           Add //Comment=comment to the top of CSV files to add
+                           persistent comments or press the Pen button to add
+                           temporary comments
+                        </div>
+                     }
+                  >
+                     <TableCell>File Name and Comment</TableCell>
+                  </MuiTooltip>
                   <TableCell>Application</TableCell>
                   <TableCell>API</TableCell>
-                  <TableCell>Present Mode</TableCell>
+                  <CustomWidthTooltip
+                     title={
+                        <div className="tooltip">
+                           <table id="present-mode-table">
+                              <tbody>
+                                 <tr>
+                                    <td>Hardware: Legacy Flip</td>
+                                    <td>
+                                       Indicates the app took ownership of the
+                                       screen, and is swapping the displayed
+                                       surface every frame.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td>
+                                       Hardware: Legacy Copy to front buffer
+                                    </td>
+                                    <td>
+                                       Indicates the app took ownership of the
+                                       screen, and is copying new contents to an
+                                       already-on-screen surface every frame.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td>Hardware: Independent Flip</td>
+                                    <td>
+                                       Indicates the app does not have ownership
+                                       of the screen, but is still swapping the
+                                       displayed surface every frame.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td>Composed: Flip</td>
+                                    <td>
+                                       Indicates the app is windowed, is using
+                                       "flip model" swapchains, and is sharing
+                                       its surfaces with DWM to be composed.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td>Hardware Composed: Independent Flip</td>
+                                    <td>
+                                       Indicates the app is using "flip model"
+                                       swapchains, and has been granted a
+                                       hardware overlay plane.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td>Composed: Copy with GPU GDI</td>
+                                    <td>
+                                       Indicates the app is windowed, and is
+                                       copying contents into a surface that's
+                                       shared with GDI.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td>Composed: Copy with CPU GDI</td>
+                                    <td>
+                                       Indicates the app is windowed, and is
+                                       copying contents into a dedicated DirectX
+                                       window surface. GDI contents are stored
+                                       separately, and are composed together
+                                       with DX contents by the DWM.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td>Composed: Composition Atlas</td>
+                                    <td>Indicates use of DirectComposition.</td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     }
+                  >
+                     <TableCell>Present Mode</TableCell>
+                  </CustomWidthTooltip>
                   <TableCell>Duration (ms)</TableCell>
                   <TableCell>Sync Interval</TableCell>
                   <TableCell>Total Frames</TableCell>
                   <TableCell>Dropped Frames</TableCell>
-                  <TableCell>Allows Tearing</TableCell>
-                  <TableCell>DWM Notified</TableCell>
-                  <TableCell>Was Batched</TableCell>
+                  <MuiTooltip
+                     title={
+                        <div className="tooltip">
+                           Number of frames that were not V-Synced
+                        </div>
+                     }
+                  >
+                     <TableCell>Allows Tearing</TableCell>
+                  </MuiTooltip>
+                  <MuiTooltip
+                     title={
+                        <div className="tooltip">
+                           Number of frames the desktop compositor was notified
+                           about
+                        </div>
+                     }
+                  >
+                     <TableCell>DWM Notified</TableCell>
+                  </MuiTooltip>
+                  <MuiTooltip
+                     title={
+                        <div className="tooltip">
+                           Number of frames submitted by the driver on a
+                           different thread than the app
+                        </div>
+                     }
+                  >
+                     <TableCell>Was Batched</TableCell>
+                  </MuiTooltip>
                </TableRow>
             </TableHead>
             <TableBody>
