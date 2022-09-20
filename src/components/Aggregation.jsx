@@ -55,23 +55,26 @@ async function handleFileChange(ev) {
 
 export default function Aggregation() {
    return (
-      <Stack
-         direction="row"
-         spacing={1}
-         divider={<Divider orientation="vertical" flexItem />}
-         style={{ alignItems: "center" }}
-      >
-         <IconButton color="primary" component="label">
-            <input
-               type="file"
-               accept=".csv"
-               multiple
-               hidden
-               onChange={handleFileChange}
-            />
-            <FileUploadIcon fontSize="large" />
-         </IconButton>
-         <div>Merge multiple CSV files</div>
+      <Stack spacing={1} divider={<Divider />}>
+         <div className="title">Aggregate</div>
+         <Stack
+            direction="row"
+            spacing={1}
+            divider={<Divider orientation="vertical" flexItem />}
+            style={{ alignItems: "center" }}
+         >
+            <IconButton color="primary" component="label">
+               <input
+                  type="file"
+                  accept=".csv"
+                  multiple
+                  hidden
+                  onChange={handleFileChange}
+               />
+               <FileUploadIcon fontSize="large" />
+            </IconButton>
+            <div>Merge multiple CSV files</div>
+         </Stack>
       </Stack>
    );
 }

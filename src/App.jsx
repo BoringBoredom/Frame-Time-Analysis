@@ -2,6 +2,7 @@ import "./App.css";
 import Colors from "./components/Colors";
 import ChartTypes from "./components/ChartTypes";
 import Misc from "./components/Misc";
+import Aggregation from "./components/Aggregation";
 import Charts from "./components/Charts";
 import ReadMe from "./components/ReadMe";
 
@@ -233,6 +234,7 @@ export default function App() {
                         chartsPerRow={chartsPerRow}
                         setChartsPerRow={setChartsPerRow}
                      />
+                     <Aggregation />
                      <ReadMe />
                   </Stack>
                </Item>

@@ -1,5 +1,3 @@
-import Aggregation from "./Aggregation";
-
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
@@ -15,8 +13,7 @@ export default function Misc(props) {
    return (
       <Stack spacing={1} divider={<Divider />}>
          <div className="title">Miscellaneous</div>
-         <Stack spacing={1} divider={<Divider />}>
-            <Aggregation />
+         <Stack spacing={2}>
             <FormControl fullWidth size="small" style={{ marginTop: "16px" }}>
                <InputLabel id="charts-per-row">Charts Per Row</InputLabel>
                <Select
