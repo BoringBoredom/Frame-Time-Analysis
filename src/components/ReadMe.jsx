@@ -61,6 +61,7 @@ export default function ReadMe() {
                <br></br> - disabled for both Scatter and both Line charts due to
                performance reasons
             </div>
+            <div>Hiding individual benchmarks: click on them in the legend</div>
             <div>
                Report bugs{" "}
                <Link

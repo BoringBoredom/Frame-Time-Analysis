@@ -237,17 +237,26 @@ function Info(props) {
                            {bench.file_name}
                         </div>
                         <div style={{ display: "flex" }}>
-                           <IconButton
-                              className="hide-for-export"
-                              onClick={() =>
-                                 document
-                                    .getElementById(`comment-${index}`)
-                                    .focus()
+                           <MuiTooltip
+                              title={
+                                 <div className="tooltip">
+                                    Edit temporary comment (click anywhere else
+                                    to confirm)
+                                 </div>
                               }
-                              style={{ paddingLeft: 0 }}
                            >
-                              <EditIcon style={{ color: "black" }} />
-                           </IconButton>
+                              <IconButton
+                                 className="hide-for-export"
+                                 onClick={() =>
+                                    document
+                                       .getElementById(`comment-${index}`)
+                                       .focus()
+                                 }
+                                 style={{ paddingLeft: 0 }}
+                              >
+                                 <EditIcon style={{ color: "black" }} />
+                              </IconButton>
+                           </MuiTooltip>
                            <input
                               type="text"
                               id={`comment-${index}`}
