@@ -8,6 +8,10 @@ export default function ReadMe() {
          <div className="title">Read Me</div>
          <Stack spacing={3}>
             <div>
+               Press the Upload icon in the upper-right corner to upload
+               benchmarks.
+            </div>
+            <div>
                Supported formats:
                <br></br>- CSV (
                <Link
@@ -61,7 +65,9 @@ export default function ReadMe() {
                <br></br> - disabled for both Scatter and both Line charts due to
                performance reasons
             </div>
-            <div>Hiding individual benchmarks: click on them in the legend</div>
+            <div>
+               Click on individual benchmarks in the chart legends to hide them.
+            </div>
             <div>
                Report bugs{" "}
                <Link

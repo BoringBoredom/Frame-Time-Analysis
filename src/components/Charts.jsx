@@ -181,40 +181,31 @@ function Info(props) {
                         </div>
                      }
                   >
-                     <TableCell>Present Mode</TableCell>
+                     <TableCell>Presentation Mode</TableCell>
                   </CustomWidthTooltip>
                   <TableCell>Duration (ms)</TableCell>
                   <TableCell>Sync Interval</TableCell>
                   <TableCell>Total Frames</TableCell>
+                  <TableCell>VSynced Frames</TableCell>
                   <TableCell>Dropped Frames</TableCell>
                   <MuiTooltip
                      title={
                         <div className="tooltip">
-                           Number of frames that were not V-Synced
+                           Frames submitted by the driver on a different thread
+                           than the app
                         </div>
                      }
                   >
-                     <TableCell>Allows Tearing</TableCell>
+                     <TableCell>Batched Frames</TableCell>
                   </MuiTooltip>
                   <MuiTooltip
                      title={
                         <div className="tooltip">
-                           Number of frames the desktop compositor was notified
-                           about
+                           Frames the desktop compositor was notified about
                         </div>
                      }
                   >
                      <TableCell>DWM Notified</TableCell>
-                  </MuiTooltip>
-                  <MuiTooltip
-                     title={
-                        <div className="tooltip">
-                           Number of frames submitted by the driver on a
-                           different thread than the app
-                        </div>
-                     }
-                  >
-                     <TableCell>Was Batched</TableCell>
                   </MuiTooltip>
                </TableRow>
             </TableHead>
@@ -286,10 +277,14 @@ function Info(props) {
                      <TableCell>{bench.benchmark_time.toFixed(2)}</TableCell>
                      <TableCell>{bench.sync_intervals}</TableCell>
                      <TableCell>{bench.frame_count}</TableCell>
+                     <TableCell>
+                        {bench.allows_tearing !== undefined
+                           ? bench.frame_count - bench.allows_tearing
+                           : ""}
+                     </TableCell>
                      <TableCell>{bench.dropped}</TableCell>
-                     <TableCell>{bench.allows_tearing}</TableCell>
-                     <TableCell>{bench.dwm_notified}</TableCell>
                      <TableCell>{bench.was_batched}</TableCell>
+                     <TableCell>{bench.dwm_notified}</TableCell>
                   </TableRow>
                ))}
             </TableBody>

@@ -5,6 +5,7 @@ import Misc from "./components/Misc";
 import Aggregation from "./components/Aggregation";
 import Charts from "./components/Charts";
 import ReadMe from "./components/ReadMe";
+import PresentMon from "./components/PresentMon";
 
 import processFiles from "./components/processFiles";
 
@@ -236,6 +237,7 @@ export default function App() {
                      />
                      <Aggregation />
                      <ReadMe />
+                     <PresentMon />
                   </Stack>
                </Item>
             ) : (
