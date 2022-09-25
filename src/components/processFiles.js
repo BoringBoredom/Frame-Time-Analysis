@@ -276,18 +276,27 @@ function processPresentMon(fileName, data, infoRow, comment) {
    };
 }
 
-function processMangoHud(fileName, data, infoRow, comment) {
+function processNonPresentMon(
+   fileName,
+   data,
+   infoRow,
+   comment,
+   presentIndicator,
+   transformFunction
+) {
    const vanillaFrameTimes = [];
    const vanillaFps = [];
    const frameTimes = [];
    const fps = [];
 
-   const presentIndex = infoRow.indexOf("frametime");
+   const presentIndex = infoRow.indexOf(presentIndicator);
 
    let benchmarkTime = 0;
 
    for (const row of data) {
-      const present = parseFloat(row.split(",")[presentIndex]) / 1000;
+      const present = transformFunction(
+         parseFloat(row.split(",")[presentIndex])
+      );
 
       if (!isNaN(present)) {
          const fpsUnit = 1000 / present;
@@ -353,11 +362,27 @@ export default async function processFiles(
             } else if (splitRow.includes("cpuscheduler")) {
                newBenches.push(
                   calculateMetrics(
-                     processMangoHud(
+                     processNonPresentMon(
                         fileName,
                         splitFile.slice(index + 3),
                         splitFile[index + 2].toLowerCase().split(","),
-                        comment
+                        comment,
+                        "frametime",
+                        (value) => value / 1000
+                     )
+                  )
+               );
+               break;
+            } else if (splitRow.includes("99(%) fps")) {
+               newBenches.push(
+                  calculateMetrics(
+                     processNonPresentMon(
+                        fileName,
+                        splitFile.slice(index + 1),
+                        splitRow,
+                        comment,
+                        "fps",
+                        (value) => 1000 / value
                      )
                   )
                );
@@ -372,6 +397,8 @@ export default async function processFiles(
          );
       }
    }
+
+   ev.target.value = "";
 
    const extremes = {
       max_benchmark_time:
@@ -451,6 +478,4 @@ export default async function processFiles(
       previousBenches.benches = [...previousBenches.benches, ...newBenches];
       return { ...previousBenches };
    });
-
-   ev.target.value = "";
 }

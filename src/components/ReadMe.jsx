@@ -48,7 +48,7 @@ export default function ReadMe() {
                >
                   MangoHud
                </Link>
-               )<br></br>- JSON (
+               , GeForce Experience)<br></br>- JSON (
                <Link
                   href="https://github.com/CXWorld/CapFrameX"
                   target="_blank"
