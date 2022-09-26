@@ -12,6 +12,8 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import { styled } from "@mui/material/styles";
 import MuiTooltip, { tooltipClasses } from "@mui/material/Tooltip";
+import WarningIcon from "@mui/icons-material/Warning";
+import Link from "@mui/material/Link";
 
 import { useMemo } from "react";
 
@@ -273,7 +275,35 @@ function Info(props) {
                      </TableCell>
                      <TableCell>{bench.applications}</TableCell>
                      <TableCell>{bench.runtimes}</TableCell>
-                     <TableCell>{bench.present_modes}</TableCell>
+                     <TableCell>
+                        {bench.present_modes.includes(
+                           "Composed: Composition Atlas"
+                        ) ? (
+                           <MuiTooltip
+                              title={
+                                 <div className="tooltip">
+                                    <Link
+                                       href="https://github.com/GameTechDev/PresentMon/commit/65904264e57b8c635f1adb2d9dadfca9815400cc"
+                                       target="_blank"
+                                    >
+                                       Invalid results: Composition Atlas is
+                                       composing various windows together and is
+                                       not processed correctly.
+                                    </Link>
+                                 </div>
+                              }
+                           >
+                              <div>
+                                 {bench.present_modes}
+                                 <span style={{ marginLeft: "8px" }}>
+                                    <WarningIcon />
+                                 </span>
+                              </div>
+                           </MuiTooltip>
+                        ) : (
+                           bench.present_modes
+                        )}
+                     </TableCell>
                      <TableCell>{bench.benchmark_time.toFixed(2)}</TableCell>
                      <TableCell>{bench.sync_intervals}</TableCell>
                      <TableCell>{bench.frame_count}</TableCell>
