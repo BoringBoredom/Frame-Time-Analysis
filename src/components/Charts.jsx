@@ -294,8 +294,8 @@ function Info(props) {
                               }
                            >
                               <div>
-                                 {bench.present_modes}
-                                 <span style={{ marginLeft: "8px" }}>
+                                 {bench.present_modes}{" "}
+                                 <span>
                                     <WarningIcon />
                                  </span>
                               </div>
