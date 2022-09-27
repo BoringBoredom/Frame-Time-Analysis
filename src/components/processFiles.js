@@ -185,7 +185,14 @@ function processCfxJson(fileName, data) {
    return returnObject;
 }
 
-function processPresentMon(fileName, data, infoRow, comment) {
+function processCsv(
+   fileName,
+   data,
+   infoRow,
+   comment,
+   presentIndicator,
+   transformFunction
+) {
    const vanillaFrameTimes = [];
    const vanillaFps = [];
    const frameTimes = [];
@@ -196,7 +203,7 @@ function processPresentMon(fileName, data, infoRow, comment) {
    const presentModes = new Set();
    const syncIntervals = new Set();
 
-   const presentIndex = infoRow.indexOf("msbetweenpresents");
+   const presentIndex = infoRow.indexOf(presentIndicator);
    const droppedIndex = infoRow.indexOf("dropped");
    const allowsTearingIndex = infoRow.indexOf("allowstearing");
    const dwmNotifiedIndex = infoRow.indexOf("dwmnotified");
@@ -225,7 +232,7 @@ function processPresentMon(fileName, data, infoRow, comment) {
 
    for (const row of data) {
       const splitRow = row.split(",");
-      const present = parseFloat(splitRow[presentIndex]);
+      const present = transformFunction(parseFloat(splitRow[presentIndex]));
 
       if (!isNaN(present)) {
          const fpsUnit = 1000 / present;
@@ -276,51 +283,6 @@ function processPresentMon(fileName, data, infoRow, comment) {
    };
 }
 
-function processNonPresentMon(
-   fileName,
-   data,
-   infoRow,
-   comment,
-   presentIndicator,
-   transformFunction
-) {
-   const vanillaFrameTimes = [];
-   const vanillaFps = [];
-   const frameTimes = [];
-   const fps = [];
-
-   const presentIndex = infoRow.indexOf(presentIndicator);
-
-   let benchmarkTime = 0;
-
-   for (const row of data) {
-      const present = transformFunction(
-         parseFloat(row.split(",")[presentIndex])
-      );
-
-      if (!isNaN(present)) {
-         const fpsUnit = 1000 / present;
-         benchmarkTime += present;
-
-         vanillaFrameTimes.push(present);
-         vanillaFps.push(fpsUnit);
-         frameTimes.push({ x: benchmarkTime, y: present });
-         fps.push({ x: benchmarkTime, y: fpsUnit });
-      }
-   }
-
-   return {
-      file_name: fileName,
-      comment: comment,
-      vanilla_frame_times: vanillaFrameTimes,
-      vanilla_fps: vanillaFps,
-      frame_times: frameTimes,
-      fps: fps,
-      benchmark_time: benchmarkTime,
-      frame_count: frameTimes.length
-   };
-}
-
 export default async function processFiles(
    ev,
    benches,
@@ -350,11 +312,13 @@ export default async function processFiles(
             if (splitRow.includes("msbetweenpresents")) {
                newBenches.push(
                   calculateMetrics(
-                     processPresentMon(
+                     processCsv(
                         fileName,
                         splitFile.slice(index + 1),
                         splitRow,
-                        comment
+                        comment,
+                        "msbetweenpresents",
+                        (value) => value
                      )
                   )
                );
@@ -362,7 +326,7 @@ export default async function processFiles(
             } else if (splitRow.includes("cpuscheduler")) {
                newBenches.push(
                   calculateMetrics(
-                     processNonPresentMon(
+                     processCsv(
                         fileName,
                         splitFile.slice(index + 3),
                         splitFile[index + 2].toLowerCase().split(","),
@@ -376,7 +340,7 @@ export default async function processFiles(
             } else if (splitRow.includes("99(%) fps")) {
                newBenches.push(
                   calculateMetrics(
-                     processNonPresentMon(
+                     processCsv(
                         fileName,
                         splitFile.slice(index + 1),
                         splitRow,
