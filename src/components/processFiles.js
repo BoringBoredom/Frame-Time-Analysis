@@ -291,7 +291,7 @@ export default async function processFiles(
   const element = ev.target;
 
   for (const file of element.files) {
-    if (benches.benches.length >= 12) {
+    if (benches.benches.length + newBenches.length >= 12) {
       break;
     }
 
