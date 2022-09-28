@@ -5,31 +5,32 @@ import Switch from "@mui/material/Switch";
 import FormGroup from "@mui/material/FormGroup";
 
 export default function ChartTypes(props) {
-   const { chartTypes, setChartTypes } = props;
+  const { chartTypes, setChartTypes } = props;
 
-   return (
-      <Stack spacing={1} divider={<Divider />}>
-         <div className="title">Chart Types</div>
-         <FormGroup>
-            {chartTypes.map((chartType, index) => (
-               <FormControlLabel
-                  key={index}
-                  control={
-                     <Switch
-                        checked={chartType.show}
-                        onChange={() =>
-                           setChartTypes((previousChartTypes) => {
-                              previousChartTypes[index].show =
-                                 !previousChartTypes[index].show;
-                              return [...previousChartTypes];
-                           })
-                        }
-                     />
-                  }
-                  label={chartType.type}
-               />
-            ))}
-         </FormGroup>
-      </Stack>
-   );
+  return (
+    <Stack spacing={1} divider={<Divider />}>
+      <div className="title">Chart Types</div>
+      <FormGroup>
+        {chartTypes.map((chartType, index) => (
+          <FormControlLabel
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
+            control={
+              <Switch
+                checked={chartType.show}
+                onChange={() =>
+                  setChartTypes((previousChartTypes) => {
+                    const newChartTypes = structuredClone(previousChartTypes);
+                    newChartTypes[index].show = !newChartTypes[index].show;
+                    return newChartTypes;
+                  })
+                }
+              />
+            }
+            label={chartType.type}
+          />
+        ))}
+      </FormGroup>
+    </Stack>
+  );
 }

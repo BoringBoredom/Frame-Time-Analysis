@@ -5,76 +5,78 @@ import Stack from "@mui/material/Stack";
 import { saveAs } from "file-saver";
 
 async function handleFileChange(ev) {
-   let first = true;
-   let content = "";
-   let indicator;
+  let first = true;
+  let content = "";
+  let indicator;
 
-   for (const file of ev.target.files) {
-      const text = await file.text();
-      const textArray = text.split("\n");
+  const element = ev.target;
 
-      if (first) {
-         for (const line of textArray) {
-            const lowerCaseLine = line.toLowerCase();
+  for (const file of element.files) {
+    const text = await file.text();
+    const textArray = text.split("\n");
 
-            if (lowerCaseLine.includes("cpuscheduler")) {
-               indicator = "frametime";
-               break;
-            }
+    if (first) {
+      for (const line of textArray) {
+        const lowerCaseLine = line.toLowerCase();
 
-            if (lowerCaseLine.includes("msbetweenpresents")) {
-               indicator = "msbetweenpresents";
-               break;
-            }
-         }
+        if (lowerCaseLine.includes("cpuscheduler")) {
+          indicator = "frametime";
+          break;
+        }
 
-         content += text;
-         first = false;
-      } else {
-         for (const [index, line] of textArray.entries()) {
-            const lowerCaseLine = line.toLowerCase();
-
-            if (lowerCaseLine.includes(indicator)) {
-               content += textArray.slice(index + 1).join("\n");
-               break;
-            }
-         }
+        if (lowerCaseLine.includes("msbetweenpresents")) {
+          indicator = "msbetweenpresents";
+          break;
+        }
       }
 
-      if (textArray[textArray.length - 1] !== "") {
-         content += "\n";
+      content += text;
+      first = false;
+    } else {
+      for (const [index, line] of textArray.entries()) {
+        const lowerCaseLine = line.toLowerCase();
+
+        if (lowerCaseLine.includes(indicator)) {
+          content += textArray.slice(index + 1).join("\n");
+          break;
+        }
       }
-   }
+    }
 
-   if (content) {
-      saveAs(new Blob([content]), "aggregated.csv");
-   }
+    if (textArray[textArray.length - 1] !== "") {
+      content += "\n";
+    }
+  }
 
-   ev.target.value = "";
+  if (content) {
+    saveAs(new Blob([content]), "aggregated.csv");
+  }
+
+  element.value = "";
 }
 
 export default function Aggregation() {
-   return (
-      <Stack spacing={1} divider={<Divider />}>
-         <div className="title">Aggregate</div>
-         <Stack
-            direction="row"
-            spacing={1}
-            divider={<Divider orientation="vertical" flexItem />}
-            style={{ alignItems: "center" }}
-         >
-            <IconButton color="primary" component="label">
-               <input
-                  type="file"
-                  accept=".csv"
-                  multiple
-                  hidden
-                  onChange={handleFileChange}
-               />
-               <FileUploadIcon fontSize="large" />
-            </IconButton>
-            <div>Merge multiple CSV files</div>
-         </Stack>
+  return (
+    <Stack spacing={1} divider={<Divider />}>
+      <div className="title">Aggregate</div>
+      <Stack
+        direction="row"
+        spacing={1}
+        divider={<Divider orientation="vertical" flexItem />}
+        style={{ alignItems: "center" }}
+      >
+        <IconButton color="primary" component="label">
+          <input
+            type="file"
+            accept=".csv"
+            multiple
+            hidden
+            onChange={handleFileChange}
+          />
+          <FileUploadIcon fontSize="large" />
+        </IconButton>
+        <div>Merge multiple CSV files</div>
       </Stack>
-   );
+    </Stack>
+  );
 }
