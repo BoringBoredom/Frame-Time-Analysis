@@ -52,8 +52,6 @@ export default function ReadMe() {
           Panning and Zooming:
           <br />- Pan: hold down left click and move mouse inside a chart
           <br />- Zoom: hold down CTRL and scroll inside a chart
-          <br />- disabled for both Scatter and both Line charts due to
-          performance reasons
         </div>
         <div>
           Click on individual benchmarks in the chart legends to hide them.

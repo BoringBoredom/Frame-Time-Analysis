@@ -338,6 +338,27 @@ function ScatterFps(props) {
         radius: 2,
       },
     },
+    plugins: {
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: "x",
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+            modifierKey: "ctrl",
+          },
+          mode: "x",
+        },
+        limits: {
+          x: {
+            min: "original",
+            max: "original",
+          },
+        },
+      },
+    },
   };
 
   return (
@@ -389,6 +410,27 @@ function ScatterMs(props) {
     elements: {
       point: {
         radius: 2,
+      },
+    },
+    plugins: {
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: "x",
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+            modifierKey: "ctrl",
+          },
+          mode: "x",
+        },
+        limits: {
+          x: {
+            min: "original",
+            max: "original",
+          },
+        },
       },
     },
   };
@@ -448,6 +490,27 @@ function LineFps(props) {
         borderWidth: 2,
       },
     },
+    plugins: {
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: "x",
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+            modifierKey: "ctrl",
+          },
+          mode: "x",
+        },
+        limits: {
+          x: {
+            min: "original",
+            max: "original",
+          },
+        },
+      },
+    },
   };
 
   return (
@@ -503,6 +566,27 @@ function LineMs(props) {
       },
       line: {
         borderWidth: 2,
+      },
+    },
+    plugins: {
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: "x",
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+            modifierKey: "ctrl",
+          },
+          mode: "x",
+        },
+        limits: {
+          x: {
+            min: "original",
+            max: "original",
+          },
+        },
       },
     },
   };
