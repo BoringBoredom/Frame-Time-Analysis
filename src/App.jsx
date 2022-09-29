@@ -80,6 +80,10 @@ async function exportPage(type) {
     #watermark {
       display: block !important;
     }
+
+    .MuiTooltip-popper {
+      display: none !important;
+    }
   `;
 
   await new Promise((resolve) => {
