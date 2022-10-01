@@ -61,7 +61,7 @@ const initialChartTypes = [
 ];
 
 const values = [];
-for (let i = 1; i >= 0.005; i = parseFloat((i - 0.005).toFixed(3))) {
+for (let i = 5; i >= 0.005; i = parseFloat((i - 0.005).toFixed(3))) {
   values.push(i);
 }
 

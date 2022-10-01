@@ -617,9 +617,10 @@ function Percentiles(props) {
     events: ["click", "mousemove"],
     scales: {
       x: {
+        min: values.indexOf(1),
         title: {
           display: true,
-          text: "Percentiles",
+          text: "Percentile",
         },
       },
       y: {
@@ -627,8 +628,6 @@ function Percentiles(props) {
           display: true,
           text: "FPS",
         },
-        min: benches.extremes.min_percentile,
-        max: benches.extremes.max_percentile,
       },
     },
     elements: {
@@ -654,7 +653,7 @@ function Percentiles(props) {
         },
         limits: {
           x: {
-            min: "original",
+            min: 0,
             max: "original",
           },
         },
@@ -689,9 +688,10 @@ function Lows(props) {
     events: ["click", "mousemove"],
     scales: {
       x: {
+        min: values.indexOf(1),
         title: {
           display: true,
-          text: "% lows",
+          text: "% Low",
         },
       },
       y: {
@@ -699,8 +699,6 @@ function Lows(props) {
           display: true,
           text: "FPS",
         },
-        min: benches.extremes.min_low,
-        max: benches.extremes.max_low,
       },
     },
     elements: {
@@ -726,7 +724,7 @@ function Lows(props) {
         },
         limits: {
           x: {
-            min: "original",
+            min: 0,
             max: "original",
           },
         },
@@ -796,7 +794,7 @@ function BarVariation(props) {
         limits: {
           x: {
             min: 0,
-            max: 100,
+            max: "original",
           },
         },
       },

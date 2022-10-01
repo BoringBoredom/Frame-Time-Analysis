@@ -1,6 +1,4 @@
-let values;
-
-function calculateMetrics(bench) {
+function calculateMetrics(bench, values) {
   const benchmarkTime = bench.benchmark_time;
   const frameCount = bench.frame_count;
 
@@ -279,13 +277,7 @@ function processCsv(
   };
 }
 
-export default async function processFiles(
-  ev,
-  benches,
-  setBenches,
-  passedValues
-) {
-  values = passedValues;
+export default async function processFiles(ev, benches, setBenches, values) {
   const newBenches = [];
 
   const element = ev.target;
@@ -317,7 +309,8 @@ export default async function processFiles(
                 comment,
                 "msbetweenpresents",
                 (value) => value
-              )
+              ),
+              values
             )
           );
           break;
@@ -331,7 +324,8 @@ export default async function processFiles(
                 comment,
                 "frametime",
                 (value) => value / 1000
-              )
+              ),
+              values
             )
           );
           break;
@@ -345,7 +339,8 @@ export default async function processFiles(
                 comment,
                 "fps",
                 (value) => 1000 / value
-              )
+              ),
+              values
             )
           );
           break;
@@ -354,7 +349,8 @@ export default async function processFiles(
     } else if (fileName.endsWith(".json")) {
       newBenches.push(
         calculateMetrics(
-          processCfxJson(fileName, JSON.parse(await file.text()))
+          processCfxJson(fileName, JSON.parse(await file.text())),
+          values
         )
       );
     }
@@ -371,16 +367,6 @@ export default async function processFiles(
       benches.extremes.min_ms ??
       newBenches[0].sorted_frame_times[newBenches[0].frame_count - 1],
     max_ms: benches.extremes.max_ms ?? newBenches[0].sorted_frame_times[0],
-    min_percentile:
-      benches.extremes.min_percentile ??
-      newBenches[0].data.percentiles[values[values.length - 1]],
-    max_percentile:
-      benches.extremes.max_percentile ??
-      newBenches[0].data.percentiles[values[0]],
-    min_low:
-      benches.extremes.min_low ??
-      newBenches[0].data.lows[values[values.length - 1]],
-    max_low: benches.extremes.max_low ?? newBenches[0].data.lows[values[0]],
   };
 
   for (const bench of newBenches) {
@@ -403,26 +389,6 @@ export default async function processFiles(
     if (bench.sorted_frame_times[0] > extremes.max_ms) {
       [extremes.max_ms] = bench.sorted_frame_times;
     }
-
-    if (
-      bench.data.percentiles[values[values.length - 1]] <
-      extremes.min_percentile
-    ) {
-      extremes.min_percentile =
-        bench.data.percentiles[values[values.length - 1]];
-    }
-
-    if (bench.data.percentiles[values[0]] > extremes.max_percentile) {
-      extremes.max_percentile = bench.data.percentiles[values[0]];
-    }
-
-    if (bench.data.lows[values[values.length - 1]] < extremes.min_low) {
-      extremes.min_low = bench.data.lows[values[values.length - 1]];
-    }
-
-    if (bench.data.lows[values[0]] > extremes.max_low) {
-      extremes.max_low = bench.data.lows[values[0]];
-    }
   }
 
   extremes.max_benchmark_time = Math.ceil(extremes.max_benchmark_time);
@@ -430,10 +396,6 @@ export default async function processFiles(
   extremes.max_fps = Math.ceil(extremes.max_fps);
   extremes.min_ms = Math.floor(extremes.min_ms * 10) / 10;
   extremes.max_ms = Math.ceil(extremes.max_ms * 10) / 10;
-  extremes.min_percentile = Math.floor(extremes.min_percentile);
-  extremes.max_percentile = Math.ceil(extremes.max_percentile);
-  extremes.min_low = Math.floor(extremes.min_low);
-  extremes.max_low = Math.ceil(extremes.max_low);
 
   setBenches((previousBenches) => {
     const newState = structuredClone(previousBenches);
