@@ -282,18 +282,30 @@ function Info({ benches, setBenches, colors }) {
               <TableCell>{bench.applications}</TableCell>
               <TableCell>{bench.runtimes}</TableCell>
               <TableCell>
-                {bench.present_modes.includes("Composed: Composition Atlas") ? (
+                {bench.present_modes.includes(
+                  "Hardware: Legacy Copy to front buffer"
+                ) ||
+                bench.present_modes.includes("Composed: Flip") ||
+                bench.present_modes.includes("Composed: Copy with GPU GDI") ||
+                bench.present_modes.includes("Composed: Copy with CPU GDI") ||
+                bench.present_modes.includes("Composed: Composition Atlas") ? (
                   <MuiTooltip
                     title={
                       <div className="tooltip">
-                        <Link
-                          href="https://github.com/GameTechDev/PresentMon/commit/65904264e57b8c635f1adb2d9dadfca9815400cc"
-                          target="_blank"
-                        >
-                          Invalid results: Composition Atlas is composing
-                          various windows together and is not processed
-                          correctly.
-                        </Link>
+                        {bench.present_modes.includes(
+                          "Composed: Composition Atlas"
+                        ) ? (
+                          <Link
+                            href="https://github.com/GameTechDev/PresentMon/commit/65904264e57b8c635f1adb2d9dadfca9815400cc"
+                            target="_blank"
+                          >
+                            Invalid results: Composition Atlas is composing
+                            various windows together and is not processed
+                            correctly.
+                          </Link>
+                        ) : (
+                          "inefficient Presentation Mode"
+                        )}
                       </div>
                     }
                   >
