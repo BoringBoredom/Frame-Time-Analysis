@@ -82,6 +82,29 @@ const CustomWidthTooltip = styled(({ className, ...props }) => (
   <MuiTooltip {...props} classes={{ popper: className }} />
 ))({ [`& .${tooltipClasses.tooltip}`]: { minWidth: "90vw" } });
 
+function VSyncedFrames({ allowsTearing, frameCount }) {
+  if (allowsTearing === undefined) {
+    return "";
+  }
+
+  const vSyncedFrames = frameCount - allowsTearing;
+
+  return vSyncedFrames !== 0 ? (
+    <MuiTooltip
+      title={<div className="tooltip">VSync heavily increases latency</div>}
+    >
+      <div>
+        {vSyncedFrames}{" "}
+        <span>
+          <WarningIcon />
+        </span>
+      </div>
+    </MuiTooltip>
+  ) : (
+    vSyncedFrames
+  );
+}
+
 function Info({ benches, setBenches, colors }) {
   return (
     <TableContainer component={Paper}>
@@ -289,9 +312,10 @@ function Info({ benches, setBenches, colors }) {
               <TableCell>{bench.sync_intervals}</TableCell>
               <TableCell>{bench.frame_count}</TableCell>
               <TableCell>
-                {bench.allows_tearing !== undefined
-                  ? bench.frame_count - bench.allows_tearing
-                  : ""}
+                <VSyncedFrames
+                  allowsTearing={bench.allows_tearing}
+                  frameCount={bench.frame_count}
+                />
               </TableCell>
               <TableCell>{bench.dropped}</TableCell>
               <TableCell>{bench.was_batched}</TableCell>
