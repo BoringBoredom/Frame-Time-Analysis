@@ -7,9 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function Misc(props) {
-  const { chartsPerRow, setChartsPerRow } = props;
-
+export default function Misc({ chartsPerRow, setChartsPerRow }) {
   return (
     <Stack spacing={1} divider={<Divider />}>
       <div className="title">Miscellaneous</div>

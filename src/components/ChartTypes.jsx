@@ -4,9 +4,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import FormGroup from "@mui/material/FormGroup";
 
-export default function ChartTypes(props) {
-  const { chartTypes, setChartTypes } = props;
-
+export default function ChartTypes({ chartTypes, setChartTypes }) {
   return (
     <Stack spacing={1} divider={<Divider />}>
       <div className="title">Chart Types</div>

@@ -5,9 +5,8 @@ import Stack from "@mui/material/Stack";
 import { useState } from "react";
 import { SketchPicker } from "react-color";
 
-function ColorPicker(props) {
+function ColorPicker({ color, index, setColors }) {
   const [display, setDisplay] = useState(false);
-  const { color, index, setColors } = props;
 
   return (
     <>
@@ -48,9 +47,7 @@ function ColorPicker(props) {
   );
 }
 
-export default function Colors(props) {
-  const { colors, setColors } = props;
-
+export default function Colors({ colors, setColors }) {
   return (
     <Stack spacing={1} divider={<Divider />}>
       <div className="title">Colors</div>

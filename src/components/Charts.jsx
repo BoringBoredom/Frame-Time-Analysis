@@ -82,9 +82,7 @@ const CustomWidthTooltip = styled(({ className, ...props }) => (
   <MuiTooltip {...props} classes={{ popper: className }} />
 ))({ [`& .${tooltipClasses.tooltip}`]: { minWidth: "90vw" } });
 
-function Info(props) {
-  const { benches, setBenches, colors } = props;
-
+function Info({ benches, setBenches, colors }) {
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -306,9 +304,7 @@ function Info(props) {
   );
 }
 
-function ScatterFps(props) {
-  const { benches, colors } = props;
-
+function ScatterFps({ benches, colors }) {
   const options = {
     parsing: false,
     events: ["click"],
@@ -380,9 +376,7 @@ function ScatterFps(props) {
   );
 }
 
-function ScatterMs(props) {
-  const { benches, colors } = props;
-
+function ScatterMs({ benches, colors }) {
   const options = {
     parsing: false,
     events: ["click"],
@@ -454,9 +448,7 @@ function ScatterMs(props) {
   );
 }
 
-function LineFps(props) {
-  const { benches, colors } = props;
-
+function LineFps({ benches, colors }) {
   const options = {
     parsing: false,
     showLine: true,
@@ -532,9 +524,7 @@ function LineFps(props) {
   );
 }
 
-function LineMs(props) {
-  const { benches, colors } = props;
-
+function LineMs({ benches, colors }) {
   const options = {
     parsing: false,
     showLine: true,
@@ -610,9 +600,7 @@ function LineMs(props) {
   );
 }
 
-function Percentiles(props) {
-  const { benches, colors, values, labelValues } = props;
-
+function Percentiles({ benches, colors, values, labelValues }) {
   const options = {
     events: ["click", "mousemove"],
     scales: {
@@ -681,9 +669,7 @@ function Percentiles(props) {
   );
 }
 
-function Lows(props) {
-  const { benches, colors, values, labelValues } = props;
-
+function Lows({ benches, colors, values, labelValues }) {
   const options = {
     events: ["click", "mousemove"],
     scales: {
@@ -752,9 +738,7 @@ function Lows(props) {
   );
 }
 
-function BarVariation(props) {
-  const { benches } = props;
-
+function BarVariation({ benches }) {
   const options = {
     indexAxis: "y",
     events: ["mousemove"],
@@ -827,9 +811,7 @@ function BarVariation(props) {
   );
 }
 
-function BarDefault(props) {
-  const { benches } = props;
-
+function BarDefault({ benches }) {
   const options = {
     indexAxis: "y",
     maintainAspectRatio: false,
@@ -895,14 +877,19 @@ function BarDefault(props) {
   );
 }
 
-export default function Charts(props) {
-  const { values } = props;
+export default function Charts({
+  values,
+  benches,
+  setBenches,
+  colors,
+  chartTypes,
+  chartsPerRow,
+  Item,
+}) {
   const labelValues = useMemo(
     () => values.map((value) => value.toFixed(3)),
     [values]
   );
-
-  const { benches, setBenches, colors, chartTypes, chartsPerRow, Item } = props;
 
   return (
     <Stack spacing={1}>
