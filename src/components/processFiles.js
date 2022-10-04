@@ -1,4 +1,4 @@
-function calculateMetrics(bench, values) {
+function calculateMetrics(bench, values, variationThresholds) {
   const benchmarkTime = bench.benchmark_time;
   const frameCount = bench.frame_count;
 
@@ -39,38 +39,32 @@ function calculateMetrics(bench, values) {
     }
   }
 
-  const segmentation = {
-    "<0.5ms": 0,
-    "<1ms": 0,
-    "<2ms": 0,
-    "<4ms": 0,
-    "<8ms": 0,
-    "<16ms": 0,
-    ">16ms": 0,
-  };
+  const thresholds = new Array(variationThresholds.length).fill(0);
 
   for (const present of sortedFrameTimes) {
-    if (present < 0.5) {
-      segmentation["<0.5ms"] += 1;
-    } else if (present < 1) {
-      segmentation["<1ms"] += 1;
-    } else if (present < 2) {
-      segmentation["<2ms"] += 1;
-    } else if (present < 4) {
-      segmentation["<4ms"] += 1;
-    } else if (present < 8) {
-      segmentation["<8ms"] += 1;
-    } else if (present < 16) {
-      segmentation["<16ms"] += 1;
-    } else if (present > 16) {
-      segmentation[">16ms"] += 1;
+    for (const [index, variationThreshold] of variationThresholds.entries()) {
+      if (
+        variationThreshold.type === "<" &&
+        present < variationThreshold.threshold
+      ) {
+        thresholds[index] += 1;
+        break;
+      }
+
+      if (
+        variationThreshold.type === ">=" &&
+        present >= variationThreshold.threshold
+      ) {
+        thresholds[index] += 1;
+        break;
+      }
     }
   }
 
   return {
     ...bench,
     sorted_frame_times: sortedFrameTimes,
-    segmentation,
+    thresholds,
     data,
   };
 }
@@ -277,7 +271,13 @@ function processCsv(
   };
 }
 
-export default async function processFiles(ev, benches, setBenches, values) {
+export default async function processFiles(
+  ev,
+  benches,
+  setBenches,
+  values,
+  variationThresholds
+) {
   const newBenches = [];
 
   const element = ev.target;
@@ -310,7 +310,8 @@ export default async function processFiles(ev, benches, setBenches, values) {
                 "msbetweenpresents",
                 (value) => value
               ),
-              values
+              values,
+              variationThresholds
             )
           );
           break;
@@ -325,7 +326,8 @@ export default async function processFiles(ev, benches, setBenches, values) {
                 "frametime",
                 (value) => value / 1000
               ),
-              values
+              values,
+              variationThresholds
             )
           );
           break;
@@ -340,7 +342,8 @@ export default async function processFiles(ev, benches, setBenches, values) {
                 "fps",
                 (value) => 1000 / value
               ),
-              values
+              values,
+              variationThresholds
             )
           );
           break;
@@ -350,7 +353,8 @@ export default async function processFiles(ev, benches, setBenches, values) {
       newBenches.push(
         calculateMetrics(
           processCfxJson(fileName, JSON.parse(await file.text())),
-          values
+          values,
+          variationThresholds
         )
       );
     }

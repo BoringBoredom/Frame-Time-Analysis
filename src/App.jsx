@@ -1,5 +1,4 @@
 import "./App.css";
-
 import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
@@ -14,7 +13,6 @@ import Tooltip from "@mui/material/Tooltip";
 import { useState, useEffect } from "react";
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
-
 import Colors from "./components/Colors";
 import ChartTypes from "./components/ChartTypes";
 import Misc from "./components/Misc";
@@ -58,6 +56,15 @@ const initialChartTypes = [
   { type: "L: Lows", show: true },
   { type: "Bar: Variation", show: false },
   { type: "Bar: Default Metrics", show: true },
+];
+
+const initialVariationThresholds = [
+  { type: "<", threshold: 2, color: "rgb(0,80,0)" },
+  { type: "<", threshold: 3, color: "rgb(34,139,34)" },
+  { type: "<", threshold: 4, color: "rgb(154,205,50)" },
+  { type: "<", threshold: 5, color: "rgb(255,255,0)" },
+  { type: "<", threshold: 6, color: "rgb(255,165,0)" },
+  { type: ">=", threshold: 6, color: "rgb(255,0,0)" },
 ];
 
 const values = [];
@@ -138,14 +145,11 @@ export default function App() {
     const storedChartTypes =
       JSON.parse(localStorage.getItem("chart_types")) ?? [];
 
-    if (storedChartTypes.length !== initialChartTypes.length) {
+    if (
+      JSON.stringify(storedChartTypes.map((entry) => entry.type)) !==
+      JSON.stringify(initialChartTypes.map((entry) => entry.type))
+    ) {
       return initialChartTypes;
-    }
-
-    for (let i = 0, len = storedChartTypes.length; i < len; i += 1) {
-      if (storedChartTypes[i].type !== initialChartTypes[i].type) {
-        return initialChartTypes;
-      }
     }
 
     return storedChartTypes;
@@ -163,6 +167,28 @@ export default function App() {
   useEffect(
     () => localStorage.setItem("charts_per_row", chartsPerRow),
     [chartsPerRow]
+  );
+
+  const [variationThresholds, setVariationThresholds] = useState(() => {
+    const storedVariationThresholds =
+      JSON.parse(localStorage.getItem("variation_thresholds")) ?? [];
+
+    if (
+      JSON.stringify(storedVariationThresholds.map((entry) => entry.color)) !==
+      JSON.stringify(initialVariationThresholds.map((entry) => entry.color))
+    ) {
+      return initialVariationThresholds;
+    }
+    return storedVariationThresholds;
+  });
+
+  useEffect(
+    () =>
+      localStorage.setItem(
+        "variation_thresholds",
+        JSON.stringify(variationThresholds)
+      ),
+    [variationThresholds]
   );
 
   return (
@@ -200,7 +226,15 @@ export default function App() {
                 multiple
                 accept=".csv, .json"
                 type="file"
-                onChange={(ev) => processFiles(ev, benches, setBenches, values)}
+                onChange={(ev) =>
+                  processFiles(
+                    ev,
+                    benches,
+                    setBenches,
+                    values,
+                    variationThresholds
+                  )
+                }
               />
               <FileUploadIcon fontSize="large" />
             </IconButton>
@@ -218,6 +252,8 @@ export default function App() {
               <ChartTypes
                 chartTypes={chartTypes}
                 setChartTypes={setChartTypes}
+                variationThresholds={variationThresholds}
+                setVariationThresholds={setVariationThresholds}
               />
               <Misc
                 chartsPerRow={chartsPerRow}
@@ -235,6 +271,7 @@ export default function App() {
               setBenches={setBenches}
               colors={colors}
               chartTypes={chartTypes}
+              variationThresholds={variationThresholds}
               chartsPerRow={chartsPerRow}
               Item={Item}
               values={values}

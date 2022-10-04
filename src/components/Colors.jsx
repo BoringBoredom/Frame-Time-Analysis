@@ -2,11 +2,22 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
+import Popover from "@mui/material/Popover";
 import { useState } from "react";
 import { SketchPicker } from "react-color";
 
 function ColorPicker({ color, index, setColors }) {
-  const [display, setDisplay] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
 
   return (
     <>
@@ -17,32 +28,29 @@ function ColorPicker({ color, index, setColors }) {
           height: "32px",
           background: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
         }}
-        onClick={() => setDisplay(true)}
+        onClick={handleClick}
       />
-      {display && (
-        <div style={{ position: "absolute", zIndex: "2" }}>
-          <div
-            style={{
-              position: "fixed",
-              top: "0px",
-              right: "0px",
-              bottom: "0px",
-              left: "0px",
-            }}
-            onClick={() => setDisplay(false)}
-          />
-          <SketchPicker
-            color={color}
-            onChange={(ev) =>
-              setColors((previousColors) => {
-                const newColors = structuredClone(previousColors);
-                newColors[index] = ev.rgb;
-                return newColors;
-              })
-            }
-          />
-        </div>
-      )}
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transitionDuration={1}
+      >
+        <SketchPicker
+          color={color}
+          onChange={(ev) =>
+            setColors((previousColors) => {
+              const newColors = structuredClone(previousColors);
+              newColors[index] = ev.rgb;
+              return newColors;
+            })
+          }
+        />
+      </Popover>
     </>
   );
 }

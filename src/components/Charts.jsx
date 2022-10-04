@@ -14,9 +14,7 @@ import { styled } from "@mui/material/styles";
 import MuiTooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import WarningIcon from "@mui/icons-material/Warning";
 import Link from "@mui/material/Link";
-
 import { useMemo } from "react";
-
 import { Line, Scatter, Bar } from "react-chartjs-2";
 // import 'chart.js/auto';
 import {
@@ -57,16 +55,6 @@ const mainMetrics = [
   { name: "0.01 % low", color: "rgb(180,0,0)" },
   { name: "0.005 % low", color: "rgb(230,0,0)" },
   { name: "STDEV", color: "rgb(130,130,130)" },
-];
-
-const segmentationUnits = [
-  { name: "<0.5ms", color: "rgb(0,100,0)" },
-  { name: "<1ms", color: "rgb(0,128,0)" },
-  { name: "<2ms", color: "rgb(50,205,50)" },
-  { name: "<4ms", color: "rgb(154,205,50)" },
-  { name: "<8ms", color: "rgb(255,255,0)" },
-  { name: "<16ms", color: "rgb(255,165,0)" },
-  { name: ">16ms", color: "rgb(255,0,0)" },
 ];
 
 defaults.animation = false;
@@ -774,7 +762,7 @@ function Lows({ benches, colors, values, labelValues }) {
   );
 }
 
-function BarVariation({ benches }) {
+function BarVariation({ benches, variationThresholds }) {
   const options = {
     indexAxis: "y",
     events: ["mousemove"],
@@ -830,16 +818,13 @@ function BarVariation({ benches }) {
           labels: benches.benches.map(
             (bench) => bench.comment || bench.file_name
           ),
-          datasets: segmentationUnits.map((segmentationUnit, index) => ({
+          datasets: variationThresholds.map((variationThreshold, index) => ({
             id: index,
-            label: segmentationUnit.name,
+            label: `${variationThreshold.type}${variationThreshold.threshold}ms`,
             data: benches.benches.map(
-              (bench) =>
-                (bench.segmentation[segmentationUnit.name] /
-                  bench.frame_count) *
-                100
+              (bench) => (bench.thresholds[index] / bench.frame_count) * 100
             ),
-            backgroundColor: segmentationUnit.color,
+            backgroundColor: variationThreshold.color,
           })),
         }}
       />
@@ -919,6 +904,7 @@ export default function Charts({
   setBenches,
   colors,
   chartTypes,
+  variationThresholds,
   chartsPerRow,
   Item,
 }) {
@@ -991,7 +977,10 @@ export default function Charts({
           {chartTypes[7].show && (
             <Grid item xs={1}>
               <Item>
-                <BarVariation benches={benches} />
+                <BarVariation
+                  benches={benches}
+                  variationThresholds={variationThresholds}
+                />
               </Item>
             </Grid>
           )}
