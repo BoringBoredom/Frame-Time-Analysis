@@ -249,10 +249,12 @@ function Info({ benches, setBenches, colors }) {
                     id={`comment-${index}`}
                     defaultValue={bench.comment || ""}
                     onBlur={(ev) =>
-                      setBenches((previousBenches) => {
-                        const newBenches = structuredClone(previousBenches);
-                        newBenches.benches[index].comment = ev.target.value;
-                        return newBenches;
+                      setBenches((previousState) => {
+                        const newState = JSON.parse(
+                          JSON.stringify(previousState)
+                        );
+                        newState.benches[index].comment = ev.target.value;
+                        return newState;
                       })
                     }
                     style={{

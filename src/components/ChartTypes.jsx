@@ -70,7 +70,9 @@ function Wrapper({
                       value > variationThresholds[index - 1].threshold)
                   ) {
                     setVariationThresholds((previousState) => {
-                      const newState = structuredClone(previousState);
+                      const newState = JSON.parse(
+                        JSON.stringify(previousState)
+                      );
                       newState[index].threshold = value;
                       newState[variationThresholds.length - 1].threshold =
                         newState[variationThresholds.length - 2].threshold;
@@ -112,10 +114,12 @@ export default function ChartTypes({
                 <Switch
                   checked={chartType.show}
                   onChange={() =>
-                    setChartTypes((previousChartTypes) => {
-                      const newChartTypes = structuredClone(previousChartTypes);
-                      newChartTypes[index].show = !newChartTypes[index].show;
-                      return newChartTypes;
+                    setChartTypes((previousState) => {
+                      const newState = JSON.parse(
+                        JSON.stringify(previousState)
+                      );
+                      newState[index].show = !newState[index].show;
+                      return newState;
                     })
                   }
                 />

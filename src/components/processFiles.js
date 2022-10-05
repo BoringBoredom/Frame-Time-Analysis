@@ -401,8 +401,8 @@ export default async function processFiles(
   extremes.min_ms = Math.floor(extremes.min_ms * 10) / 10;
   extremes.max_ms = Math.ceil(extremes.max_ms * 10) / 10;
 
-  setBenches((previousBenches) => {
-    const newState = structuredClone(previousBenches);
+  setBenches((previousState) => {
+    const newState = JSON.parse(JSON.stringify(previousState));
     newState.extremes = extremes;
     newState.benches = [...newState.benches, ...newBenches];
     return newState;

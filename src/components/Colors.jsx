@@ -43,10 +43,10 @@ function ColorPicker({ color, index, setColors }) {
         <SketchPicker
           color={color}
           onChange={(ev) =>
-            setColors((previousColors) => {
-              const newColors = structuredClone(previousColors);
-              newColors[index] = ev.rgb;
-              return newColors;
+            setColors((previousState) => {
+              const newState = JSON.parse(JSON.stringify(previousState));
+              newState[index] = ev.rgb;
+              return newState;
             })
           }
         />
