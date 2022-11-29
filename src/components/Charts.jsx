@@ -874,7 +874,9 @@ function BarDefault({ benches }) {
         plugins={[ChartDataLabels]}
         data={{
           labels: benches.benches.map(
-            (bench) => bench.comment || bench.file_name
+            (bench) =>
+              (bench.comment && bench.comment.match(/.{1,8}/g)) ||
+              bench.file_name.match(/.{1,8}/g)
           ),
           datasets: mainMetrics.map((metric, index) => ({
             id: index,

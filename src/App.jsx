@@ -1,6 +1,5 @@
 import "./App.css";
-import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import { styled } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
@@ -21,8 +20,6 @@ import Charts from "./components/Charts";
 import ReadMe from "./components/ReadMe";
 import PresentMon from "./components/PresentMon";
 import processFiles from "./components/processFiles";
-
-const darkTheme = createTheme({ palette: { mode: "dark" } });
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -192,98 +189,93 @@ export default function App() {
   );
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <Container maxWidth={false} style={{ padding: 0 }}>
-        <Stack
-          className="hide-for-export"
-          spacing={1}
-          style={{ position: "fixed", top: 0, right: 0 }}
-        >
-          {benches.benches.length > 0 && (
-            <>
-              <Tooltip title={<div className="tooltip">Download as PNG</div>}>
-                <IconButton color="primary" onClick={() => exportPage("file")}>
-                  <PhotoCamera fontSize="large" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip
-                title={<div className="tooltip">Export to clipboard</div>}
-              >
-                <IconButton
-                  color="primary"
-                  onClick={() => exportPage("clipboard")}
-                >
-                  <ContentCopyIcon fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </>
-          )}
-          <Tooltip title={<div className="tooltip">Upload benchmarks</div>}>
-            <IconButton color="primary" component="label">
-              <input
-                hidden
-                multiple
-                accept=".csv, .json"
-                type="file"
-                onChange={(ev) =>
-                  processFiles(
-                    ev,
-                    benches,
-                    setBenches,
-                    values,
-                    variationThresholds
-                  )
-                }
-              />
-              <FileUploadIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-        {benches.benches.length < 1 ? (
-          <Item>
-            <Stack
-              direction="row"
-              spacing={2}
-              justifyContent="center"
-              divider={<Divider orientation="vertical" flexItem />}
-            >
-              <Colors colors={colors} setColors={setColors} />
-              <ChartTypes
-                chartTypes={chartTypes}
-                setChartTypes={setChartTypes}
-                variationThresholds={variationThresholds}
-                setVariationThresholds={setVariationThresholds}
-              />
-              <Misc
-                chartsPerRow={chartsPerRow}
-                setChartsPerRow={setChartsPerRow}
-              />
-              <Aggregation />
-              <ReadMe />
-              <PresentMon />
-            </Stack>
-          </Item>
-        ) : (
+    <Container maxWidth={false} style={{ padding: 0 }}>
+      <Stack
+        className="hide-for-export"
+        spacing={1}
+        style={{ position: "fixed", top: 0, right: 0 }}
+      >
+        {benches.benches.length > 0 && (
           <>
-            <Charts
-              benches={benches}
-              setBenches={setBenches}
-              colors={colors}
-              chartTypes={chartTypes}
-              variationThresholds={variationThresholds}
-              chartsPerRow={chartsPerRow}
-              Item={Item}
-              values={values}
-            />
-            <div id="watermark" style={{ display: "none" }}>
-              <div style={{ textAlign: "center", padding: "16px" }}>
-                https://boringboredom.github.io/Frame-Time-Analysis/
-              </div>
-            </div>
+            <Tooltip title={<div className="tooltip">Download as PNG</div>}>
+              <IconButton color="primary" onClick={() => exportPage("file")}>
+                <PhotoCamera fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={<div className="tooltip">Export to clipboard</div>}>
+              <IconButton
+                color="primary"
+                onClick={() => exportPage("clipboard")}
+              >
+                <ContentCopyIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
           </>
         )}
-      </Container>
-    </ThemeProvider>
+        <Tooltip title={<div className="tooltip">Upload benchmarks</div>}>
+          <IconButton color="primary" component="label">
+            <input
+              hidden
+              multiple
+              accept=".csv, .json"
+              type="file"
+              onChange={(ev) =>
+                processFiles(
+                  ev,
+                  benches,
+                  setBenches,
+                  values,
+                  variationThresholds
+                )
+              }
+            />
+            <FileUploadIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+      {benches.benches.length < 1 ? (
+        <Item>
+          <Stack
+            direction="row"
+            spacing={2}
+            justifyContent="center"
+            divider={<Divider orientation="vertical" flexItem />}
+          >
+            <Colors colors={colors} setColors={setColors} />
+            <ChartTypes
+              chartTypes={chartTypes}
+              setChartTypes={setChartTypes}
+              variationThresholds={variationThresholds}
+              setVariationThresholds={setVariationThresholds}
+            />
+            <Misc
+              chartsPerRow={chartsPerRow}
+              setChartsPerRow={setChartsPerRow}
+            />
+            <Aggregation />
+            <ReadMe />
+            <PresentMon />
+          </Stack>
+        </Item>
+      ) : (
+        <>
+          <Charts
+            benches={benches}
+            setBenches={setBenches}
+            colors={colors}
+            chartTypes={chartTypes}
+            variationThresholds={variationThresholds}
+            chartsPerRow={chartsPerRow}
+            Item={Item}
+            values={values}
+          />
+          <div id="watermark" style={{ display: "none" }}>
+            <div style={{ textAlign: "center", padding: "16px" }}>
+              https://boringboredom.github.io/Frame-Time-Analysis/
+            </div>
+          </div>
+        </>
+      )}
+    </Container>
   );
 }
