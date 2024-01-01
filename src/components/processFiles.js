@@ -324,7 +324,7 @@ export default async function processFiles(
                 splitFile[index + 2].toLowerCase().split(","),
                 comment,
                 "frametime",
-                (value) => value / 1000
+                (value) => value
               ),
               values,
               variationThresholds
