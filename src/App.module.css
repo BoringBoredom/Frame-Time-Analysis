@@ -1,0 +1,8 @@
+.padding > div {
+  padding: 1rem;
+}
+.watermark {
+  text-align: center;
+  padding: 1rem;
+  display: none;
+}

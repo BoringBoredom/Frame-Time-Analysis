@@ -1,63 +1,45 @@
 {
   "name": "frame-time-analysis",
-  "version": "0.1.0",
-  "homepage": "https://boringboredom.github.io/Frame-Time-Analysis",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
   "dependencies": {
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.0",
-    "@fontsource/roboto": "^4.5.8",
-    "@mui/icons-material": "^5.10.2",
-    "@mui/material": "^5.10.2",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "chart.js": "^3.9.1",
-    "chartjs-plugin-datalabels": "^2.1.0",
-    "chartjs-plugin-zoom": "^1.2.1",
+    "@mantine/core": "^7.4.1",
+    "@mantine/hooks": "^7.4.1",
+    "@tabler/icons-react": "^2.47.0",
+    "chart.js": "^4.4.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "chartjs-plugin-zoom": "^2.0.1",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
+    "immer": "^10.0.3",
     "react": "^18.2.0",
-    "react-chartjs-2": "^4.3.1",
-    "react-color": "^2.19.3",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "use-immer": "^0.9.0"
   },
   "devDependencies": {
-    "eslint": "^8.25.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.6.1",
-    "eslint-plugin-react": "^7.31.10",
+    "@types/file-saver": "^2.0.7",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^7",
+    "@typescript-eslint/parser": "^7",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "gh-pages": "^4.0.0"
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.33",
+    "postcss-preset-mantine": "^1.12.3",
+    "postcss-simple-vars": "^7.0.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vite-plugin-checker": "^0.6.2"
   }
 }
