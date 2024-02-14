@@ -1,14 +1,13 @@
 import { Stack, Divider, Switch, Text } from "@mantine/core";
 import s from "./ChartTypes.module.css";
-import type { Updater } from "use-immer";
 import type { initialChartTypes } from "../static";
 
 export default function ChartTypes({
   chartTypes,
-  updateChartTypes,
+  setChartTypes,
 }: {
   chartTypes: typeof initialChartTypes;
-  updateChartTypes: Updater<typeof initialChartTypes>;
+  setChartTypes: React.Dispatch<React.SetStateAction<typeof initialChartTypes>>;
 }) {
   return (
     <Stack className={s.width}>
@@ -23,8 +22,10 @@ export default function ChartTypes({
           checked={chartType.show}
           label={chartType.name}
           onChange={(ev) => {
-            updateChartTypes((draft) => {
-              draft[index].show = ev.target.checked;
+            setChartTypes((previousChartTypes) => {
+              const newChartTypes = structuredClone(previousChartTypes);
+              newChartTypes[index].show = ev.target.checked;
+              return newChartTypes;
             });
           }}
         />

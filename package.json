@@ -18,11 +18,9 @@
     "chartjs-plugin-zoom": "^2.0.1",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
-    "immer": "^10.0.3",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.2.0",
-    "use-immer": "^0.9.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",

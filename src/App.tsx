@@ -1,5 +1,4 @@
 import React from "react";
-import { useImmer } from "use-immer";
 import { Group } from "@mantine/core";
 import s from "./App.module.css";
 import type { Data } from "./components/types";
@@ -12,7 +11,7 @@ import Colors from "./components/Colors/Colors";
 import DataDisplay from "./components/DataDisplay/DataDisplay";
 
 export default function App() {
-  const [data, updateData] = useImmer<Data>({
+  const [data, setData] = React.useState<Data>({
     benches: [],
     extremes: {
       duration: { min: 0, max: 0 },
@@ -21,7 +20,7 @@ export default function App() {
     },
   });
 
-  const [colors, updateColors] = useImmer<typeof initialColors>(() => {
+  const [colors, setColors] = React.useState<typeof initialColors>(() => {
     const storedColorsValue = localStorage.getItem("colors");
 
     let storedColors: typeof initialColors = [];
@@ -38,7 +37,7 @@ export default function App() {
     localStorage.setItem("colors", JSON.stringify(colors));
   }, [colors]);
 
-  const [chartTypes, updateChartTypes] = useImmer<typeof initialChartTypes>(
+  const [chartTypes, setChartTypes] = React.useState<typeof initialChartTypes>(
     () => {
       const storedChartTypesValue = localStorage.getItem("chartTypes");
 
@@ -81,7 +80,7 @@ export default function App() {
 
   return (
     <>
-      <Buttons data={data} updateData={updateData} />
+      <Buttons data={data} setData={setData} />
       {data.benches.length < 1 ? (
         <Group
           align="start"
@@ -89,11 +88,8 @@ export default function App() {
           preventGrowOverflow={false}
           className={s.padding}
         >
-          <Colors colors={colors} updateColors={updateColors} />
-          <ChartTypes
-            chartTypes={chartTypes}
-            updateChartTypes={updateChartTypes}
-          />
+          <Colors colors={colors} setColors={setColors} />
+          <ChartTypes chartTypes={chartTypes} setChartTypes={setChartTypes} />
           <Misc chartsPerRow={chartsPerRow} setChartsPerRow={setChartsPerRow} />
           <ReadMe />
         </Group>

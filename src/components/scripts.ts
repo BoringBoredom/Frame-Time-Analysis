@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Bench, Data, Ms, Fps, Cfx } from "./types";
-import type { Updater } from "use-immer";
 import { percentileList } from "./static";
 
 function calculateMetrics(
@@ -231,7 +230,7 @@ function processCsv(
 export async function handleUpload(
   files: File[],
   data: Data,
-  updateData: Updater<Data>,
+  setData: React.Dispatch<React.SetStateAction<Data>>,
   resetRef: React.RefObject<() => void>
 ) {
   const newBenches: Bench[] = [];
@@ -294,37 +293,37 @@ export async function handleUpload(
     }
   }
 
-  updateData((draft) => {
-    for (const bench of newBenches) {
-      draft.extremes.duration.max = Math.max(
-        draft.extremes.duration.max,
-        bench.duration
-      );
-      draft.extremes.fps.min = Math.min(
-        draft.extremes.fps.min,
-        bench.fps.metrics.min
-      );
-      draft.extremes.fps.max = Math.max(
-        draft.extremes.fps.max,
-        bench.fps.metrics.max
-      );
-      draft.extremes.ms.min = Math.min(
-        draft.extremes.ms.min,
-        bench.ms.sorted[bench.frames - 1]
-      );
-      draft.extremes.ms.max = Math.max(
-        draft.extremes.ms.max,
-        bench.ms.sorted[0]
-      );
+  const extremes = {
+    duration: {
+      min: data.extremes.duration.min,
+      max: data.extremes.duration.max,
+    },
+    fps: { min: data.extremes.fps.min, max: data.extremes.fps.max },
+    ms: { min: data.extremes.ms.min, max: data.extremes.ms.max },
+  };
 
-      draft.extremes.duration.max = Math.ceil(draft.extremes.duration.max);
-      draft.extremes.fps.min = Math.floor(draft.extremes.fps.min);
-      draft.extremes.fps.max = Math.ceil(draft.extremes.fps.max);
-      draft.extremes.ms.min = Math.floor(draft.extremes.ms.min * 10) / 10;
-      draft.extremes.ms.max = Math.ceil(draft.extremes.ms.max * 10) / 10;
-    }
+  for (const bench of newBenches) {
+    extremes.duration.max = Math.max(extremes.duration.max, bench.duration);
+    extremes.fps.min = Math.min(extremes.fps.min, bench.fps.metrics.min);
+    extremes.fps.max = Math.max(extremes.fps.max, bench.fps.metrics.max);
+    extremes.ms.min = Math.min(
+      extremes.ms.min,
+      bench.ms.sorted[bench.frames - 1]
+    );
+    extremes.ms.max = Math.max(extremes.ms.max, bench.ms.sorted[0]);
+  }
 
-    draft.benches = draft.benches.concat(newBenches);
+  extremes.duration.max = Math.ceil(extremes.duration.max);
+  extremes.fps.min = Math.floor(extremes.fps.min);
+  extremes.fps.max = Math.ceil(extremes.fps.max);
+  extremes.ms.min = Math.floor(extremes.ms.min * 10) / 10;
+  extremes.ms.max = Math.ceil(extremes.ms.max * 10) / 10;
+
+  setData((previousData) => {
+    const newData = structuredClone(previousData);
+    newData.extremes = extremes;
+    newData.benches = newData.benches.concat(newBenches);
+    return newData;
   });
 
   resetRef.current?.();

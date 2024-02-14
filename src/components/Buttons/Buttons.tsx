@@ -4,7 +4,6 @@ import { handleUpload } from "../scripts";
 import s from "./Buttons.module.css";
 import React from "react";
 import type { Data } from "../types";
-import type { Updater } from "use-immer";
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
 
@@ -37,10 +36,10 @@ function exportPage(download: boolean) {
 
 export default function Buttons({
   data,
-  updateData,
+  setData,
 }: {
   data: Data;
-  updateData: Updater<Data>;
+  setData: React.Dispatch<React.SetStateAction<Data>>;
 }) {
   const resetRef = React.useRef<() => void>(null);
 
@@ -50,26 +49,26 @@ export default function Buttons({
         <>
           <Tooltip label="Export as PNG">
             <ActionIcon
-              size="lg"
+              size="2rem"
               variant="subtle"
               color="gray"
               onClick={() => {
                 exportPage(true);
               }}
             >
-              <IconDownload size="lg" />
+              <IconDownload size="2rem" />
             </ActionIcon>
           </Tooltip>
           <Tooltip label="Export to clipboard">
             <ActionIcon
-              size="lg"
+              size="2rem"
               variant="subtle"
               color="gray"
               onClick={() => {
                 exportPage(false);
               }}
             >
-              <IconCopy size="lg" />
+              <IconCopy size="2rem" />
             </ActionIcon>
           </Tooltip>
         </>
@@ -79,13 +78,13 @@ export default function Buttons({
         multiple
         accept=".csv,.json"
         onChange={(files) => {
-          void handleUpload(files, data, updateData, resetRef);
+          void handleUpload(files, data, setData, resetRef);
         }}
       >
         {(props) => (
           <Tooltip label="Upload files (max. 14)">
-            <ActionIcon size="lg" variant="subtle" color="gray" {...props}>
-              <IconUpload size="lg" />
+            <ActionIcon size="2rem" variant="subtle" color="gray" {...props}>
+              <IconUpload size="2rem" />
             </ActionIcon>
           </Tooltip>
         )}

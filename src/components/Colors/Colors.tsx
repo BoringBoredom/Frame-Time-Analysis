@@ -1,14 +1,13 @@
 import { Stack, Divider, ColorInput, Text } from "@mantine/core";
 import s from "./Colors.module.css";
-import type { Updater } from "use-immer";
 import { initialColors } from "../static";
 
 export default function colors({
   colors,
-  updateColors,
+  setColors,
 }: {
   colors: typeof initialColors;
-  updateColors: Updater<typeof initialColors>;
+  setColors: React.Dispatch<React.SetStateAction<typeof initialColors>>;
 }) {
   return (
     <Stack className={s.width}>
@@ -23,8 +22,10 @@ export default function colors({
           withEyeDropper={false}
           swatches={initialColors}
           onChangeEnd={(value) => {
-            updateColors((draft) => {
-              draft[index] = value;
+            setColors((previousColors) => {
+              const newColors = structuredClone(previousColors);
+              newColors[index] = value;
+              return newColors;
             });
           }}
         />
