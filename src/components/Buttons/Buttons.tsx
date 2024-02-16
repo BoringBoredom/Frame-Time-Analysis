@@ -10,13 +10,14 @@ import { saveAs } from "file-saver";
 function exportPage(download: boolean) {
   void html2canvas(document.body, {
     scrollY: 0,
+    height: document.body.scrollHeight,
     ignoreElements: (element) =>
       element.id === "button-container" ||
       element.tagName === "NOSCRIPT" ||
       !!element.getAttribute("data-portal"),
     onclone: (document) =>
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      (document.getElementById("watermark")!.style.display = "block"),
+      (document.getElementById("watermark")!.style.visibility = "visible"),
   }).then((canvas) => {
     canvas.toBlob((blob) => {
       if (blob) {

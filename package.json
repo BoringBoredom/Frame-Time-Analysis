@@ -12,6 +12,7 @@
   "dependencies": {
     "@mantine/core": "^7.4.1",
     "@mantine/hooks": "^7.4.1",
+    "@sgratzl/chartjs-chart-boxplot": "^4.2.8",
     "@tabler/icons-react": "^2.47.0",
     "chart.js": "^4.4.1",
     "chartjs-plugin-datalabels": "^2.2.0",

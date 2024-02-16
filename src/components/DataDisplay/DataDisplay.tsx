@@ -8,9 +8,13 @@ import {
 import type { Data } from "../types";
 import { IconAlertTriangleFilled } from "@tabler/icons-react";
 import s from "./DataDisplay.module.css";
-import { Scatter, Bar } from "react-chartjs-2";
+import { Scatter, Bar, Chart } from "react-chartjs-2";
 import zoomPlugin from "chartjs-plugin-zoom";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import {
+  BoxPlotController,
+  BoxAndWiskers,
+} from "@sgratzl/chartjs-chart-boxplot";
 //import "chart.js/auto";
 import {
   Chart as ChartJS,
@@ -22,6 +26,7 @@ import {
   BarElement,
   Legend,
   Tooltip as ChartTooltip,
+  Title,
 } from "chart.js";
 ChartJS.register(
   CategoryScale,
@@ -31,7 +36,10 @@ ChartJS.register(
   BarElement,
   Legend,
   ChartTooltip,
-  zoomPlugin
+  zoomPlugin,
+  BoxPlotController,
+  BoxAndWiskers,
+  Title
 );
 
 defaults.animation = false;
@@ -408,7 +416,7 @@ function ScatterFps({
   );
 }
 
-function Percentiles({
+function PercentilesFps({
   data,
   colors,
 }: {
@@ -483,7 +491,13 @@ function Percentiles({
   );
 }
 
-function Lows({ data, colors }: { data: Data; colors: typeof initialColors }) {
+function LowsFps({
+  data,
+  colors,
+}: {
+  data: Data;
+  colors: typeof initialColors;
+}) {
   return (
     <div>
       <Scatter
@@ -552,7 +566,61 @@ function Lows({ data, colors }: { data: Data; colors: typeof initialColors }) {
   );
 }
 
-function BarDefault({ data }: { data: Data }) {
+function BoxFps({
+  data,
+  colors,
+}: {
+  data: Data;
+  colors: typeof initialColors;
+}) {
+  return (
+    <div>
+      <Chart
+        type="boxplot"
+        datasetIdKey="index"
+        data={{
+          labels: [["Min", "-STDEV", "Avg", "+STDEV", "Max"]],
+          datasets: data.benches.map((bench, index) => ({
+            index,
+            label: bench.name,
+            data: [
+              {
+                min: bench.fps.metrics.min,
+                q1: bench.fps.metrics.avg - bench.fps.metrics.stdev,
+                median: bench.fps.metrics.avg,
+                q3: bench.fps.metrics.avg + bench.fps.metrics.stdev,
+                max: bench.fps.metrics.max,
+              },
+            ],
+            backgroundColor: colors[index],
+            borderColor: colors[index],
+            borderWidth: 3,
+            medianColor: "rgb(150,150,150)",
+          })),
+        }}
+        options={{
+          indexAxis: "y",
+          events: [],
+          coef: 0,
+          scales: {
+            x: { min: data.extremes.fps.min, max: data.extremes.fps.max },
+            y: { ticks: { display: false } },
+          },
+          plugins: {
+            title: {
+              display: true,
+              position: "bottom",
+              text: "Min, -STDEV, Avg, +STDEV, Max",
+              font: { weight: 400 },
+            },
+          },
+        }}
+      />
+    </div>
+  );
+}
+
+function BarFps({ data }: { data: Data }) {
   return (
     <div style={{ minHeight: `${16 + data.benches.length * 35}vh` }}>
       <Bar
@@ -639,9 +707,10 @@ export default function DataDisplay({
         {chartTypes[2].show && <LineFps data={data} colors={colors} />}
         {chartTypes[3].show && <ScatterMs data={data} colors={colors} />}
         {chartTypes[4].show && <ScatterFps data={data} colors={colors} />}
-        {chartTypes[5].show && <Percentiles data={data} colors={colors} />}
-        {chartTypes[6].show && <Lows data={data} colors={colors} />}
-        {chartTypes[7].show && <BarDefault data={data} />}
+        {chartTypes[5].show && <PercentilesFps data={data} colors={colors} />}
+        {chartTypes[6].show && <LowsFps data={data} colors={colors} />}
+        {chartTypes[7].show && <BoxFps data={data} colors={colors} />}
+        {chartTypes[8].show && <BarFps data={data} />}
       </SimpleGrid>
     </Stack>
   );

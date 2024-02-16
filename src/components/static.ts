@@ -21,13 +21,13 @@ export const percentileList = [
 export const initialColors = [
   "#800000",
   "#008000",
-  "#000080",
+  "#00bfff",
   "#ff8c00",
+  "#ff00ff",
   "#deb887",
   "#00ff00",
-  "#00bfff",
   "#0000ff",
-  "#ff00ff",
+  "#000080",
   "#2f4f4f",
   "#ffff54",
   "#dda0dd",
@@ -43,7 +43,8 @@ export const initialChartTypes = [
   { name: "Scatter: FPS (slow)", show: false },
   { name: "Line: Percentiles", show: true },
   { name: "Line: Lows", show: true },
-  { name: "Bar: Default Metrics", show: true },
+  { name: "Box: FPS", show: true },
+  { name: "Bar: FPS", show: true },
 ];
 
 export const barMetrics = [
