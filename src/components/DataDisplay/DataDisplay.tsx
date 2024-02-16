@@ -620,7 +620,13 @@ function BoxFps({
   );
 }
 
-function BarFps({ data }: { data: Data }) {
+function BarFps({
+  data,
+  colors,
+}: {
+  data: Data;
+  colors: typeof initialColors;
+}) {
   return (
     <div style={{ minHeight: `${16 + data.benches.length * 35}vh` }}>
       <Bar
@@ -669,6 +675,9 @@ function BarFps({ data }: { data: Data }) {
               grid: {
                 display: false,
               },
+              ticks: {
+                color: colors,
+              },
             },
           },
           plugins: {
@@ -710,7 +719,7 @@ export default function DataDisplay({
         {chartTypes[5].show && <PercentilesFps data={data} colors={colors} />}
         {chartTypes[6].show && <LowsFps data={data} colors={colors} />}
         {chartTypes[7].show && <BoxFps data={data} colors={colors} />}
-        {chartTypes[8].show && <BarFps data={data} />}
+        {chartTypes[8].show && <BarFps data={data} colors={colors} />}
       </SimpleGrid>
     </Stack>
   );
