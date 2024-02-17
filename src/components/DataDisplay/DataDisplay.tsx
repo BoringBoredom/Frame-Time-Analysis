@@ -26,7 +26,6 @@ import {
   BarElement,
   Legend,
   Tooltip as ChartTooltip,
-  Title,
 } from "chart.js";
 ChartJS.register(
   CategoryScale,
@@ -38,8 +37,7 @@ ChartJS.register(
   ChartTooltip,
   zoomPlugin,
   BoxPlotController,
-  BoxAndWiskers,
-  Title
+  BoxAndWiskers
 );
 
 defaults.animation = false;
@@ -603,16 +601,15 @@ function BoxFps({
           events: [],
           coef: 0,
           scales: {
-            x: { min: data.extremes.fps.min, max: data.extremes.fps.max },
-            y: { ticks: { display: false } },
-          },
-          plugins: {
-            title: {
-              display: true,
-              position: "bottom",
-              text: "Min, -STDEV, Avg, +STDEV, Max",
-              font: { weight: 400 },
+            x: {
+              title: {
+                display: true,
+                text: "FPS (Min, -STDEV, Avg, +STDEV, Max)",
+              },
+              min: data.extremes.fps.min,
+              max: data.extremes.fps.max,
             },
+            y: { ticks: { display: false } },
           },
         }}
       />
