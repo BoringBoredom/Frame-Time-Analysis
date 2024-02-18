@@ -58,4 +58,17 @@ export const barMetrics = [
   { name: "0.1 % low", color: "rgb(140,0,0)" },
   { name: "0.01 % low", color: "rgb(210,0,0)" },
   { name: "STDEV", color: "rgb(140,140,140)" },
-];
+] as const;
+
+export const sortOptions = [
+  "-",
+  "Maximum FPS",
+  "Average FPS",
+  "1 %ile FPS",
+  "0.1 %ile FPS",
+  "0.01 %ile FPS",
+  "1 % low FPS",
+  "0.1 % low FPS",
+  "0.01 % low FPS",
+  "Minimum FPS",
+] as const;

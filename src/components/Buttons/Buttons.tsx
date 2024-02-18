@@ -6,6 +6,7 @@ import React from "react";
 import type { Data } from "../types";
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
+import type { sortOptions } from "../static";
 
 function exportPage(download: boolean) {
   void html2canvas(document.body, {
@@ -38,14 +39,32 @@ function exportPage(download: boolean) {
 export default function Buttons({
   data,
   setData,
+  sortBy,
 }: {
   data: Data;
   setData: React.Dispatch<React.SetStateAction<Data>>;
+  sortBy: (typeof sortOptions)[number];
 }) {
   const resetRef = React.useRef<() => void>(null);
 
   return (
     <Stack className={s.buttons} id="button-container">
+      <FileButton
+        resetRef={resetRef}
+        multiple
+        accept=".csv,.json"
+        onChange={(files) => {
+          void handleUpload(files, data, setData, sortBy, resetRef);
+        }}
+      >
+        {(props) => (
+          <Tooltip label="Upload files (max. 14)">
+            <ActionIcon size="2rem" variant="subtle" color="gray" {...props}>
+              <IconUpload size="2rem" />
+            </ActionIcon>
+          </Tooltip>
+        )}
+      </FileButton>
       {data.benches.length > 0 && (
         <>
           <Tooltip label="Export as PNG">
@@ -74,22 +93,6 @@ export default function Buttons({
           </Tooltip>
         </>
       )}
-      <FileButton
-        resetRef={resetRef}
-        multiple
-        accept=".csv,.json"
-        onChange={(files) => {
-          void handleUpload(files, data, setData, resetRef);
-        }}
-      >
-        {(props) => (
-          <Tooltip label="Upload files (max. 14)">
-            <ActionIcon size="2rem" variant="subtle" color="gray" {...props}>
-              <IconUpload size="2rem" />
-            </ActionIcon>
-          </Tooltip>
-        )}
-      </FileButton>
     </Stack>
   );
 }

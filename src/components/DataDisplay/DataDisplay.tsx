@@ -89,7 +89,13 @@ function Info({ data, colors }: { data: Data; colors: typeof initialColors }) {
       <Table.Tbody>
         {data.benches.map((bench, index) => (
           <Table.Tr
-            key={index}
+            key={
+              bench.name +
+              bench.fps.metrics.avg +
+              bench.fps.metrics.stdev +
+              bench.fps.metrics.min +
+              bench.fps.metrics.max
+            }
             className={s.text}
             style={{ backgroundColor: colors[index] }}
           >
@@ -128,10 +134,15 @@ function LineMs({
   return (
     <div>
       <Scatter
-        datasetIdKey="index"
+        datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            index,
+            datasetIdKey:
+              bench.name +
+              bench.fps.metrics.avg +
+              bench.fps.metrics.stdev +
+              bench.fps.metrics.min +
+              bench.fps.metrics.max,
             label: bench.name,
             data: bench.ms.chartFormat,
             backgroundColor: colors[index],
@@ -205,10 +216,15 @@ function LineFps({
   return (
     <div>
       <Scatter
-        datasetIdKey="index"
+        datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            index,
+            datasetIdKey:
+              bench.name +
+              bench.fps.metrics.avg +
+              bench.fps.metrics.stdev +
+              bench.fps.metrics.min +
+              bench.fps.metrics.max,
             label: bench.name,
             data: bench.fps.chartFormat,
             backgroundColor: colors[index],
@@ -282,10 +298,15 @@ function ScatterMs({
   return (
     <div>
       <Scatter
-        datasetIdKey="index"
+        datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            index,
+            datasetIdKey:
+              bench.name +
+              bench.fps.metrics.avg +
+              bench.fps.metrics.stdev +
+              bench.fps.metrics.min +
+              bench.fps.metrics.max,
             label: bench.name,
             data: bench.ms.chartFormat,
             backgroundColor: colors[index],
@@ -353,10 +374,15 @@ function ScatterFps({
   return (
     <div>
       <Scatter
-        datasetIdKey="index"
+        datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            index,
+            datasetIdKey:
+              bench.name +
+              bench.fps.metrics.avg +
+              bench.fps.metrics.stdev +
+              bench.fps.metrics.min +
+              bench.fps.metrics.max,
             label: bench.name,
             data: bench.fps.chartFormat,
             backgroundColor: colors[index],
@@ -424,10 +450,15 @@ function PercentilesFps({
   return (
     <div>
       <Scatter
-        datasetIdKey="index"
+        datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            index,
+            datasetIdKey:
+              bench.name +
+              bench.fps.metrics.avg +
+              bench.fps.metrics.stdev +
+              bench.fps.metrics.min +
+              bench.fps.metrics.max,
             label: bench.name,
             data: percentileList.map((percentile) => ({
               x: percentile,
@@ -499,10 +530,15 @@ function LowsFps({
   return (
     <div>
       <Scatter
-        datasetIdKey="index"
+        datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            index,
+            datasetIdKey:
+              bench.name +
+              bench.fps.metrics.avg +
+              bench.fps.metrics.stdev +
+              bench.fps.metrics.min +
+              bench.fps.metrics.max,
             label: bench.name,
             data: percentileList.map((percentile) => ({
               x: percentile,
@@ -575,11 +611,16 @@ function BoxFps({
     <div>
       <Chart
         type="boxplot"
-        datasetIdKey="index"
+        datasetIdKey="datasetIdKey"
         data={{
           labels: [["Min", "-STDEV", "Avg", "+STDEV", "Max"]],
           datasets: data.benches.map((bench, index) => ({
-            index,
+            datasetIdKey:
+              bench.name +
+              bench.fps.metrics.avg +
+              bench.fps.metrics.stdev +
+              bench.fps.metrics.min +
+              bench.fps.metrics.max,
             label: bench.name,
             data: [
               {
@@ -627,12 +668,12 @@ function BarFps({
   return (
     <div style={{ minHeight: `${16 + data.benches.length * 35}vh` }}>
       <Bar
-        datasetIdKey="index"
+        datasetIdKey="datasetIdKey"
         plugins={[ChartDataLabels]}
         data={{
           labels: data.benches.map((bench) => bench.name.match(/.{1,8}/g)),
-          datasets: barMetrics.map((metric, index) => ({
-            index,
+          datasets: barMetrics.map((metric) => ({
+            datasetIdKey: metric.name,
             label: metric.name,
             data: data.benches.map((bench) => {
               if (metric.name.includes("%ile")) {

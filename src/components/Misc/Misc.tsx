@@ -10,6 +10,7 @@ import { IconTrash, IconUpload } from "@tabler/icons-react";
 import s from "./Misc.module.css";
 import { saveAs } from "file-saver";
 import React from "react";
+import { sortOptions } from "../static";
 
 async function aggregate(files: File[], resetRef: React.RefObject<() => void>) {
   let first = true;
@@ -64,9 +65,13 @@ async function aggregate(files: File[], resetRef: React.RefObject<() => void>) {
 export default function Misc({
   chartsPerRow,
   setChartsPerRow,
+  sortBy,
+  setSortBy,
 }: {
   chartsPerRow: number;
   setChartsPerRow: React.Dispatch<React.SetStateAction<number>>;
+  sortBy: (typeof sortOptions)[number];
+  setSortBy: React.Dispatch<React.SetStateAction<(typeof sortOptions)[number]>>;
 }) {
   const resetRef = React.useRef<() => void>(null);
 
@@ -82,6 +87,14 @@ export default function Misc({
         value={chartsPerRow}
         onChange={(ev) => {
           setChartsPerRow(parseInt(ev.target.value, 10));
+        }}
+      />
+      <NativeSelect
+        label="Sort By"
+        data={sortOptions}
+        value={sortBy}
+        onChange={(ev) => {
+          setSortBy(ev.target.value as (typeof sortOptions)[number]);
         }}
       />
       <Button

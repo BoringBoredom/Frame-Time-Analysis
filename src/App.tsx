@@ -2,7 +2,11 @@ import React from "react";
 import { Group } from "@mantine/core";
 import s from "./App.module.css";
 import type { Data } from "./components/types";
-import { initialChartTypes, initialColors } from "./components/static";
+import {
+  initialChartTypes,
+  initialColors,
+  type sortOptions,
+} from "./components/static";
 import ReadMe from "./components/ReadMe/ReadMe";
 import Misc from "./components/Misc/Misc";
 import ChartTypes from "./components/ChartTypes/ChartTypes";
@@ -78,9 +82,26 @@ export default function App() {
     localStorage.setItem("chartsPerRow", chartsPerRow.toString());
   }, [chartsPerRow]);
 
+  const [sortBy, setSortBy] = React.useState<(typeof sortOptions)[number]>(
+    () => {
+      const sortByValue = localStorage.getItem("sortBy");
+
+      let sortBy: (typeof sortOptions)[number] = "-";
+      if (sortByValue) {
+        sortBy = sortByValue as (typeof sortOptions)[number];
+      }
+
+      return sortBy;
+    }
+  );
+
+  React.useEffect(() => {
+    localStorage.setItem("sortBy", sortBy);
+  }, [sortBy]);
+
   return (
     <>
-      <Buttons data={data} setData={setData} />
+      <Buttons data={data} setData={setData} sortBy={sortBy} />
       {data.benches.length < 1 ? (
         <Group
           align="start"
@@ -90,7 +111,12 @@ export default function App() {
         >
           <Colors colors={colors} setColors={setColors} />
           <ChartTypes chartTypes={chartTypes} setChartTypes={setChartTypes} />
-          <Misc chartsPerRow={chartsPerRow} setChartsPerRow={setChartsPerRow} />
+          <Misc
+            chartsPerRow={chartsPerRow}
+            setChartsPerRow={setChartsPerRow}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+          />
           <ReadMe />
         </Group>
       ) : (

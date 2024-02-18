@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Bench, Data, Ms, Fps, Cfx } from "./types";
-import { percentileList } from "./static";
+import { percentileList, type sortOptions } from "./static";
 
 function calculateMetrics(
   ms: Pick<Ms, "unsorted" | "chartFormat">,
@@ -231,6 +231,7 @@ export async function handleUpload(
   files: File[],
   data: Data,
   setData: React.Dispatch<React.SetStateAction<Data>>,
+  sortBy: (typeof sortOptions)[number],
   resetRef: React.RefObject<() => void>
 ) {
   const newBenches: Bench[] = [];
@@ -322,7 +323,33 @@ export async function handleUpload(
   setData((previousData) => {
     const newData = structuredClone(previousData);
     newData.extremes = extremes;
-    newData.benches = newData.benches.concat(newBenches);
+
+    const sortedBenches = newData.benches.concat(newBenches);
+
+    if (sortBy === "Maximum FPS") {
+      sortedBenches.sort((a, b) => b.fps.metrics.max - a.fps.metrics.max);
+    } else if (sortBy === "Average FPS") {
+      sortedBenches.sort((a, b) => b.fps.metrics.avg - a.fps.metrics.avg);
+    } else if (sortBy.includes("%ile")) {
+      const percentile = parseFloat(sortBy.split(" ")[0]);
+
+      sortedBenches.sort(
+        (a, b) =>
+          b.fps.metrics.percentiles[percentile] -
+          a.fps.metrics.percentiles[percentile]
+      );
+    } else if (sortBy.includes("% low")) {
+      const low = parseFloat(sortBy.split(" ")[0]);
+
+      sortedBenches.sort(
+        (a, b) => b.fps.metrics.lows[low] - a.fps.metrics.lows[low]
+      );
+    } else if (sortBy === "Minimum FPS") {
+      sortedBenches.sort((a, b) => b.fps.metrics.min - a.fps.metrics.min);
+    }
+
+    newData.benches = sortedBenches;
+
     return newData;
   });
 
