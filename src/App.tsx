@@ -86,7 +86,7 @@ export default function App() {
     () => {
       const sortByValue = localStorage.getItem("sortBy");
 
-      let sortBy: (typeof sortOptions)[number] = "-";
+      let sortBy: (typeof sortOptions)[number] = "Average FPS";
       if (sortByValue) {
         sortBy = sortByValue as (typeof sortOptions)[number];
       }
