@@ -86,7 +86,6 @@ export default function ReadMe() {
       <Button
         component="a"
         href="presentmon.zip"
-        target="_blank"
         leftSection={<IconDownload />}
       >
         PresentMon
