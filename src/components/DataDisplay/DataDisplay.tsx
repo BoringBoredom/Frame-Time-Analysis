@@ -613,7 +613,19 @@ function BoxFps({
         type="boxplot"
         datasetIdKey="datasetIdKey"
         data={{
-          labels: [["Min", "-STDEV", "Avg", "+STDEV", "Max"]],
+          labels: [
+            [
+              "Min",
+              "0.1 %ile",
+              "1 %ile",
+              "-STDEV",
+              "Avg",
+              "+STDEV",
+              "99 %ile",
+              "99.9 %ile",
+              "Max",
+            ],
+          ],
           datasets: data.benches.map((bench, index) => ({
             datasetIdKey:
               bench.name +
@@ -629,12 +641,21 @@ function BoxFps({
                 median: bench.fps.metrics.avg,
                 q3: bench.fps.metrics.avg + bench.fps.metrics.stdev,
                 max: bench.fps.metrics.max,
+                outliers: [
+                  bench.fps.metrics.percentiles[0.1],
+                  bench.fps.metrics.percentiles[1],
+                  bench.fps.metrics.percentiles[99],
+                  bench.fps.metrics.percentiles[99.9],
+                ],
               },
             ],
             backgroundColor: colors[index],
             borderColor: colors[index],
             borderWidth: 3,
             medianColor: "rgb(150,150,150)",
+            outlierBackgroundColor: colors[index],
+            outlierBorderColor: colors[index],
+            outlierRadius: 4,
           })),
         }}
         options={{
@@ -645,7 +666,7 @@ function BoxFps({
             x: {
               title: {
                 display: true,
-                text: "FPS (Min, -STDEV, Avg, +STDEV, Max)",
+                text: "FPS (Min | 0.1 %ile | 1 %ile | -STDEV | Avg | +STDEV | 99 %ile | 99.9 %ile | Max)",
               },
               min: data.extremes.fps.min,
               max: data.extremes.fps.max,

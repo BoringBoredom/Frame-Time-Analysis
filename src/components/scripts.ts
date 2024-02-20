@@ -16,6 +16,8 @@ function calculateMetrics(
     percentiles[percentile] =
       1000 / sortedMs[Math.ceil((percentile / 100) * frames) - 1];
   }
+  percentiles[99] = 1000 / sortedMs[Math.ceil((99 / 100) * frames) - 1];
+  percentiles[99.9] = 1000 / sortedMs[Math.ceil((99.9 / 100) * frames) - 1];
 
   const lows: Record<number, number> = {};
   for (const low of percentileList) {
