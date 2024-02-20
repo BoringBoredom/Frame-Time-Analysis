@@ -45,7 +45,7 @@ jobs:
         run: mkdir -p ./temp/captures
 
       - name: Download PresentMon
-        run: wget ${{ steps.presentmon-url.outputs.PRESENTMON_URL }} -O temp/presentmon.exe
+        run: wget ${{ steps.presentmon-url.outputs.PRESENTMON_URL }} -O ./temp/presentmon.exe
 
       - name: Zip the PresentMon package
         run: 7z a ./public/presentmon.zip ./temp/presentmon.exe ./presentmon/Run.bat ./temp/captures

@@ -101,6 +101,23 @@ export default function ReadMe() {
           </Accordion.Control>
           <Accordion.Panel>
             <Stack>
+              <Text>
+                This package is{" "}
+                <Anchor
+                  href="https://github.com/BoringBoredom/Frame-Time-Analysis/blob/main/.github/workflows/deploy.yaml#L40-L51"
+                  target="_blank"
+                >
+                  automatically
+                </Anchor>{" "}
+                generated from the{" "}
+                <Anchor
+                  href="https://github.com/GameTechDev/PresentMon"
+                  target="_blank"
+                >
+                  PresentMon
+                </Anchor>{" "}
+                release page every week.
+              </Text>
               <Code block>
                 presentmon
                 <br />
