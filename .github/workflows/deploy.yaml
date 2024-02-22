@@ -1,11 +1,10 @@
+# Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
 
 on:
+  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
-
-  schedule:
-    - cron: "0 0 * * 0"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -22,6 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -30,40 +30,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
-
-      - name: Get latest PresentMon CLI URL
-        id: presentmon-url
-        run: node ./presentmon/fetchLatestURL.js >> "$GITHUB_OUTPUT"
-
-      - name: Create directories
-        run: mkdir -p ./temp/captures
-
-      - name: Download PresentMon
-        run: wget ${{ steps.presentmon-url.outputs.PRESENTMON_URL }} -O ./temp/presentmon.exe
-
-      - name: Zip the PresentMon package
-        run: 7z a ./public/presentmon.zip ./temp/presentmon.exe ./presentmon/Run.bat ./temp/captures
-
       - name: Install dependencies
         run: npm ci
-
       - name: Build
         run: npm run build
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Upload dist folder
           path: "./dist"
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

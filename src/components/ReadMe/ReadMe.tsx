@@ -85,7 +85,7 @@ export default function ReadMe() {
       </Text>
       <Button
         component="a"
-        href="presentmon.zip"
+        href="https://github.com/BoringBoredom/Frame-Time-Analysis/raw/main/presentmon/presentmon.zip"
         leftSection={<IconDownload />}
       >
         PresentMon
@@ -102,21 +102,14 @@ export default function ReadMe() {
           <Accordion.Panel>
             <Stack>
               <Text>
-                This package is{" "}
-                <Anchor
-                  href="https://github.com/BoringBoredom/Frame-Time-Analysis/blob/main/.github/workflows/deploy.yaml#L40-L51"
-                  target="_blank"
-                >
-                  automatically
-                </Anchor>{" "}
-                generated from the{" "}
+                This package is automatically generated from the{" "}
                 <Anchor
                   href="https://github.com/GameTechDev/PresentMon"
                   target="_blank"
                 >
                   PresentMon
                 </Anchor>{" "}
-                release page every week.
+                release page.
               </Text>
               <Code block>
                 presentmon
