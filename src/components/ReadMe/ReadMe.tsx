@@ -13,14 +13,19 @@ import { IconDownload } from "@tabler/icons-react";
 
 export default function ReadMe() {
   return (
-    <Stack>
+    <Stack className={s.width}>
       <Text size="xl" className={s.title}>
         Read Me
       </Text>
       <Divider />
       <Text>
-        Press the Upload icon in the upper-right corner to upload benchmarks
+        Press the Upload button in the upper-right corner to upload benchmarks
         (max. 14).
+      </Text>
+      <Text>
+        After you upload files, you can export a screenshot of the whole page
+        (including off-screen) to your clipboard or save it as a PNG with the
+        buttons below the Upload one.
       </Text>
       <Text>
         Supported formats:

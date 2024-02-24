@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 
 async function main() {
@@ -31,7 +31,7 @@ async function main() {
               `New PresentMon version found: ${localVersion} -> ${remoteVersion}`
             );
 
-            execSync("mkdir -p ./temp/captures");
+            mkdirSync("./temp/captures", { recursive: true });
             execSync(
               `wget ${asset.browser_download_url} -O ./temp/presentmon.exe`
             );
