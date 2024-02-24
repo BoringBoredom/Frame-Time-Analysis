@@ -20,7 +20,7 @@ async function main() {
     for (const release of releases) {
       for (const asset of release.assets) {
         const match = asset.browser_download_url.match(
-          /\/PresentMon-(\d\.\d\.\d)-x64\.exe/
+          /\/PresentMon-(\d+\.\d+\.\d+)-x64\.exe/
         );
 
         if (match) {
