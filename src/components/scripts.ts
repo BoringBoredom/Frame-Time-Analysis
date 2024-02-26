@@ -120,14 +120,16 @@ function processCfxJson(name: string, bench: Cfx): Bench {
       .map(
         (presentMode) =>
           ({
+            0: "Unknown",
             1: "Hardware: Legacy Flip",
             2: "Hardware: Legacy Copy to front buffer",
             3: "Hardware: Independent Flip",
             4: "Composed: Flip",
-            5: "Hardware Composed: Independent Flip",
-            6: "Composed: Copy with GPU GDI",
-            7: "Composed: Copy with CPU GDI",
-            8: "Composed: Composition Atlas",
+            5: "Composed: Copy with GPU GDI",
+            6: "Composed: Copy with CPU GDI",
+            7: "Composed: Composition Atlas",
+            8: "Hardware Composed: Independent Flip",
+            9: "Other",
           }[presentMode])
       )
       .join(", "),
