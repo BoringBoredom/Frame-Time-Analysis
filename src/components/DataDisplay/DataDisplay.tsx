@@ -695,6 +695,9 @@ function BarFps({
               },
               ticks: {
                 color: colors,
+                textStrokeColor: "white",
+                textStrokeWidth: 1,
+                font: { weight: 900 },
               },
             },
           },
