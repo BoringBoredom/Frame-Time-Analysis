@@ -89,13 +89,7 @@ function Info({ data, colors }: { data: Data; colors: typeof initialColors }) {
       <Table.Tbody>
         {data.benches.map((bench, index) => (
           <Table.Tr
-            key={
-              bench.name +
-              bench.fps.metrics.avg +
-              bench.fps.metrics.stdev +
-              bench.fps.metrics.min +
-              bench.fps.metrics.max
-            }
+            key={bench.name + bench.uploaded}
             className={s.text}
             style={{ backgroundColor: colors[index] }}
           >
@@ -137,12 +131,7 @@ function LineMs({
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            datasetIdKey:
-              bench.name +
-              bench.fps.metrics.avg +
-              bench.fps.metrics.stdev +
-              bench.fps.metrics.min +
-              bench.fps.metrics.max,
+            datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: bench.ms.chartFormat,
             backgroundColor: colors[index],
@@ -219,12 +208,7 @@ function LineFps({
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            datasetIdKey:
-              bench.name +
-              bench.fps.metrics.avg +
-              bench.fps.metrics.stdev +
-              bench.fps.metrics.min +
-              bench.fps.metrics.max,
+            datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: bench.fps.chartFormat,
             backgroundColor: colors[index],
@@ -301,12 +285,7 @@ function ScatterMs({
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            datasetIdKey:
-              bench.name +
-              bench.fps.metrics.avg +
-              bench.fps.metrics.stdev +
-              bench.fps.metrics.min +
-              bench.fps.metrics.max,
+            datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: bench.ms.chartFormat,
             backgroundColor: colors[index],
@@ -377,12 +356,7 @@ function ScatterFps({
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            datasetIdKey:
-              bench.name +
-              bench.fps.metrics.avg +
-              bench.fps.metrics.stdev +
-              bench.fps.metrics.min +
-              bench.fps.metrics.max,
+            datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: bench.fps.chartFormat,
             backgroundColor: colors[index],
@@ -453,12 +427,7 @@ function PercentilesFps({
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            datasetIdKey:
-              bench.name +
-              bench.fps.metrics.avg +
-              bench.fps.metrics.stdev +
-              bench.fps.metrics.min +
-              bench.fps.metrics.max,
+            datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: percentileList.map((percentile) => ({
               x: percentile,
@@ -533,12 +502,7 @@ function LowsFps({
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench, index) => ({
-            datasetIdKey:
-              bench.name +
-              bench.fps.metrics.avg +
-              bench.fps.metrics.stdev +
-              bench.fps.metrics.min +
-              bench.fps.metrics.max,
+            datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: percentileList.map((percentile) => ({
               x: percentile,
@@ -627,12 +591,7 @@ function BoxFps({
             ],
           ],
           datasets: data.benches.map((bench, index) => ({
-            datasetIdKey:
-              bench.name +
-              bench.fps.metrics.avg +
-              bench.fps.metrics.stdev +
-              bench.fps.metrics.min +
-              bench.fps.metrics.max,
+            datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: [
               {

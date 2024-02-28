@@ -106,6 +106,7 @@ function processCfxJson(name: string, bench: Cfx): Bench {
 
   return {
     name,
+    uploaded: Date.now().toString(),
     duration,
     frames: unsortedMs.length,
     ...(dropped.length !== 0 && {
@@ -212,6 +213,7 @@ function processCsv(
 
   return {
     name,
+    uploaded: Date.now().toString(),
     duration,
     frames: unsortedMs.length,
     ...(droppedIndex !== -1 && { dropped }),
