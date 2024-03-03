@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Bench, Data, Ms, Fps, Cfx } from "./types";
-import { percentileList, type sortOptions } from "./static";
+import { percentileList, type sortOptions, type initialColors } from "./static";
+
+let benchIndex = 0;
 
 function calculateMetrics(
   ms: Pick<Ms, "unsorted" | "chartFormat">,
@@ -62,7 +64,11 @@ function calculateMetrics(
   };
 }
 
-function processCfxJson(name: string, bench: Cfx): Bench {
+function processCfxJson(
+  name: string,
+  bench: Cfx,
+  colors: typeof initialColors
+): Bench {
   let unsortedMs: number[] = [];
   const chartFormatMs: { x: number; y: number }[] = [];
   const unsortedFps: number[] = [];
@@ -107,6 +113,7 @@ function processCfxJson(name: string, bench: Cfx): Bench {
   return {
     name,
     uploaded: Date.now().toString(),
+    color: colors[benchIndex++],
     duration,
     frames: unsortedMs.length,
     ...(dropped.length !== 0 && {
@@ -149,7 +156,8 @@ function processCsv(
   lines: string[],
   lowerCaseSplitRow: string[],
   indicator: "msbetweenpresents" | "frametime" | "fps",
-  transformFunc: (arg0: number) => number
+  transformFunc: (arg0: number) => number,
+  colors: typeof initialColors
 ): Bench {
   const unsortedMs: number[] = [];
   const chartFormatMs: { x: number; y: number }[] = [];
@@ -214,6 +222,7 @@ function processCsv(
   return {
     name,
     uploaded: Date.now().toString(),
+    color: colors[benchIndex++],
     duration,
     frames: unsortedMs.length,
     ...(droppedIndex !== -1 && { dropped }),
@@ -238,7 +247,8 @@ export async function handleUpload(
   data: Data,
   setData: React.Dispatch<React.SetStateAction<Data>>,
   sortBy: (typeof sortOptions)[number],
-  resetRef: React.RefObject<() => void>
+  resetRef: React.RefObject<() => void>,
+  colors: typeof initialColors
 ) {
   const newBenches: Bench[] = [];
 
@@ -262,7 +272,8 @@ export async function handleUpload(
               lines.slice(index + 1),
               lowerCaseSplitRow,
               "msbetweenpresents",
-              (value) => value
+              (value) => value,
+              colors
             )
           );
 
@@ -274,7 +285,8 @@ export async function handleUpload(
               lines.slice(index + 3),
               lines[index + 2].toLowerCase().trim().split(","),
               "frametime",
-              (value) => value
+              (value) => value,
+              colors
             )
           );
 
@@ -286,7 +298,8 @@ export async function handleUpload(
               lines.slice(index + 1),
               lowerCaseSplitRow,
               "fps",
-              (value) => 1000 / value
+              (value) => 1000 / value,
+              colors
             )
           );
 
@@ -295,7 +308,11 @@ export async function handleUpload(
       }
     } else if (name.endsWith(".json")) {
       newBenches.push(
-        processCfxJson(name.slice(0, -5), JSON.parse(await file.text()) as Cfx)
+        processCfxJson(
+          name.slice(0, -5),
+          JSON.parse(await file.text()) as Cfx,
+          colors
+        )
       );
     }
   }

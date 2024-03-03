@@ -1,6 +1,7 @@
 export interface Bench {
   name: string;
   uploaded: string;
+  color: string;
   duration: number;
   frames: number;
   dropped?: number;

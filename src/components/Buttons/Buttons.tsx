@@ -6,7 +6,7 @@ import React from "react";
 import type { Data } from "../types";
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
-import type { sortOptions } from "../static";
+import type { initialColors, sortOptions } from "../static";
 
 function exportPage(download: boolean) {
   void html2canvas(document.body, {
@@ -40,10 +40,12 @@ export default function Buttons({
   data,
   setData,
   sortBy,
+  colors,
 }: {
   data: Data;
   setData: React.Dispatch<React.SetStateAction<Data>>;
   sortBy: (typeof sortOptions)[number];
+  colors: typeof initialColors;
 }) {
   const resetRef = React.useRef<() => void>(null);
 
@@ -54,7 +56,7 @@ export default function Buttons({
         multiple
         accept=".csv,.json"
         onChange={(files) => {
-          void handleUpload(files, data, setData, sortBy, resetRef);
+          void handleUpload(files, data, setData, sortBy, resetRef, colors);
         }}
       >
         {(props) => (

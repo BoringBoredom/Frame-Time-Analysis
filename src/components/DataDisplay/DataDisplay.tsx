@@ -1,10 +1,5 @@
 import { Group, SimpleGrid, Stack, Table, Tooltip } from "@mantine/core";
-import {
-  percentileList,
-  barMetrics,
-  type initialChartTypes,
-  type initialColors,
-} from "../static";
+import { percentileList, barMetrics, type initialChartTypes } from "../static";
 import type { Data } from "../types";
 import { IconAlertTriangleFilled } from "@tabler/icons-react";
 import s from "./DataDisplay.module.css";
@@ -70,7 +65,7 @@ function PresentModes({ presentModes }: { presentModes: string | undefined }) {
   return <Table.Td>{presentModes}</Table.Td>;
 }
 
-function Info({ data, colors }: { data: Data; colors: typeof initialColors }) {
+function Info({ data }: { data: Data }) {
   return (
     <Table>
       <Table.Thead>
@@ -87,11 +82,11 @@ function Info({ data, colors }: { data: Data; colors: typeof initialColors }) {
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        {data.benches.map((bench, index) => (
+        {data.benches.map((bench) => (
           <Table.Tr
             key={bench.name + bench.uploaded}
             className={s.text}
-            style={{ backgroundColor: colors[index] }}
+            style={{ backgroundColor: bench.color }}
           >
             <Table.Td>{bench.name}</Table.Td>
             <Table.Td>{bench.applications}</Table.Td>
@@ -118,24 +113,18 @@ function Info({ data, colors }: { data: Data; colors: typeof initialColors }) {
   );
 }
 
-function LineMs({
-  data,
-  colors,
-}: {
-  data: Data;
-  colors: typeof initialColors;
-}) {
+function LineMs({ data }: { data: Data }) {
   return (
     <div>
       <Scatter
         datasetIdKey="datasetIdKey"
         data={{
-          datasets: data.benches.map((bench, index) => ({
+          datasets: data.benches.map((bench) => ({
             datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: bench.ms.chartFormat,
-            backgroundColor: colors[index],
-            borderColor: colors[index],
+            backgroundColor: bench.color,
+            borderColor: bench.color,
           })),
         }}
         options={{
@@ -195,24 +184,18 @@ function LineMs({
   );
 }
 
-function LineFps({
-  data,
-  colors,
-}: {
-  data: Data;
-  colors: typeof initialColors;
-}) {
+function LineFps({ data }: { data: Data }) {
   return (
     <div>
       <Scatter
         datasetIdKey="datasetIdKey"
         data={{
-          datasets: data.benches.map((bench, index) => ({
+          datasets: data.benches.map((bench) => ({
             datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: bench.fps.chartFormat,
-            backgroundColor: colors[index],
-            borderColor: colors[index],
+            backgroundColor: bench.color,
+            borderColor: bench.color,
           })),
         }}
         options={{
@@ -272,24 +255,18 @@ function LineFps({
   );
 }
 
-function ScatterMs({
-  data,
-  colors,
-}: {
-  data: Data;
-  colors: typeof initialColors;
-}) {
+function ScatterMs({ data }: { data: Data }) {
   return (
     <div>
       <Scatter
         datasetIdKey="datasetIdKey"
         data={{
-          datasets: data.benches.map((bench, index) => ({
+          datasets: data.benches.map((bench) => ({
             datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: bench.ms.chartFormat,
-            backgroundColor: colors[index],
-            borderColor: colors[index],
+            backgroundColor: bench.color,
+            borderColor: bench.color,
           })),
         }}
         options={{
@@ -343,24 +320,18 @@ function ScatterMs({
   );
 }
 
-function ScatterFps({
-  data,
-  colors,
-}: {
-  data: Data;
-  colors: typeof initialColors;
-}) {
+function ScatterFps({ data }: { data: Data }) {
   return (
     <div>
       <Scatter
         datasetIdKey="datasetIdKey"
         data={{
-          datasets: data.benches.map((bench, index) => ({
+          datasets: data.benches.map((bench) => ({
             datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: bench.fps.chartFormat,
-            backgroundColor: colors[index],
-            borderColor: colors[index],
+            backgroundColor: bench.color,
+            borderColor: bench.color,
           })),
         }}
         options={{
@@ -414,27 +385,21 @@ function ScatterFps({
   );
 }
 
-function PercentilesFps({
-  data,
-  colors,
-}: {
-  data: Data;
-  colors: typeof initialColors;
-}) {
+function PercentilesFps({ data }: { data: Data }) {
   return (
     <div>
       <Scatter
         datasetIdKey="datasetIdKey"
         data={{
-          datasets: data.benches.map((bench, index) => ({
+          datasets: data.benches.map((bench) => ({
             datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: percentileList.map((percentile) => ({
               x: percentile,
               y: bench.fps.metrics.percentiles[percentile],
             })),
-            backgroundColor: colors[index],
-            borderColor: colors[index],
+            backgroundColor: bench.color,
+            borderColor: bench.color,
           })),
         }}
         options={{
@@ -489,27 +454,21 @@ function PercentilesFps({
   );
 }
 
-function LowsFps({
-  data,
-  colors,
-}: {
-  data: Data;
-  colors: typeof initialColors;
-}) {
+function LowsFps({ data }: { data: Data }) {
   return (
     <div>
       <Scatter
         datasetIdKey="datasetIdKey"
         data={{
-          datasets: data.benches.map((bench, index) => ({
+          datasets: data.benches.map((bench) => ({
             datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: percentileList.map((percentile) => ({
               x: percentile,
               y: bench.fps.metrics.lows[percentile],
             })),
-            backgroundColor: colors[index],
-            borderColor: colors[index],
+            backgroundColor: bench.color,
+            borderColor: bench.color,
           })),
         }}
         options={{
@@ -564,13 +523,7 @@ function LowsFps({
   );
 }
 
-function BoxFps({
-  data,
-  colors,
-}: {
-  data: Data;
-  colors: typeof initialColors;
-}) {
+function BoxFps({ data }: { data: Data }) {
   return (
     <div>
       <Chart
@@ -590,7 +543,7 @@ function BoxFps({
               "Max",
             ],
           ],
-          datasets: data.benches.map((bench, index) => ({
+          datasets: data.benches.map((bench) => ({
             datasetIdKey: bench.name + bench.uploaded,
             label: bench.name,
             data: [
@@ -608,12 +561,12 @@ function BoxFps({
                 ],
               },
             ],
-            backgroundColor: colors[index],
-            borderColor: colors[index],
+            backgroundColor: bench.color,
+            borderColor: bench.color,
             borderWidth: 3,
             medianColor: "rgb(150,150,150)",
-            outlierBackgroundColor: colors[index],
-            outlierBorderColor: colors[index],
+            outlierBackgroundColor: bench.color,
+            outlierBorderColor: bench.color,
             outlierRadius: 4,
           })),
         }}
@@ -638,13 +591,7 @@ function BoxFps({
   );
 }
 
-function BarFps({
-  data,
-  colors,
-}: {
-  data: Data;
-  colors: typeof initialColors;
-}) {
+function BarFps({ data }: { data: Data }) {
   return (
     <div style={{ minHeight: `${16 + data.benches.length * 35}vh` }}>
       <Bar
@@ -694,7 +641,7 @@ function BarFps({
                 display: false,
               },
               ticks: {
-                color: colors,
+                color: data.benches.map((bench) => bench.color),
                 textStrokeColor: "white",
                 textStrokeWidth: 3,
                 font: { weight: 700 },
@@ -720,27 +667,25 @@ function BarFps({
 
 export default function DataDisplay({
   data,
-  colors,
   chartTypes,
   chartsPerRow,
 }: {
   data: Data;
-  colors: typeof initialColors;
   chartTypes: typeof initialChartTypes;
   chartsPerRow: number;
 }) {
   return (
     <Stack>
-      {chartTypes[0].show && <Info data={data} colors={colors} />}
+      {chartTypes[0].show && <Info data={data} />}
       <SimpleGrid cols={chartsPerRow}>
-        {chartTypes[1].show && <LineMs data={data} colors={colors} />}
-        {chartTypes[2].show && <LineFps data={data} colors={colors} />}
-        {chartTypes[3].show && <ScatterMs data={data} colors={colors} />}
-        {chartTypes[4].show && <ScatterFps data={data} colors={colors} />}
-        {chartTypes[5].show && <PercentilesFps data={data} colors={colors} />}
-        {chartTypes[6].show && <LowsFps data={data} colors={colors} />}
-        {chartTypes[7].show && <BoxFps data={data} colors={colors} />}
-        {chartTypes[8].show && <BarFps data={data} colors={colors} />}
+        {chartTypes[1].show && <LineMs data={data} />}
+        {chartTypes[2].show && <LineFps data={data} />}
+        {chartTypes[3].show && <ScatterMs data={data} />}
+        {chartTypes[4].show && <ScatterFps data={data} />}
+        {chartTypes[5].show && <PercentilesFps data={data} />}
+        {chartTypes[6].show && <LowsFps data={data} />}
+        {chartTypes[7].show && <BoxFps data={data} />}
+        {chartTypes[8].show && <BarFps data={data} />}
       </SimpleGrid>
     </Stack>
   );

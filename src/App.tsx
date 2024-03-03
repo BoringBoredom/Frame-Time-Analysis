@@ -101,7 +101,7 @@ export default function App() {
 
   return (
     <>
-      <Buttons data={data} setData={setData} sortBy={sortBy} />
+      <Buttons data={data} setData={setData} sortBy={sortBy} colors={colors} />
       {data.benches.length < 1 ? (
         <Group
           align="start"
@@ -123,7 +123,6 @@ export default function App() {
         <>
           <DataDisplay
             data={data}
-            colors={colors}
             chartTypes={chartTypes}
             chartsPerRow={chartsPerRow}
           />
