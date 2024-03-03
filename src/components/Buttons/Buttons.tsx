@@ -41,11 +41,13 @@ export default function Buttons({
   setData,
   sortBy,
   colors,
+  colorRepeat,
 }: {
   data: Data;
   setData: React.Dispatch<React.SetStateAction<Data>>;
   sortBy: (typeof sortOptions)[number];
   colors: typeof initialColors;
+  colorRepeat: number;
 }) {
   const resetRef = React.useRef<() => void>(null);
 
@@ -56,11 +58,19 @@ export default function Buttons({
         multiple
         accept=".csv,.json"
         onChange={(files) => {
-          void handleUpload(files, data, setData, sortBy, resetRef, colors);
+          void handleUpload(
+            files,
+            data,
+            setData,
+            sortBy,
+            resetRef,
+            colors,
+            colorRepeat
+          );
         }}
       >
         {(props) => (
-          <Tooltip label="Upload files (max. 14)">
+          <Tooltip label="Upload files">
             <ActionIcon size="2rem" variant="subtle" color="gray" {...props}>
               <IconUpload size="2rem" />
             </ActionIcon>

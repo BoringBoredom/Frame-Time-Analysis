@@ -5,6 +5,7 @@ import {
   Button,
   FileButton,
   Text,
+  NumberInput,
 } from "@mantine/core";
 import { IconTrash, IconUpload } from "@tabler/icons-react";
 import s from "./Misc.module.css";
@@ -67,11 +68,15 @@ export default function Misc({
   setChartsPerRow,
   sortBy,
   setSortBy,
+  colorRepeat,
+  setColorRepeat,
 }: {
   chartsPerRow: number;
   setChartsPerRow: React.Dispatch<React.SetStateAction<number>>;
   sortBy: (typeof sortOptions)[number];
   setSortBy: React.Dispatch<React.SetStateAction<(typeof sortOptions)[number]>>;
+  colorRepeat: number;
+  setColorRepeat: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const resetRef = React.useRef<() => void>(null);
 
@@ -96,6 +101,22 @@ export default function Misc({
         onChange={(ev) => {
           setSortBy(ev.target.value as (typeof sortOptions)[number]);
         }}
+      />
+      <NumberInput
+        label="Repeat each color __ times"
+        value={colorRepeat}
+        onChange={(value) => {
+          if (typeof value === "number") {
+            setColorRepeat(value);
+          }
+        }}
+        min={0}
+        max={100}
+        clampBehavior="strict"
+        allowNegative={false}
+        allowDecimal={false}
+        stepHoldDelay={250}
+        stepHoldInterval={1}
       />
       <Button
         leftSection={<IconTrash />}

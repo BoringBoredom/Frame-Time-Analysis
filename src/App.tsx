@@ -99,9 +99,30 @@ export default function App() {
     localStorage.setItem("sortBy", sortBy);
   }, [sortBy]);
 
+  const [colorRepeat, setColorRepeat] = React.useState<number>(() => {
+    const colorRepeatValue = localStorage.getItem("colorRepeat");
+
+    let colorRepeat = 0;
+    if (colorRepeatValue) {
+      colorRepeat = parseInt(colorRepeatValue, 10);
+    }
+
+    return colorRepeat;
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem("colorRepeat", colorRepeat.toString());
+  }, [colorRepeat]);
+
   return (
     <>
-      <Buttons data={data} setData={setData} sortBy={sortBy} colors={colors} />
+      <Buttons
+        data={data}
+        setData={setData}
+        sortBy={sortBy}
+        colors={colors}
+        colorRepeat={colorRepeat}
+      />
       {data.benches.length < 1 ? (
         <Group
           align="start"
@@ -116,6 +137,8 @@ export default function App() {
             setChartsPerRow={setChartsPerRow}
             sortBy={sortBy}
             setSortBy={setSortBy}
+            colorRepeat={colorRepeat}
+            setColorRepeat={setColorRepeat}
           />
           <ReadMe />
         </Group>

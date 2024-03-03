@@ -19,8 +19,7 @@ export default function ReadMe() {
       </Text>
       <Divider />
       <Text>
-        Press the Upload button in the upper-right corner to upload benchmarks
-        (max. 14).
+        Press the Upload button in the upper-right corner to upload benchmarks.
       </Text>
       <Text>
         After you upload files, you can export a screenshot of the whole page

@@ -67,7 +67,8 @@ function calculateMetrics(
 function processCfxJson(
   name: string,
   bench: Cfx,
-  colors: typeof initialColors
+  colors: typeof initialColors,
+  colorRepeat: number
 ): Bench {
   let unsortedMs: number[] = [];
   const chartFormatMs: { x: number; y: number }[] = [];
@@ -113,7 +114,7 @@ function processCfxJson(
   return {
     name,
     uploaded: Date.now().toString(),
-    color: colors[benchIndex++],
+    color: colors[Math.floor(benchIndex++ / (colorRepeat + 1))],
     duration,
     frames: unsortedMs.length,
     ...(dropped.length !== 0 && {
@@ -157,7 +158,8 @@ function processCsv(
   lowerCaseSplitRow: string[],
   indicator: "msbetweenpresents" | "frametime" | "fps",
   transformFunc: (arg0: number) => number,
-  colors: typeof initialColors
+  colors: typeof initialColors,
+  colorRepeat: number
 ): Bench {
   const unsortedMs: number[] = [];
   const chartFormatMs: { x: number; y: number }[] = [];
@@ -222,7 +224,7 @@ function processCsv(
   return {
     name,
     uploaded: Date.now().toString(),
-    color: colors[benchIndex++],
+    color: colors[Math.floor(benchIndex++ / (colorRepeat + 1))],
     duration,
     frames: unsortedMs.length,
     ...(droppedIndex !== -1 && { dropped }),
@@ -248,12 +250,13 @@ export async function handleUpload(
   setData: React.Dispatch<React.SetStateAction<Data>>,
   sortBy: (typeof sortOptions)[number],
   resetRef: React.RefObject<() => void>,
-  colors: typeof initialColors
+  colors: typeof initialColors,
+  colorRepeat: number
 ) {
   const newBenches: Bench[] = [];
 
   for (const file of files) {
-    if (data.benches.length + newBenches.length >= 14) {
+    if (data.benches.length + newBenches.length >= 14 * (colorRepeat + 1)) {
       break;
     }
 
@@ -273,7 +276,8 @@ export async function handleUpload(
               lowerCaseSplitRow,
               "msbetweenpresents",
               (value) => value,
-              colors
+              colors,
+              colorRepeat
             )
           );
 
@@ -286,7 +290,8 @@ export async function handleUpload(
               lines[index + 2].toLowerCase().trim().split(","),
               "frametime",
               (value) => value,
-              colors
+              colors,
+              colorRepeat
             )
           );
 
@@ -299,7 +304,8 @@ export async function handleUpload(
               lowerCaseSplitRow,
               "fps",
               (value) => 1000 / value,
-              colors
+              colors,
+              colorRepeat
             )
           );
 
@@ -311,7 +317,8 @@ export async function handleUpload(
         processCfxJson(
           name.slice(0, -5),
           JSON.parse(await file.text()) as Cfx,
-          colors
+          colors,
+          colorRepeat
         )
       );
     }
