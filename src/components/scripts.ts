@@ -368,7 +368,7 @@ export async function handleUpload(
           b.fps.metrics.percentiles[percentile] -
           a.fps.metrics.percentiles[percentile]
       );
-    } else if (sortBy.includes("% low")) {
+    } else if (sortBy.includes("% Low")) {
       const low = parseFloat(sortBy.split(" ")[0]);
 
       sortedBenches.sort(

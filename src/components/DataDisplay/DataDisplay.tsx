@@ -591,6 +591,51 @@ function BoxFps({ data }: { data: Data }) {
   );
 }
 
+function TableFps({ data }: { data: Data }) {
+  return (
+    <Table>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>Name</Table.Th>
+          <Table.Th>Max</Table.Th>
+          <Table.Th>Avg</Table.Th>
+          <Table.Th>Min</Table.Th>
+          <Table.Th>1 %ile</Table.Th>
+          <Table.Th>0.1 %ile</Table.Th>
+          <Table.Th>0.01 %ile</Table.Th>
+          <Table.Th>1% Low</Table.Th>
+          <Table.Th>0.1% Low</Table.Th>
+          <Table.Th>0.01% Low</Table.Th>
+          <Table.Th>STDEV</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {data.benches.map((bench) => (
+          <Table.Tr
+            key={bench.name + bench.uploaded}
+            className={s.text}
+            style={{ backgroundColor: bench.color }}
+          >
+            <Table.Td>{bench.name}</Table.Td>
+            <Table.Td>{bench.fps.metrics.max.toFixed(2)}</Table.Td>
+            <Table.Td>{bench.fps.metrics.avg.toFixed(2)}</Table.Td>
+            <Table.Td>{bench.fps.metrics.min.toFixed(2)}</Table.Td>
+            <Table.Td>{bench.fps.metrics.percentiles[1].toFixed(2)}</Table.Td>
+            <Table.Td>{bench.fps.metrics.percentiles[0.1].toFixed(2)}</Table.Td>
+            <Table.Td>
+              {bench.fps.metrics.percentiles[0.01].toFixed(2)}
+            </Table.Td>
+            <Table.Td>{bench.fps.metrics.lows[1].toFixed(2)}</Table.Td>
+            <Table.Td>{bench.fps.metrics.lows[0.1].toFixed(2)}</Table.Td>
+            <Table.Td>{bench.fps.metrics.lows[0.01].toFixed(2)}</Table.Td>
+            <Table.Td>{bench.fps.metrics.stdev.toFixed(2)}</Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
+  );
+}
+
 function BarFps({ data }: { data: Data }) {
   return (
     <div style={{ minHeight: `${16 + data.benches.length * 35}vh` }}>
@@ -609,7 +654,7 @@ function BarFps({ data }: { data: Data }) {
                 ].toFixed(2);
               }
 
-              if (metric.name.includes("% low")) {
+              if (metric.name.includes("% Low")) {
                 return bench.fps.metrics.lows[
                   parseFloat(metric.name.split(" ")[0])
                 ].toFixed(2);
@@ -685,7 +730,8 @@ export default function DataDisplay({
         {chartTypes[5].show && <PercentilesFps data={data} />}
         {chartTypes[6].show && <LowsFps data={data} />}
         {chartTypes[7].show && <BoxFps data={data} />}
-        {chartTypes[8].show && <BarFps data={data} />}
+        {chartTypes[8].show && <TableFps data={data} />}
+        {chartTypes[9].show && <BarFps data={data} />}
       </SimpleGrid>
     </Stack>
   );

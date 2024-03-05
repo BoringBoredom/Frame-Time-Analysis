@@ -44,6 +44,7 @@ export const initialChartTypes = [
   { name: "Line: Percentiles", show: true },
   { name: "Line: Lows", show: true },
   { name: "Box: FPS", show: true },
+  { name: "Table: FPS", show: false },
   { name: "Bar: FPS", show: true },
 ];
 
@@ -54,9 +55,9 @@ export const barMetrics = [
   { name: "1 %ile", color: "rgb(0,0,70)" },
   { name: "0.1 %ile", color: "rgb(0,0,140)" },
   { name: "0.01 %ile", color: "rgb(0,0,210)" },
-  { name: "1 % low", color: "rgb(70,0,0)" },
-  { name: "0.1 % low", color: "rgb(140,0,0)" },
-  { name: "0.01 % low", color: "rgb(210,0,0)" },
+  { name: "1 % Low", color: "rgb(70,0,0)" },
+  { name: "0.1 % Low", color: "rgb(140,0,0)" },
+  { name: "0.01 % Low", color: "rgb(210,0,0)" },
   { name: "STDEV", color: "rgb(140,140,140)" },
 ] as const;
 
@@ -67,8 +68,8 @@ export const sortOptions = [
   "1 %ile FPS",
   "0.1 %ile FPS",
   "0.01 %ile FPS",
-  "1 % low FPS",
-  "0.1 % low FPS",
-  "0.01 % low FPS",
+  "1 % Low FPS",
+  "0.1 % Low FPS",
+  "0.01 % Low FPS",
   "Minimum FPS",
 ] as const;
