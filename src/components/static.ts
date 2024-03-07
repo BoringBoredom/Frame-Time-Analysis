@@ -44,8 +44,8 @@ export const initialChartTypes = [
   { name: "Line: Percentiles", show: true },
   { name: "Line: Lows", show: true },
   { name: "Box: FPS", show: true },
-  { name: "Table: FPS", show: false },
-  { name: "Bar: FPS", show: true },
+  { name: "Table: FPS", show: true },
+  { name: "Bar: FPS", show: false },
 ];
 
 export const barMetrics = [

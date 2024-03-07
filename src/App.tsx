@@ -70,7 +70,7 @@ export default function App() {
   const [chartsPerRow, setChartsPerRow] = React.useState<number>(() => {
     const chartsPerRowValue = localStorage.getItem("chartsPerRow");
 
-    let chartsPerRow = 1;
+    let chartsPerRow = 2;
     if (chartsPerRowValue) {
       chartsPerRow = parseInt(chartsPerRowValue, 10);
     }
