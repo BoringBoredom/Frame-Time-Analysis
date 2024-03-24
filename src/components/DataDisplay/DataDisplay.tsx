@@ -77,7 +77,9 @@ function Info({ data }: { data: Data }) {
           <Table.Th>Duration (ms)</Table.Th>
           <Table.Th>Sync Interval</Table.Th>
           <Table.Th>Total Frames</Table.Th>
-          <Table.Th>AllowsTearing=0 Frames</Table.Th>
+          <Tooltip label="number of frames that have the AllowsTearing flag set to 0, meaning tearing is prohibited">
+            <Table.Th>AllowsTearing=0 Frames</Table.Th>
+          </Tooltip>
           <Table.Th>Dropped Frames</Table.Th>
         </Table.Tr>
       </Table.Thead>
@@ -638,7 +640,9 @@ function TableFps({ data }: { data: Data }) {
 
 function BarFps({ data }: { data: Data }) {
   return (
-    <div style={{ minHeight: `${16 + data.benches.length * 35}vh` }}>
+    <div
+      style={{ minHeight: `${(16 + data.benches.length * 35).toString()}vh` }}
+    >
       <Bar
         datasetIdKey="datasetIdKey"
         plugins={[ChartDataLabels]}
