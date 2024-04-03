@@ -3,9 +3,11 @@ import { execSync } from "node:child_process";
 
 async function main() {
   try {
-    const localVersion = readFileSync("./presentmon/version", {
+    const version = readFileSync("./presentmon/version", {
       encoding: "utf-8",
     });
+    const [major, minor, patch] = version.split(".");
+    const localVersion = { version, major, minor, patch };
 
     const response = await fetch(
       "https://api.github.com/repos/GameTechDev/PresentMon/releases"
@@ -20,15 +22,18 @@ async function main() {
     for (const release of releases) {
       for (const asset of release.assets) {
         const match = asset.browser_download_url.match(
-          /\/PresentMon-(\d+\.\d+\.\d+)-x64\.exe/
+          /\/PresentMon-((\d+)\.(\d+)\.(\d+))-x64\.exe/
         );
 
         if (match) {
-          const remoteVersion = match[1];
+          const [, version, major, minor, patch] = match;
 
-          if (localVersion !== remoteVersion) {
+          if (
+            major === localVersion.major &&
+            (minor !== localVersion.minor || patch !== localVersion.patch)
+          ) {
             console.log(
-              `New PresentMon version found: ${localVersion} -> ${remoteVersion}`
+              `New PresentMon version found: ${localVersion.version} -> ${version}`
             );
 
             mkdirSync("./temp/captures", { recursive: true });
@@ -39,11 +44,11 @@ async function main() {
               "7z a ./presentmon/presentmon.zip ./temp/presentmon.exe ./presentmon/Run.bat ./temp/captures"
             );
 
-            writeFileSync("./presentmon/version", remoteVersion, {
+            writeFileSync("./presentmon/version", version, {
               encoding: "utf-8",
             });
           } else {
-            console.log("PresentMon is up-to-date.");
+            console.log("No new minor/patch version found.");
           }
 
           return 0;
