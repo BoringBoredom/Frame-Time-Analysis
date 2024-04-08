@@ -169,6 +169,7 @@ function processCsv(
   const frameTimeIndex = lowerCaseSplitRow.indexOf(indicator);
   const cpuBusyIndex = lowerCaseSplitRow.indexOf("cpubusy");
   const cpuWaitIndex = lowerCaseSplitRow.indexOf("cpuwait");
+  const displayedTimeIndex = lowerCaseSplitRow.indexOf("displayedtime");
   const droppedIndex = lowerCaseSplitRow.indexOf("dropped");
   const allowsTearingIndex = lowerCaseSplitRow.indexOf("allowstearing");
   const dwmNotifiedIndex = lowerCaseSplitRow.indexOf("dwmnotified");
@@ -217,7 +218,10 @@ function processCsv(
       presentModes.add(splitLine[presentModeIndex]);
       syncIntervals.add(splitLine[syncIntervalIndex]);
 
-      if (parseInt(splitLine[droppedIndex], 10) === 1) {
+      if (
+        parseInt(splitLine[droppedIndex], 10) === 1 ||
+        splitLine[displayedTimeIndex] === "0.000000"
+      ) {
         dropped += 1;
       }
       if (parseInt(splitLine[allowsTearingIndex], 10) === 1) {
@@ -238,7 +242,7 @@ function processCsv(
     color: colors[Math.floor(benchIndex++ / (colorRepeat + 1))],
     duration,
     frames: unsortedMs.length,
-    ...(droppedIndex !== -1 && { dropped }),
+    ...((droppedIndex !== -1 || displayedTimeIndex !== -1) && { dropped }),
     ...(allowsTearingIndex !== -1 && { allowsTearing }),
     ...(dwmNotified !== -1 && { dwmNotified }),
     ...(wasBatched !== -1 && { wasBatched }),
