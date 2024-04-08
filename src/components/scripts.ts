@@ -26,10 +26,10 @@ function calculateMetrics(
     const wall = (low / 100) * duration;
     let currentTotal = 0;
 
-    for (const present of sortedMs) {
-      currentTotal += present;
+    for (const frameTime of sortedMs) {
+      currentTotal += frameTime;
       if (currentTotal >= wall) {
-        lows[low] = 1000 / present;
+        lows[low] = 1000 / frameTime;
         break;
       }
     }
@@ -102,11 +102,11 @@ function processCfxJson(
 
   let duration = 0;
 
-  for (const present of unsortedMs) {
-    const fpsUnit = 1000 / present;
-    duration += present;
+  for (const frameTime of unsortedMs) {
+    const fpsUnit = 1000 / frameTime;
+    duration += frameTime;
 
-    chartFormatMs.push({ x: duration, y: present });
+    chartFormatMs.push({ x: duration, y: frameTime });
     unsortedFps.push(fpsUnit);
     chartFormatFps.push({ x: duration, y: fpsUnit });
   }
@@ -156,7 +156,7 @@ function processCsv(
   name: string,
   lines: string[],
   lowerCaseSplitRow: string[],
-  indicator: "msbetweenpresents" | "frametime" | "fps",
+  indicator: "msbetweenpresents" | "frametime" | "fps" | "cpubusy",
   transformFunc: (arg0: number) => number,
   colors: typeof initialColors,
   colorRepeat: number
@@ -166,7 +166,9 @@ function processCsv(
   const unsortedFps: number[] = [];
   const chartFormatFps: { x: number; y: number }[] = [];
 
-  const presentIndex = lowerCaseSplitRow.indexOf(indicator);
+  const frameTimeIndex = lowerCaseSplitRow.indexOf(indicator);
+  const cpuBusyIndex = lowerCaseSplitRow.indexOf("cpubusy");
+  const cpuWaitIndex = lowerCaseSplitRow.indexOf("cpuwait");
   const droppedIndex = lowerCaseSplitRow.indexOf("dropped");
   const allowsTearingIndex = lowerCaseSplitRow.indexOf("allowstearing");
   const dwmNotifiedIndex = lowerCaseSplitRow.indexOf("dwmnotified");
@@ -190,14 +192,23 @@ function processCsv(
 
   for (const line of lines) {
     const splitLine = line.trim().split(",");
-    const present = transformFunc(parseFloat(splitLine[presentIndex]));
 
-    if (!Number.isNaN(present)) {
-      const fpsUnit = 1000 / present;
-      duration += present;
+    let frameTime;
 
-      unsortedMs.push(present);
-      chartFormatMs.push({ x: duration, y: present });
+    if (indicator === "cpubusy") {
+      frameTime =
+        parseFloat(splitLine[cpuBusyIndex]) +
+        parseFloat(splitLine[cpuWaitIndex]);
+    } else {
+      frameTime = transformFunc(parseFloat(splitLine[frameTimeIndex]));
+    }
+
+    if (!Number.isNaN(frameTime)) {
+      const fpsUnit = 1000 / frameTime;
+      duration += frameTime;
+
+      unsortedMs.push(frameTime);
+      chartFormatMs.push({ x: duration, y: frameTime });
       unsortedFps.push(fpsUnit);
       chartFormatFps.push({ x: duration, y: fpsUnit });
 
@@ -268,6 +279,7 @@ export async function handleUpload(
 
       for (const [index, row] of lines.entries()) {
         const lowerCaseSplitRow = row.toLowerCase().trim().split(",");
+
         if (lowerCaseSplitRow.includes("msbetweenpresents")) {
           newBenches.push(
             processCsv(
@@ -282,7 +294,25 @@ export async function handleUpload(
           );
 
           break;
-        } else if (lowerCaseSplitRow.includes("cpuscheduler")) {
+        }
+
+        if (lowerCaseSplitRow.includes("cpubusy")) {
+          newBenches.push(
+            processCsv(
+              benchName,
+              lines.slice(index + 1),
+              lowerCaseSplitRow,
+              "cpubusy",
+              (value) => value,
+              colors,
+              colorRepeat
+            )
+          );
+
+          break;
+        }
+
+        if (lowerCaseSplitRow.includes("cpuscheduler")) {
           newBenches.push(
             processCsv(
               benchName,
@@ -296,7 +326,9 @@ export async function handleUpload(
           );
 
           break;
-        } else if (lowerCaseSplitRow.includes("99(%) fps")) {
+        }
+
+        if (lowerCaseSplitRow.includes("99(%) fps")) {
           newBenches.push(
             processCsv(
               benchName,

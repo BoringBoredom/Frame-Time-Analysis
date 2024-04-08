@@ -16,7 +16,11 @@ import { sortOptions } from "../static";
 async function aggregate(files: File[], resetRef: React.RefObject<() => void>) {
   let first = true;
   let content = "";
-  let indicator: "frametime" | "msbetweenpresents";
+  let indicator:
+    | "frametime"
+    | "msbetweenpresents"
+    | "cpubusy"
+    | "render latency(msec)";
 
   for (const file of files) {
     const text = await file.text();
@@ -33,6 +37,16 @@ async function aggregate(files: File[], resetRef: React.RefObject<() => void>) {
 
         if (lowerCaseLine.includes("msbetweenpresents")) {
           indicator = "msbetweenpresents";
+          break;
+        }
+
+        if (lowerCaseLine.includes("cpubusy")) {
+          indicator = "cpubusy";
+          break;
+        }
+
+        if (lowerCaseLine.includes("render latency(msec)")) {
+          indicator = "render latency(msec)";
           break;
         }
       }

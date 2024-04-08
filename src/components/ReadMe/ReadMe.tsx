@@ -131,7 +131,7 @@ export default function ReadMe() {
                   className={s.cursor}
                   onClick={() => {
                     void navigator.clipboard.writeText(
-                      `pushd %~dp0\ncd captures\n..\\presentmon.exe -multi_csv -no_top -hotkey "f10"`
+                      `pushd %~dp0\ncd captures\n..\\presentmon.exe --multi_csv --no_console_stats --hotkey "F10"`
                     );
                   }}
                 >
@@ -139,7 +139,8 @@ export default function ReadMe() {
                   <br />
                   cd captures
                   <br />
-                  ..\presentmon.exe -multi_csv -no_top -hotkey &quot;f10&quot;
+                  ..\presentmon.exe --multi_csv --no_console_stats --hotkey
+                  &quot;F10&quot;
                 </Code>
               </Tooltip>
               <Text>
