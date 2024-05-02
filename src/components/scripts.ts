@@ -156,7 +156,7 @@ function processCsv(
   name: string,
   lines: string[],
   lowerCaseSplitRow: string[],
-  indicator: "msbetweenpresents" | "frametime" | "fps" | "cpubusy",
+  indicator: "msbetweenpresents" | "frametime" | "fps",
   transformFunc: (arg0: number) => number,
   colors: typeof initialColors,
   colorRepeat: number
@@ -172,10 +172,10 @@ function processCsv(
   const displayedTimeIndex = lowerCaseSplitRow.indexOf("displayedtime");
   const droppedIndex = lowerCaseSplitRow.indexOf("dropped");
   const allowsTearingIndex = lowerCaseSplitRow.indexOf("allowstearing");
-  const dwmNotifiedIndex = lowerCaseSplitRow.indexOf("dwmnotified");
-  const wasBatchedIndex = lowerCaseSplitRow.indexOf("wasbatched");
   const applicationIndex = lowerCaseSplitRow.indexOf("application");
-  const runtimeIndex = lowerCaseSplitRow.indexOf("runtime");
+  const runtimeIndex = lowerCaseSplitRow.includes("presentruntime")
+    ? lowerCaseSplitRow.indexOf("presentruntime")
+    : lowerCaseSplitRow.indexOf("runtime");
   const presentModeIndex = lowerCaseSplitRow.indexOf("presentmode");
   const syncIntervalIndex = lowerCaseSplitRow.indexOf("syncinterval");
 
@@ -186,8 +186,6 @@ function processCsv(
 
   let dropped = 0;
   let allowsTearing = 0;
-  let dwmNotified = 0;
-  let wasBatched = 0;
 
   let duration = 0;
 
@@ -196,12 +194,12 @@ function processCsv(
 
     let frameTime;
 
-    if (indicator === "cpubusy") {
+    if (frameTimeIndex !== -1) {
+      frameTime = transformFunc(parseFloat(splitLine[frameTimeIndex]));
+    } else {
       frameTime =
         parseFloat(splitLine[cpuBusyIndex]) +
         parseFloat(splitLine[cpuWaitIndex]);
-    } else {
-      frameTime = transformFunc(parseFloat(splitLine[frameTimeIndex]));
     }
 
     if (!Number.isNaN(frameTime)) {
@@ -220,18 +218,12 @@ function processCsv(
 
       if (
         parseInt(splitLine[droppedIndex], 10) === 1 ||
-        splitLine[displayedTimeIndex] === "0.000000"
+        parseFloat(splitLine[displayedTimeIndex]) === 0
       ) {
         dropped += 1;
       }
       if (parseInt(splitLine[allowsTearingIndex], 10) === 1) {
         allowsTearing += 1;
-      }
-      if (parseInt(splitLine[dwmNotifiedIndex], 10) === 1) {
-        dwmNotified += 1;
-      }
-      if (parseInt(splitLine[wasBatchedIndex], 10) === 1) {
-        wasBatched += 1;
       }
     }
   }
@@ -244,8 +236,6 @@ function processCsv(
     frames: unsortedMs.length,
     ...((droppedIndex !== -1 || displayedTimeIndex !== -1) && { dropped }),
     ...(allowsTearingIndex !== -1 && { allowsTearing }),
-    ...(dwmNotified !== -1 && { dwmNotified }),
-    ...(wasBatched !== -1 && { wasBatched }),
     applications: [...applications].join(", "),
     runtimes: [...runtimes].join(", "),
     presentModes: [...presentModes].join(", "),
@@ -306,7 +296,7 @@ export async function handleUpload(
               benchName,
               lines.slice(index + 1),
               lowerCaseSplitRow,
-              "cpubusy",
+              "frametime",
               (value) => value,
               colors,
               colorRepeat
