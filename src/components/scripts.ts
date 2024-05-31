@@ -216,9 +216,11 @@ function processCsv(
       presentModes.add(splitLine[presentModeIndex]);
       syncIntervals.add(splitLine[syncIntervalIndex]);
 
+      const displayedTime = parseFloat(splitLine[displayedTimeIndex]);
       if (
         parseInt(splitLine[droppedIndex], 10) === 1 ||
-        parseFloat(splitLine[displayedTimeIndex]) === 0
+        displayedTime === 0 ||
+        Number.isNaN(displayedTime)
       ) {
         dropped += 1;
       }
