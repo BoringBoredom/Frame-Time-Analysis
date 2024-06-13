@@ -91,11 +91,30 @@ function Info({ data }: { data: Data }) {
             style={{ backgroundColor: bench.color }}
           >
             <Table.Td>{bench.name}</Table.Td>
-            <Table.Td>{bench.applications}</Table.Td>
-            <Table.Td>{bench.runtimes}</Table.Td>
+            <Table.Td>
+              <Group gap="xs" wrap="nowrap">
+                <div>{bench.applications}</div>
+                {bench.applications?.includes(", ") && (
+                  <IconAlertTriangleFilled />
+                )}
+              </Group>
+            </Table.Td>
+            <Table.Td>
+              <Group gap="xs" wrap="nowrap">
+                <div>{bench.runtimes}</div>
+                {bench.runtimes?.includes(", ") && <IconAlertTriangleFilled />}
+              </Group>
+            </Table.Td>
             <PresentModes presentModes={bench.presentModes} />
             <Table.Td>{bench.duration.toFixed(2)}</Table.Td>
-            <Table.Td>{bench.syncIntervals}</Table.Td>
+            <Table.Td>
+              <Group gap="xs" wrap="nowrap">
+                <div>{bench.syncIntervals}</div>
+                {bench.syncIntervals?.includes(", ") && (
+                  <IconAlertTriangleFilled />
+                )}
+              </Group>
+            </Table.Td>
             <Table.Td>{bench.frames}</Table.Td>
             <Table.Td>
               {bench.allowsTearing !== undefined
