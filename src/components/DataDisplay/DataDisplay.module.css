@@ -4,3 +4,13 @@
   font-size: 1.2rem;
   -webkit-text-stroke: 1px black;
 }
+
+.wordBreak {
+  word-break: break-all;
+}
+
+.smallerText {
+  font-weight: 900;
+  color: white;
+  -webkit-text-stroke: 1px black;
+}

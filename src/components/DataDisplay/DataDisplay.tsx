@@ -90,7 +90,7 @@ function Info({ data }: { data: Data }) {
             className={s.text}
             style={{ backgroundColor: bench.color }}
           >
-            <Table.Td>{bench.name}</Table.Td>
+            <Table.Td className={s.wordBreak}>{bench.name}</Table.Td>
             <Table.Td>
               <Group gap="xs" wrap="nowrap">
                 <div>{bench.applications}</div>
@@ -634,10 +634,10 @@ function TableFps({ data }: { data: Data }) {
         {data.benches.map((bench) => (
           <Table.Tr
             key={bench.name + bench.uploaded}
-            className={s.text}
+            className={s.smallerText}
             style={{ backgroundColor: bench.color }}
           >
-            <Table.Td>{bench.name}</Table.Td>
+            <Table.Td className={s.wordBreak}>{bench.name}</Table.Td>
             <Table.Td>{bench.fps.metrics.max.toFixed(2)}</Table.Td>
             <Table.Td>{bench.fps.metrics.avg.toFixed(2)}</Table.Td>
             <Table.Td>{bench.fps.metrics.min.toFixed(2)}</Table.Td>
