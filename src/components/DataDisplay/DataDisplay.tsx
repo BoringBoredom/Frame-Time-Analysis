@@ -22,6 +22,8 @@ import {
   Legend,
   Tooltip as ChartTooltip,
 } from "chart.js";
+import type { ZoomPluginOptions } from "chartjs-plugin-zoom/types/options";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -41,6 +43,34 @@ defaults.font.size = 18;
 defaults.borderColor = "rgb(70,70,70)";
 defaults.color = "rgb(255,255,255)";
 defaults.normalized = true;
+
+const timeChartZoom: ZoomPluginOptions = {
+  pan: {
+    enabled: true,
+    mode: "x",
+    onPanComplete({ chart }) {
+      delete chart.options.scales?.y?.min;
+      delete chart.options.scales?.y?.max;
+    },
+  },
+  zoom: {
+    wheel: {
+      enabled: true,
+      modifierKey: "ctrl",
+    },
+    mode: "x",
+    onZoomComplete({ chart }) {
+      delete chart.options.scales?.y?.min;
+      delete chart.options.scales?.y?.max;
+    },
+  },
+  limits: {
+    x: {
+      min: "original",
+      max: "original",
+    },
+  },
+};
 
 function PresentModes({ presentModes }: { presentModes: string | undefined }) {
   if (
@@ -179,25 +209,7 @@ function LineMs({ data }: { data: Data }) {
             },
           },
           plugins: {
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: "x",
-              },
-              zoom: {
-                wheel: {
-                  enabled: true,
-                  modifierKey: "ctrl",
-                },
-                mode: "x",
-              },
-              limits: {
-                x: {
-                  min: "original",
-                  max: "original",
-                },
-              },
-            },
+            zoom: timeChartZoom,
           },
         }}
       />
@@ -250,25 +262,7 @@ function LineFps({ data }: { data: Data }) {
             },
           },
           plugins: {
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: "x",
-              },
-              zoom: {
-                wheel: {
-                  enabled: true,
-                  modifierKey: "ctrl",
-                },
-                mode: "x",
-              },
-              limits: {
-                x: {
-                  min: "original",
-                  max: "original",
-                },
-              },
-            },
+            zoom: timeChartZoom,
           },
         }}
       />
@@ -315,25 +309,7 @@ function ScatterMs({ data }: { data: Data }) {
             },
           },
           plugins: {
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: "x",
-              },
-              zoom: {
-                wheel: {
-                  enabled: true,
-                  modifierKey: "ctrl",
-                },
-                mode: "x",
-              },
-              limits: {
-                x: {
-                  min: "original",
-                  max: "original",
-                },
-              },
-            },
+            zoom: timeChartZoom,
           },
         }}
       />
@@ -380,25 +356,7 @@ function ScatterFps({ data }: { data: Data }) {
             },
           },
           plugins: {
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: "x",
-              },
-              zoom: {
-                wheel: {
-                  enabled: true,
-                  modifierKey: "ctrl",
-                },
-                mode: "x",
-              },
-              limits: {
-                x: {
-                  min: "original",
-                  max: "original",
-                },
-              },
-            },
+            zoom: timeChartZoom,
           },
         }}
       />
