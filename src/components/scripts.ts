@@ -219,8 +219,8 @@ function processCsv(
       const displayedTime = parseFloat(splitLine[displayedTimeIndex]);
       if (
         parseInt(splitLine[droppedIndex], 10) === 1 ||
-        displayedTime === 0 ||
-        Number.isNaN(displayedTime)
+        (displayedTimeIndex !== -1 &&
+          (displayedTime === 0 || Number.isNaN(displayedTime)))
       ) {
         dropped += 1;
       }
