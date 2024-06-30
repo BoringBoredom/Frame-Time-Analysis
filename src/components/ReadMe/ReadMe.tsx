@@ -70,6 +70,7 @@ export default function ReadMe() {
         <br />- Zoom: hold down CTRL and scroll up/down
         <br />- Area selection: hold down both CTRL and left click to draw a
         rectangle
+        <br />- Reset: double-click
       </Text>
       <Text>
         Click on individual benchmarks in the chart legends to hide them.

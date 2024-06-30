@@ -1,3 +1,4 @@
+import React from "react";
 import { Group, SimpleGrid, Stack, Table, Tooltip } from "@mantine/core";
 import { percentileList, barMetrics, type initialChartTypes } from "../static";
 import type { Data } from "../types";
@@ -163,9 +164,12 @@ function Info({ data }: { data: Data }) {
 }
 
 function LineMs({ data }: { data: Data }) {
+  const chartRef = React.useRef<ChartJS<"scatter">>();
+
   return (
     <div>
       <Scatter
+        ref={chartRef}
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench) => ({
@@ -209,6 +213,9 @@ function LineMs({ data }: { data: Data }) {
           plugins: {
             zoom: timeChartZoom,
           },
+        }}
+        onDoubleClick={() => {
+          chartRef.current?.resetZoom("none");
         }}
       />
     </div>
@@ -216,9 +223,12 @@ function LineMs({ data }: { data: Data }) {
 }
 
 function LineFps({ data }: { data: Data }) {
+  const chartRef = React.useRef<ChartJS<"scatter">>();
+
   return (
     <div>
       <Scatter
+        ref={chartRef}
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench) => ({
@@ -263,15 +273,21 @@ function LineFps({ data }: { data: Data }) {
             zoom: timeChartZoom,
           },
         }}
+        onDoubleClick={() => {
+          chartRef.current?.resetZoom("none");
+        }}
       />
     </div>
   );
 }
 
 function ScatterMs({ data }: { data: Data }) {
+  const chartRef = React.useRef<ChartJS<"scatter">>();
+
   return (
     <div>
       <Scatter
+        ref={chartRef}
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench) => ({
@@ -310,15 +326,21 @@ function ScatterMs({ data }: { data: Data }) {
             zoom: timeChartZoom,
           },
         }}
+        onDoubleClick={() => {
+          chartRef.current?.resetZoom("none");
+        }}
       />
     </div>
   );
 }
 
 function ScatterFps({ data }: { data: Data }) {
+  const chartRef = React.useRef<ChartJS<"scatter">>();
+
   return (
     <div>
       <Scatter
+        ref={chartRef}
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench) => ({
@@ -357,15 +379,21 @@ function ScatterFps({ data }: { data: Data }) {
             zoom: timeChartZoom,
           },
         }}
+        onDoubleClick={() => {
+          chartRef.current?.resetZoom("none");
+        }}
       />
     </div>
   );
 }
 
 function PercentilesFps({ data }: { data: Data }) {
+  const chartRef = React.useRef<ChartJS<"scatter">>();
+
   return (
     <div>
       <Scatter
+        ref={chartRef}
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench) => ({
@@ -426,15 +454,21 @@ function PercentilesFps({ data }: { data: Data }) {
             },
           },
         }}
+        onDoubleClick={() => {
+          chartRef.current?.resetZoom("none");
+        }}
       />
     </div>
   );
 }
 
 function LowsFps({ data }: { data: Data }) {
+  const chartRef = React.useRef<ChartJS<"scatter">>();
+
   return (
     <div>
       <Scatter
+        ref={chartRef}
         datasetIdKey="datasetIdKey"
         data={{
           datasets: data.benches.map((bench) => ({
@@ -494,6 +528,9 @@ function LowsFps({ data }: { data: Data }) {
               },
             },
           },
+        }}
+        onDoubleClick={() => {
+          chartRef.current?.resetZoom("none");
         }}
       />
     </div>
