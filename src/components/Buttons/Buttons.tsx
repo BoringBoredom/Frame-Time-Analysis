@@ -11,7 +11,6 @@ import type { initialColors, sortOptions } from "../static";
 function exportPage(download: boolean) {
   void html2canvas(document.body, {
     scrollY: 0,
-    height: document.body.scrollHeight,
     ignoreElements: (element) =>
       element.id === "button-container" ||
       element.tagName === "NOSCRIPT" ||
