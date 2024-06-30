@@ -53,6 +53,10 @@ const timeChartZoom: ZoomPluginOptions = {
       enabled: true,
       modifierKey: "ctrl",
     },
+    drag: {
+      enabled: true,
+      modifierKey: "ctrl",
+    },
   },
   limits: {
     x: {

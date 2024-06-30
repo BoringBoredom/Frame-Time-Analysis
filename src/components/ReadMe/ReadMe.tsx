@@ -66,8 +66,10 @@ export default function ReadMe() {
       </Text>
       <Text>
         Panning and Zooming:
-        <br />- Pan: hold down left click and move mouse inside a chart
-        <br />- Zoom: hold down CTRL and scroll inside a chart
+        <br />- Pan: hold down left click and move mouse
+        <br />- Zoom: hold down CTRL and scroll up/down
+        <br />- Area selection: hold down both CTRL and left click to draw a
+        rectangle
       </Text>
       <Text>
         Click on individual benchmarks in the chart legends to hide them.
