@@ -47,25 +47,19 @@ defaults.normalized = true;
 const timeChartZoom: ZoomPluginOptions = {
   pan: {
     enabled: true,
-    mode: "x",
-    onPanComplete({ chart }) {
-      delete chart.options.scales?.y?.min;
-      delete chart.options.scales?.y?.max;
-    },
   },
   zoom: {
     wheel: {
       enabled: true,
       modifierKey: "ctrl",
     },
-    mode: "x",
-    onZoomComplete({ chart }) {
-      delete chart.options.scales?.y?.min;
-      delete chart.options.scales?.y?.max;
-    },
   },
   limits: {
     x: {
+      min: "original",
+      max: "original",
+    },
+    y: {
       min: "original",
       max: "original",
     },
