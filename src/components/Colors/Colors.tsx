@@ -1,6 +1,6 @@
-import { Stack, Divider, ColorInput, Text } from "@mantine/core";
-import s from "./Colors.module.css";
+import { ColorInput, Divider, Stack, Text } from "@mantine/core";
 import { initialColors } from "../static";
+import s from "./Colors.module.css";
 
 export default function colors({
   colors,
@@ -17,6 +17,7 @@ export default function colors({
       <Divider />
       {colors.map((color, index) => (
         <ColorInput
+          // eslint-disable-next-line react-x/no-array-index-key
           key={index}
           value={color}
           withEyeDropper={false}

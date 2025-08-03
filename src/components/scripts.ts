@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Bench, Data, Ms, Fps, Cfx } from "./types";
-import { percentileList, type sortOptions, type initialColors } from "./static";
+import { percentileList, type initialColors, type sortOptions } from "./static";
+import type { Bench, Cfx, Data, Fps, Ms } from "./types";
 
 let benchIndex = 0;
 
@@ -256,7 +255,7 @@ export async function handleUpload(
   data: Data,
   setData: React.Dispatch<React.SetStateAction<Data>>,
   sortBy: (typeof sortOptions)[number],
-  resetRef: React.RefObject<() => void>,
+  resetRef: React.RefObject<(() => void) | null>,
   colors: typeof initialColors,
   colorRepeat: number
 ) {

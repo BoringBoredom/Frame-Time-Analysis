@@ -1,19 +1,22 @@
 import {
-  Stack,
-  Divider,
-  NativeSelect,
   Button,
+  Divider,
   FileButton,
-  Text,
+  NativeSelect,
   NumberInput,
+  Stack,
+  Text,
 } from "@mantine/core";
 import { IconTrash, IconUpload } from "@tabler/icons-react";
-import s from "./Misc.module.css";
 import { saveAs } from "file-saver";
 import React from "react";
 import { sortOptions } from "../static";
+import s from "./Misc.module.css";
 
-async function aggregate(files: File[], resetRef: React.RefObject<() => void>) {
+async function aggregate(
+  files: File[],
+  resetRef: React.RefObject<(() => void) | null>
+) {
   let first = true;
   let content = "";
   let indicator:

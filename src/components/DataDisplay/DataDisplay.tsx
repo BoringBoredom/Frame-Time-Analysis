@@ -1,27 +1,27 @@
-import React from "react";
 import { Group, SimpleGrid, Stack, Table, Tooltip } from "@mantine/core";
-import { percentileList, barMetrics, type initialChartTypes } from "../static";
-import type { Data } from "../types";
-import { IconAlertTriangleFilled } from "@tabler/icons-react";
-import s from "./DataDisplay.module.css";
-import { Scatter, Bar, Chart } from "react-chartjs-2";
-import zoomPlugin from "chartjs-plugin-zoom";
-import ChartDataLabels from "chartjs-plugin-datalabels";
 import {
-  BoxPlotController,
   BoxAndWiskers,
+  BoxPlotController,
 } from "@sgratzl/chartjs-chart-boxplot";
+import { IconAlertTriangleFilled } from "@tabler/icons-react";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import zoomPlugin from "chartjs-plugin-zoom";
+import React from "react";
+import { Bar, Chart, Scatter } from "react-chartjs-2";
+import { barMetrics, percentileList, type initialChartTypes } from "../static";
+import type { Data } from "../types";
+import s from "./DataDisplay.module.css";
 //import "chart.js/auto";
 import {
-  Chart as ChartJS,
-  defaults,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
   BarElement,
-  Legend,
+  CategoryScale,
+  Chart as ChartJS,
   Tooltip as ChartTooltip,
+  defaults,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
 } from "chart.js";
 import type { ZoomPluginOptions } from "chartjs-plugin-zoom/types/options";
 
@@ -164,7 +164,7 @@ function Info({ data }: { data: Data }) {
 }
 
 function LineMs({ data }: { data: Data }) {
-  const chartRef = React.useRef<ChartJS<"scatter">>();
+  const chartRef = React.useRef<ChartJS<"scatter">>(null);
 
   return (
     <div>
@@ -223,7 +223,7 @@ function LineMs({ data }: { data: Data }) {
 }
 
 function LineFps({ data }: { data: Data }) {
-  const chartRef = React.useRef<ChartJS<"scatter">>();
+  const chartRef = React.useRef<ChartJS<"scatter">>(null);
 
   return (
     <div>
@@ -282,7 +282,7 @@ function LineFps({ data }: { data: Data }) {
 }
 
 function ScatterMs({ data }: { data: Data }) {
-  const chartRef = React.useRef<ChartJS<"scatter">>();
+  const chartRef = React.useRef<ChartJS<"scatter">>(null);
 
   return (
     <div>
@@ -335,7 +335,7 @@ function ScatterMs({ data }: { data: Data }) {
 }
 
 function ScatterFps({ data }: { data: Data }) {
-  const chartRef = React.useRef<ChartJS<"scatter">>();
+  const chartRef = React.useRef<ChartJS<"scatter">>(null);
 
   return (
     <div>
@@ -388,7 +388,7 @@ function ScatterFps({ data }: { data: Data }) {
 }
 
 function PercentilesFps({ data }: { data: Data }) {
-  const chartRef = React.useRef<ChartJS<"scatter">>();
+  const chartRef = React.useRef<ChartJS<"scatter">>(null);
 
   return (
     <div>
@@ -463,7 +463,7 @@ function PercentilesFps({ data }: { data: Data }) {
 }
 
 function LowsFps({ data }: { data: Data }) {
-  const chartRef = React.useRef<ChartJS<"scatter">>();
+  const chartRef = React.useRef<ChartJS<"scatter">>(null);
 
   return (
     <div>
