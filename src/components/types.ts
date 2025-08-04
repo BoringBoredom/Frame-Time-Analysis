@@ -51,6 +51,7 @@ export interface Cfx {
     ProcessName: string;
     ApiInfo: string;
     PresentationMode: string;
+    Comment: string | null;
   };
   Runs: {
     PresentMonRuntime: string;

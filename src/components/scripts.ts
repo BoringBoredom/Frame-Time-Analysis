@@ -111,7 +111,7 @@ function processCfxJson(
   }
 
   return {
-    name,
+    name: bench.Info.Comment ?? name,
     uploaded: Date.now().toString(),
     color: colors[Math.floor(benchIndex++ / (colorRepeat + 1))],
     duration,
